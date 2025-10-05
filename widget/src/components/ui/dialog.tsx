@@ -1,9 +1,26 @@
-import * as DialogPrimitive from "@radix-ui/react-dialog";
-import { XIcon } from "lucide-react";
-import { motion } from "motion/react";
-import type * as React from "react";
+"use client";
 
-import { cn } from "../../lib/utils";
+import { cva, type VariantProps } from "class-variance-authority";
+import { X } from "lucide-react";
+import { Dialog as DialogPrimitive } from "radix-ui";
+import type * as React from "react";
+import { cn } from "@/lib/utils";
+
+const dialogContentVariants = cva(
+	"flex flex-col fixed outline-0 z-50 border border-border bg-background p-6 shadow-lg shadow-black/5 duration-200 data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 data-[state=closed]:zoom-out-95 data-[state=open]:zoom-in-95 sm:rounded-lg",
+	{
+		variants: {
+			variant: {
+				default:
+					"left-[50%] top-[50%] max-w-lg translate-x-[-50%] translate-y-[-50%] w-full",
+				fullscreen: "inset-5",
+			},
+		},
+		defaultVariants: {
+			variant: "default",
+		},
+	},
+);
 
 function Dialog({
 	...props
@@ -37,7 +54,7 @@ function DialogOverlay({
 		<DialogPrimitive.Overlay
 			data-slot="dialog-overlay"
 			className={cn(
-				"data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
+				"fixed inset-0 z-50 bg-black/30 [backdrop-filter:blur(4px)] data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0",
 				className,
 			)}
 			{...props}
@@ -49,92 +66,63 @@ function DialogContent({
 	className,
 	children,
 	showCloseButton = true,
+	overlay = true,
+	variant,
 	...props
-}: React.ComponentProps<typeof DialogPrimitive.Content> & {
-	showCloseButton?: boolean;
-}) {
+}: React.ComponentProps<typeof DialogPrimitive.Content> &
+	VariantProps<typeof dialogContentVariants> & {
+		showCloseButton?: boolean;
+		overlay?: boolean;
+	}) {
 	return (
-		<DialogPortal data-slot="dialog-portal">
-			<DialogOverlay />
+		<DialogPortal>
+			{overlay && <DialogOverlay />}
 			<DialogPrimitive.Content
 				data-slot="dialog-content"
-				asChild
+				className={cn(dialogContentVariants({ variant }), className)}
 				{...props}
 			>
-				<motion.div
-					initial={{
-						x: "calc(50vw - 50%)",
-						y: "calc(50vh - 50%)",
-						scaleX: 0,
-						scaleY: 0,
-						opacity: 0,
-						scale: 0.95
-					}}
-					animate={{
-						x: 0,
-						y: 0,
-						scaleX: 1,
-						scaleY: 1,
-						opacity: 1,
-						scale: 1
-					}}
-					exit={{
-						x: "calc(50vw - 50%)",
-						y: "calc(50vh - 50%)",
-						scaleX: 0,
-						scaleY: 0,
-						opacity: 0,
-						scale: 0.95
-					}}
-					transition={{
-						type: "spring",
-						damping: 25,
-						stiffness: 300,
-						duration: 0.2
-					}}
-					className={cn(
-						"bg-background fixed top-[50%] left-[50%] z-50 grid w-full max-w-[calc(100%-2rem)] translate-x-[-50%] translate-y-[-50%] gap-4 rounded-lg border p-6 shadow-lg sm:max-w-lg",
-						className,
-					)}
-				>
-					{children}
-					{showCloseButton && (
-						<DialogPrimitive.Close
-							data-slot="dialog-close"
-							className="ring-offset-background focus:ring-ring data-[state=open]:bg-accent data-[state=open]:text-muted-foreground absolute top-4 right-4 rounded-xs opacity-70 transition-opacity hover:opacity-100 focus:ring-2 focus:ring-offset-2 focus:outline-hidden disabled:pointer-events-none [&_svg]:pointer-events-none [&_svg]:shrink-0 [&_svg:not([class*='size-'])]:size-4"
-						>
-							<XIcon />
-							<span className="sr-only">Close</span>
-						</DialogPrimitive.Close>
-					)}
-				</motion.div>
+				{children}
+				{showCloseButton && (
+					<DialogClose className="cursor-pointer outline-0 absolute start-5 top-5 rounded-sm opacity-60 ring-offset-background transition-opacity hover:opacity-100 focus:outline-hidden disabled:pointer-events-none data-[state=open]:bg-accent data-[state=open]:text-muted-foreground">
+						<X className="size-4" />
+						<span className="sr-only">Close</span>
+					</DialogClose>
+				)}
 			</DialogPrimitive.Content>
 		</DialogPortal>
 	);
 }
 
-function DialogHeader({ className, ...props }: React.ComponentProps<"div">) {
-	return (
-		<div
-			data-slot="dialog-header"
-			className={cn("flex flex-col gap-2 text-center sm:text-left", className)}
-			{...props}
-		/>
-	);
-}
+export default DialogContent;
 
-function DialogFooter({ className, ...props }: React.ComponentProps<"div">) {
-	return (
-		<div
-			data-slot="dialog-footer"
-			className={cn(
-				"flex flex-col-reverse gap-2 sm:flex-row sm:justify-end",
-				className,
-			)}
-			{...props}
-		/>
-	);
-}
+const DialogHeader = ({
+	className,
+	...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+	<div
+		data-slot="dialog-header"
+		className={cn(
+			"flex flex-col space-y-1 text-center sm:text-start mb-5",
+			className,
+		)}
+		{...props}
+	/>
+);
+
+const DialogFooter = ({
+	className,
+	...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+	<div
+		data-slot="dialog-footer"
+		className={cn(
+			"flex flex-col-reverse sm:flex-row sm:justify-end pt-5 sm:space-x-2.5",
+			className,
+		)}
+		{...props}
+	/>
+);
 
 function DialogTitle({
 	className,
@@ -143,11 +131,21 @@ function DialogTitle({
 	return (
 		<DialogPrimitive.Title
 			data-slot="dialog-title"
-			className={cn("text-lg leading-none font-semibold", className)}
+			className={cn(
+				"text-lg font-semibold leading-none tracking-tight",
+				className,
+			)}
 			{...props}
 		/>
 	);
 }
+
+const DialogBody = ({
+	className,
+	...props
+}: React.HTMLAttributes<HTMLDivElement>) => (
+	<div data-slot="dialog-body" className={cn("grow", className)} {...props} />
+);
 
 function DialogDescription({
 	className,
@@ -156,7 +154,7 @@ function DialogDescription({
 	return (
 		<DialogPrimitive.Description
 			data-slot="dialog-description"
-			className={cn("text-muted-foreground text-sm", className)}
+			className={cn("text-sm text-muted-foreground", className)}
 			{...props}
 		/>
 	);
@@ -164,6 +162,7 @@ function DialogDescription({
 
 export {
 	Dialog,
+	DialogBody,
 	DialogClose,
 	DialogContent,
 	DialogDescription,
@@ -172,6 +171,5 @@ export {
 	DialogOverlay,
 	DialogPortal,
 	DialogTitle,
-	DialogTrigger
+	DialogTrigger,
 };
-
