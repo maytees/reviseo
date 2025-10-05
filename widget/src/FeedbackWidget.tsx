@@ -1,6 +1,6 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { toPng } from "html-to-image";
-import { Bug, Loader2, Send, X } from "lucide-react";
+import { Bug, Send, X } from "lucide-react";
 import { useEffect, useId, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
@@ -20,6 +20,13 @@ import {
 	DialogTrigger,
 } from "./components/ui/dialog";
 import {
+	Empty,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyMedia,
+	EmptyTitle,
+} from "./components/ui/empty";
+import {
 	Form,
 	FormControl,
 	FormField,
@@ -27,7 +34,9 @@ import {
 	FormLabel,
 } from "./components/ui/form";
 import { Input } from "./components/ui/input";
+import { Spinner } from "./components/ui/spinner";
 import { Textarea } from "./components/ui/textarea";
+import FeedbackCanvas from "./FeedbackCanvas";
 
 const formSchema = z.object({
 	title: z.string().min(1, { error: "Provide a valid overview!" }).max(50, {
@@ -43,10 +52,12 @@ const formSchema = z.object({
 function FeedbackWidget() {
 	const formId = useId();
 	const [open, setOpen] = useState<boolean>(false);
+	const contentId = useId();
+	const overlayId = useId();
+	const triggerId = useId();
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [isPending, startTransition] = useTransition();
-
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -60,13 +71,11 @@ function FeedbackWidget() {
 		console.log("submitted ", values);
 	}
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: maybe use react 19.2 later
 	useEffect(() => {
 		if (!open) return;
 
 		const captureScreenshot = async () => {
-			// Wait for the dialog to be fully rendered and the canvas to be available
-			await new Promise(resolve => setTimeout(resolve, 100));
-
 			const canvas = canvasRef.current;
 			if (!canvas) {
 				console.log("Canvas not available yet");
@@ -74,18 +83,22 @@ function FeedbackWidget() {
 			}
 
 			// Simulate network delay for testing
-			await new Promise(resolve => setTimeout(resolve, 2000));
+			await new Promise((resolve) => setTimeout(resolve, 2000));
 
 			// Use html-to-image to capture the page
 			const dataUrl = await toPng(document.body, {
 				cacheBust: true,
 				filter: (element) => {
 					// Don't include the widget itself in the screenshot
-					return element.id !== 'feedback-widget-content' && element.id !== 'feedback-widget-trigger' && element.id !== 'feedback-widget-overlay';
-				}
+					return (
+						element.id !== overlayId &&
+						element.id !== contentId &&
+						element.id !== triggerId
+					);
+				},
 			});
 
-			const ctx = canvas.getContext('2d');
+			const ctx = canvas.getContext("2d");
 			if (!ctx) return;
 
 			// Set canvas size to match viewport
@@ -102,18 +115,18 @@ function FeedbackWidget() {
 
 		// Wrap in startTransition for loading state
 		startTransition(async () => {
-			console.log("capturing screenshot");
+			await setTimeout(() => {}, 2000);
 			await captureScreenshot();
 		});
 	}, [open]);
 
-
 	return (
-		<Dialog
-			onOpenChange={setOpen}
-			open={open}
-		>
-			<DialogTrigger id="feedback-widget-trigger" className="absolute z-[9998] bottom-4 right-4" asChild>
+		<Dialog onOpenChange={setOpen} open={open}>
+			<DialogTrigger
+				id={triggerId}
+				className="absolute z-[9998] bottom-4 right-4"
+				asChild
+			>
 				<Button
 					mode={"icon"}
 					className="fixed rounded-full p-6"
@@ -124,7 +137,9 @@ function FeedbackWidget() {
 			</DialogTrigger>
 			<Form {...form}>
 				<form onSubmit={form.handleSubmit(onSubmit)} id={formId}>
-					<DialogContent id="feedback-widget-content"
+					<DialogContent
+						overlayId={overlayId}
+						id={contentId}
 						showCloseButton={false}
 						variant={"fullscreen"}
 						className="flex flex-row gap-2 z-[9999]"
@@ -132,10 +147,21 @@ function FeedbackWidget() {
 						<div className="w-full h-full py-0 relative">
 							{isPending && (
 								<div className="absolute inset-0 flex items-center justify-center bg-background/80 backdrop-blur-sm z-10">
-									<Loader2 className="size-8 animate-spin text-muted-foreground" />
+									<Empty className="w-full">
+										<EmptyHeader>
+											<EmptyMedia variant="icon">
+												<Spinner />
+											</EmptyMedia>
+											<EmptyTitle>Creating Screenshot</EmptyTitle>
+											<EmptyDescription>
+												Please wait while the screenshot is generated, this
+												should only take a few seconds.
+											</EmptyDescription>
+										</EmptyHeader>
+									</Empty>
 								</div>
 							)}
-							<canvas ref={canvasRef} className="h-full w-full "></canvas>
+							<FeedbackCanvas ref={canvasRef} />
 						</div>
 						<Card className="h-full rounded-2xl w-4/12 flex flex-col">
 							<CardHeader>
@@ -185,12 +211,21 @@ function FeedbackWidget() {
 							</CardContent>
 							<CardFooter className="gap-2 flex-col">
 								<DialogClose asChild>
-									<Button className="w-full" variant={"outline"} disabled={isPending}>
+									<Button
+										className="w-full"
+										variant={"outline"}
+										disabled={isPending}
+									>
 										<X />
 										Close
 									</Button>
 								</DialogClose>
-								<Button className="w-full" type="submit" form={formId} disabled={isPending}>
+								<Button
+									className="w-full"
+									type="submit"
+									form={formId}
+									disabled={isPending}
+								>
 									<Send />
 									Send Feedback
 								</Button>
