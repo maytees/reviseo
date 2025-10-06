@@ -4,6 +4,7 @@ import {
 	Circle as FabricCircle,
 	type FabricObject,
 	Line,
+	PencilBrush,
 	Rect,
 	Textbox,
 	type TPointerEvent,
@@ -23,6 +24,7 @@ import {
 } from "lucide-react";
 import { type RefObject, useEffect, useState } from "react";
 import ColorSwatch from "./components/ColorSwatch";
+import StrokeWidthSwatch from "./components/StrokeWidthSwatch";
 import { Button } from "./components/ui/button";
 import { ButtonGroup } from "./components/ui/button-group";
 
@@ -38,8 +40,10 @@ const BACKGROUND_COLOR = "#FBFCF8";
 
 const FeedbackCanvas = ({
 	canvasRef,
+	thingId,
 }: {
 	canvasRef: RefObject<HTMLCanvasElement | null>;
+	thingId: string;
 }) => {
 	const [canvas, setCanvas] = useState<Canvas | null>(null);
 	const [activeTool, setActiveTool] = useState<Tool>("select");
@@ -52,6 +56,7 @@ const FeedbackCanvas = ({
 	);
 	const [hasSelection, setHasSelection] = useState(false);
 	const [selectedColor, setSelectedColor] = useState("#000000");
+	const [selectedStrokeWidth, setSelectedStrokeWidth] = useState(5);
 
 	useEffect(() => {
 		if (!canvas) return;
@@ -108,6 +113,14 @@ const FeedbackCanvas = ({
 				selection: activeTool === "select",
 			});
 			initCanvas.backgroundColor = BACKGROUND_COLOR;
+			// Ensure keyboard focus is possible for text editing
+			// and initialize a drawing brush for free drawing
+			(initCanvas.upperCanvasEl as HTMLCanvasElement).tabIndex = 1000;
+			initCanvas.freeDrawingBrush = new PencilBrush(initCanvas);
+			if (initCanvas.freeDrawingBrush) {
+				initCanvas.freeDrawingBrush.color = selectedColor;
+				initCanvas.freeDrawingBrush.width = selectedStrokeWidth;
+			}
 			initCanvas.renderAll();
 			setCanvas(initCanvas);
 
@@ -136,6 +149,15 @@ const FeedbackCanvas = ({
 		// Enable/disable selection based on active tool
 		canvas.selection = activeTool === "select";
 
+		// Enable/disable drawing mode
+		canvas.isDrawingMode = activeTool === "draw";
+
+		// Configure drawing brush if in drawing mode
+		if (activeTool === "draw" && canvas.freeDrawingBrush) {
+			canvas.freeDrawingBrush.color = selectedColor;
+			canvas.freeDrawingBrush.width = selectedStrokeWidth;
+		}
+
 		// Make objects selectable only in select mode, but keep evented for editing text
 		canvas.forEachObject((obj) => {
 			if (obj.type === "textbox") {
@@ -150,7 +172,7 @@ const FeedbackCanvas = ({
 		});
 
 		canvas.renderAll();
-	}, [activeTool, canvas]);
+	}, [activeTool, canvas, selectedColor, selectedStrokeWidth]);
 
 	// Track selection changes
 	useEffect(() => {
@@ -188,7 +210,7 @@ const FeedbackCanvas = ({
 				fill: selectedColor,
 				stroke: "#000",
 				strokeUniform: true,
-				strokeWidth: 2,
+				strokeWidth: selectedStrokeWidth,
 				rx: 5,
 				ry: 5,
 				selectable: false,
@@ -275,7 +297,7 @@ const FeedbackCanvas = ({
 				fill: selectedColor,
 				stroke: "#000",
 				strokeUniform: true,
-				strokeWidth: 3,
+				strokeWidth: selectedStrokeWidth,
 				selectable: false,
 				evented: false,
 			});
@@ -344,7 +366,7 @@ const FeedbackCanvas = ({
 
 			const line = new Line([pointer.x, pointer.y, pointer.x, pointer.y], {
 				stroke: selectedColor,
-				strokeWidth: 3,
+				strokeWidth: selectedStrokeWidth,
 				strokeUniform: true,
 				selectable: false,
 				evented: false,
@@ -394,7 +416,6 @@ const FeedbackCanvas = ({
 	}, [canvas, activeTool, isDrawing, currentShape, startPoint, selectedColor]);
 
 	// Text tool handler
-	// Text tool handler
 	useEffect(() => {
 		if (!canvas || activeTool !== "text") return;
 
@@ -416,12 +437,18 @@ const FeedbackCanvas = ({
 			canvas.setActiveObject(textbox);
 			canvas.renderAll();
 
+			// Ensure canvas element can receive focus for keyboard input, then enter edit
+			const upper = canvas.upperCanvasEl as HTMLCanvasElement;
+			if (upper && typeof upper.focus === "function") {
+				upper.focus();
+			}
 			// Switch to select mode AFTER adding the textbox
 			setActiveTool("select");
 
 			// Wait for next frame to safely enter editing mode
 			requestAnimationFrame(() => {
 				textbox.enterEditing();
+				textbox.hiddenTextarea?.focus();
 				textbox.selectAll();
 				canvas.renderAll();
 			});
@@ -500,19 +527,31 @@ const FeedbackCanvas = ({
 		}
 	};
 
+	const handleStrokeWidthChange = (width: number) => {
+		setSelectedStrokeWidth(width);
+
+		// Update drawing brush if in drawing mode
+		if (canvas && activeTool === "draw" && canvas.freeDrawingBrush) {
+			canvas.freeDrawingBrush.width = width;
+		}
+	};
+
 	return (
-		<div className="h-full w-full">
+		<div className="h-full w-full" id={thingId}>
 			<div className="absolute top-1/4 left-5 h-5 w-5 z-99999">
 				<ButtonGroup orientation={"vertical"}>
-					<ButtonGroup>
+					<ButtonGroup orientation={"vertical"}>
 						<ColorSwatch
 							onColorChange={handleColorChange}
 							selectedColor={selectedColor}
 						/>
+						<StrokeWidthSwatch
+							onStrokeWidthChange={handleStrokeWidthChange}
+							selectedStrokeWidth={selectedStrokeWidth}
+						/>
 					</ButtonGroup>
 					<ButtonGroup orientation={"vertical"}>
 						<Button
-							tooltip="Select"
 							mode={"icon"}
 							variant={activeTool === "select" ? "mono" : "outline"}
 							onClick={() => setActiveTool("select")}
@@ -520,7 +559,6 @@ const FeedbackCanvas = ({
 							<PointerIcon />
 						</Button>
 						<Button
-							tooltip="arrow"
 							mode={"icon"}
 							variant={activeTool === "arrow" ? "mono" : "outline"}
 							onClick={() => setActiveTool("arrow")}
@@ -528,7 +566,6 @@ const FeedbackCanvas = ({
 							<ArrowUpRight />
 						</Button>
 						<Button
-							tooltip="Text"
 							mode={"icon"}
 							variant={activeTool === "text" ? "mono" : "outline"}
 							onClick={() => setActiveTool("text")}
@@ -537,14 +574,12 @@ const FeedbackCanvas = ({
 						</Button>
 						<Button
 							onClick={() => setActiveTool("rectangle")}
-							tooltip="Rectangle"
 							mode={"icon"}
 							variant={activeTool === "rectangle" ? "mono" : "outline"}
 						>
 							<Square />
 						</Button>
 						<Button
-							tooltip="Circle"
 							mode={"icon"}
 							variant={activeTool === "circle" ? "mono" : "outline"}
 							onClick={() => setActiveTool("circle")}
@@ -552,7 +587,6 @@ const FeedbackCanvas = ({
 							<Circle />
 						</Button>
 						<Button
-							tooltip="Draw"
 							mode={"icon"}
 							variant={activeTool === "draw" ? "mono" : "outline"}
 							onClick={() => setActiveTool("draw")}
@@ -560,7 +594,6 @@ const FeedbackCanvas = ({
 							<Pencil />
 						</Button>
 						<Button
-							tooltip="Add Image"
 							mode={"icon"}
 							variant={activeTool === "image" ? "mono" : "outline"}
 							onClick={() => setActiveTool("image")}
@@ -569,16 +602,15 @@ const FeedbackCanvas = ({
 						</Button>
 					</ButtonGroup>
 					<ButtonGroup orientation={"vertical"}>
-						<Button tooltip="Undo" mode={"icon"} variant={"outline"}>
+						<Button mode={"icon"} variant={"outline"}>
 							<Undo />
 						</Button>
-						<Button tooltip="Redo" mode={"icon"} variant={"outline"}>
+						<Button mode={"icon"} variant={"outline"}>
 							<Redo />
 						</Button>
 					</ButtonGroup>
 					<ButtonGroup orientation={"vertical"}>
 						<Button
-							tooltip="Delete"
 							mode={"icon"}
 							variant={"destructive"}
 							onClick={handleDelete}

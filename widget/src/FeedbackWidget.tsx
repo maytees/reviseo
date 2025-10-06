@@ -1,6 +1,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
+import { toPng } from "html-to-image";
 import { Bug, Send, X } from "lucide-react";
-import { useId, useRef, useState, useTransition } from "react";
+import { useEffect, useId, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { z } from "zod";
 import { Button } from "./components/ui/button";
@@ -53,10 +54,11 @@ function FeedbackWidget() {
 	const [open, setOpen] = useState<boolean>(false);
 	const contentId = useId();
 	const overlayId = useId();
+	const thingId = useId();
 	const triggerId = useId();
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
-	const [isPending, _startTransition] = useTransition();
+	const [isPending, startTransition] = useTransition();
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -70,54 +72,55 @@ function FeedbackWidget() {
 		console.log("submitted ", values);
 	}
 
-	// // biome-ignore lint/correctness/useExhaustiveDependencies: maybe use react 19.2 later
-	// useEffect(() => {
-	// 	if (!open) return;
+	// biome-ignore lint/correctness/useExhaustiveDependencies: maybe use react 19.2 later
+	useEffect(() => {
+		if (!open) return;
 
-	// 	const captureScreenshot = async () => {
-	// 		const canvas = canvasRef.current;
-	// 		if (!canvas) {
-	// 			console.log("Canvas not available yet");
-	// 			return;
-	// 		}
+		const captureScreenshot = async () => {
+			const canvas = canvasRef.current;
+			if (!canvas) {
+				console.log("Canvas not available yet");
+				return;
+			}
 
-	// 		// Simulate network delay for testing
-	// 		await new Promise((resolve) => setTimeout(resolve, 2000));
+			// Simulate network delay for testing
+			await new Promise((resolve) => setTimeout(resolve, 2000));
 
-	// 		// Use html-to-image to capture the page
-	// 		const dataUrl = await toPng(document.body, {
-	// 			cacheBust: true,
-	// 			filter: (element) => {
-	// 				// Don't include the widget itself in the screenshot
-	// 				return (
-	// 					element.id !== overlayId &&
-	// 					element.id !== contentId &&
-	// 					element.id !== triggerId
-	// 				);
-	// 			},
-	// 		});
+			// Use html-to-image to capture the page
+			const dataUrl = await toPng(document.body, {
+				cacheBust: true,
+				filter: (element) => {
+					// Don't include the widget itself in the screenshot
+					return (
+						element.id !== overlayId &&
+						element.id !== thingId &&
+						element.id !== contentId &&
+						element.id !== triggerId
+					);
+				},
+			});
 
-	// 		const ctx = canvas.getContext("2d");
-	// 		if (!ctx) return;
+			const ctx = canvas.getContext("2d");
+			if (!ctx) return;
 
-	// 		// Set canvas size to match viewport
-	// 		canvas.width = window.innerWidth;
-	// 		canvas.height = window.innerHeight;
+			// Set canvas size to match viewport
+			canvas.width = window.innerWidth;
+			canvas.height = window.innerHeight;
 
-	// 		// Create an image from the data URL and draw it on the canvas
-	// 		const img = new Image();
-	// 		img.onload = () => {
-	// 			ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-	// 		};
-	// 		img.src = dataUrl;
-	// 	};
+			// Create an image from the data URL and draw it on the canvas
+			const img = new Image();
+			img.onload = () => {
+				ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
+			};
+			img.src = dataUrl;
+		};
 
-	// 	// Wrap in startTransition for loading state
-	// 	startTransition(async () => {
-	// 		await setTimeout(() => {}, 2000);
-	// 		await captureScreenshot();
-	// 	});
-	// }, [open]);
+		// Wrap in startTransition for loading state
+		startTransition(async () => {
+			await setTimeout(() => {}, 2000);
+			await captureScreenshot();
+		});
+	}, [open]);
 
 	return (
 		<Dialog onOpenChange={setOpen} open={open}>
@@ -160,7 +163,7 @@ function FeedbackWidget() {
 									</Empty>
 								</div>
 							)}
-							<FeedbackCanvas canvasRef={canvasRef} />
+							<FeedbackCanvas thingId={thingId} canvasRef={canvasRef} />
 						</div>
 						<Card className="h-full rounded-2xl w-4/12 flex flex-col">
 							<CardHeader>
