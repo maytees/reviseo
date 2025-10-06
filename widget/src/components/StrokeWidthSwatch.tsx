@@ -24,12 +24,7 @@ export default function StrokeWidthSwatch({
 	return (
 		<Popover>
 			<PopoverTrigger asChild>
-				<Button
-					mode="icon"
-					variant="outline"
-					tooltip="Stroke Width"
-					className="relative"
-				>
+				<Button mode="icon" variant="outline" className="relative">
 					<div className="flex items-center justify-center">
 						<div
 							className="bg-gray-800 rounded-full"
@@ -45,7 +40,9 @@ export default function StrokeWidthSwatch({
 				<ButtonGroup>
 					{STROKE_WIDTHS.map((strokeWidth) => (
 						<Button
-							variant={selectedStrokeWidth === strokeWidth.value ? "dashed" : "outline"}
+							variant={
+								selectedStrokeWidth === strokeWidth.value ? "dashed" : "outline"
+							}
 							key={strokeWidth.value}
 							type="button"
 							mode={"icon"}

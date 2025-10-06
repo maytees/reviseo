@@ -1,5 +1,5 @@
 import { zodResolver } from "@hookform/resolvers/zod";
-import { toPng } from "html-to-image";
+import html2canvas from "html2canvas-pro";
 import { Bug, Send, X } from "lucide-react";
 import { useEffect, useId, useRef, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
@@ -48,7 +48,6 @@ const formSchema = z.object({
 		.max(5000, { error: "Maximum of 5000 characteres allowed!" })
 		.optional(),
 });
-
 function FeedbackWidget() {
 	const formId = useId();
 	const [open, setOpen] = useState<boolean>(false);
@@ -59,6 +58,8 @@ function FeedbackWidget() {
 
 	const canvasRef = useRef<HTMLCanvasElement>(null);
 	const [isPending, startTransition] = useTransition();
+	const [screenshotData, setScreenshotData] = useState<string | null>(null);
+	const [canvasElementIds, setCanvasElementIds] = useState<string[]>([]);
 
 	const form = useForm<z.infer<typeof formSchema>>({
 		resolver: zodResolver(formSchema),
@@ -75,50 +76,56 @@ function FeedbackWidget() {
 	// biome-ignore lint/correctness/useExhaustiveDependencies: maybe use react 19.2 later
 	useEffect(() => {
 		if (!open) return;
-
 		const captureScreenshot = async () => {
-			const canvas = canvasRef.current;
-			if (!canvas) {
-				console.log("Canvas not available yet");
-				return;
-			}
-
 			// Simulate network delay for testing
-			await new Promise((resolve) => setTimeout(resolve, 2000));
+			// await new Promise((resolve) => setTimeout(resolve, 2000));
 
-			// Use html-to-image to capture the page
-			const dataUrl = await toPng(document.body, {
-				cacheBust: true,
-				filter: (element) => {
-					// Don't include the widget itself in the screenshot
-					return (
-						element.id !== overlayId &&
-						element.id !== thingId &&
-						element.id !== contentId &&
-						element.id !== triggerId
-					);
+			// Use html2canvas to capture the page
+			const canvas = await html2canvas(document.body, {
+				scrollX: 0,
+				scrollY: 0,
+				x: window.scrollX,
+				y: window.scrollY,
+				width: window.innerWidth,
+				height: window.innerHeight,
+				windowWidth: window.innerWidth,
+				windowHeight: window.innerHeight,
+				ignoreElements: (element) => {
+					// Check for data-html2canvas-ignore attribute first
+					if (element.getAttribute('data-html2canvas-ignore') !== null) {
+						return true;
+					}
+
+					// Don't include the widget itself and all canvas elements in the screenshot
+					const excludedIds = [
+						overlayId,
+						contentId,
+						triggerId,
+						...canvasElementIds,
+					];
+
+					// Check if element or any of its parents should be excluded by ID
+					let currentElement: Element | null = element;
+					while (currentElement) {
+						if (excludedIds.includes(currentElement.id)) {
+							return true;
+						}
+						currentElement = currentElement.parentElement;
+					}
+
+					return false;
 				},
 			});
 
-			const ctx = canvas.getContext("2d");
-			if (!ctx) return;
-
-			// Set canvas size to match viewport
-			canvas.width = window.innerWidth;
-			canvas.height = window.innerHeight;
-
-			// Create an image from the data URL and draw it on the canvas
-			const img = new Image();
-			img.onload = () => {
-				ctx.drawImage(img, 0, 0, canvas.width, canvas.height);
-			};
-			img.src = dataUrl;
+			// Convert canvas to data URL
+			const dataUrl = canvas.toDataURL('image/png');
+			return dataUrl;
 		};
 
 		// Wrap in startTransition for loading state
 		startTransition(async () => {
-			await setTimeout(() => {}, 2000);
-			await captureScreenshot();
+			const dataUrl = await captureScreenshot();
+			setScreenshotData(dataUrl);
 		});
 	}, [open]);
 
@@ -163,7 +170,13 @@ function FeedbackWidget() {
 									</Empty>
 								</div>
 							)}
-							<FeedbackCanvas thingId={thingId} canvasRef={canvasRef} />
+							<FeedbackCanvas
+								isLoading={isPending}
+								thingId={thingId}
+								canvasRef={canvasRef}
+								screenshotData={screenshotData}
+								onCanvasElementIds={setCanvasElementIds}
+							/>
 						</div>
 						<Card className="h-full rounded-2xl w-4/12 flex flex-col">
 							<CardHeader>

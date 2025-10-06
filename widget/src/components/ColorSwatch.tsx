@@ -28,14 +28,9 @@ export default function ColorSwatch({
     return (
         <Popover>
             <PopoverTrigger asChild>
-                <Button
-                    mode="icon"
-                    variant="outline"
-                    tooltip="Color"
-                    className="relative"
-                >
+                <Button mode="icon" variant="outline" className="relative">
                     <div
-                        className="size-4 rounded-full border border-gray-300"
+                        className="size-4 rounded-full"
                         style={{ backgroundColor: selectedColor }}
                     />
                 </Button>
@@ -51,10 +46,9 @@ export default function ColorSwatch({
                             key={color.value}
                             value={color.value}
                             aria-label={color.name}
-                            className="size-7 border-2 shadow-none data-[state=checked]:ring-2 data-[state=checked]:ring-offset-2 data-[state=checked]:ring-gray-400"
+                            className="size-7"
                             style={{
                                 backgroundColor: color.value,
-                                borderColor: color.value,
                             }}
                         />
                     ))}
