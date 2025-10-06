@@ -86,6 +86,7 @@ export function FeedbackWidget() {
 											required
 											placeholder="Basic tasks overview"
 											maxlength={100}
+											disabled={loading}
 											className="h-10 w-full bg-input rounded-md border border-input pl-3.5 text-base text-foreground focus:outline-2 focus:-outline-offset-1 focus:outline-blue-100"
 										/>
 										<Field.Error className="text-sm text-destructive" />
@@ -103,6 +104,7 @@ export function FeedbackWidget() {
 											className="w-full flex-1 rounded-md border border-input pl-3.5 text-base text-foreground focus:outline-2 focus:-outline-offset-1 focus:outline-blue-100"
 											render={() => (
 												<Textarea
+													disabled={loading}
 													placeholder="Optional - Longer form instructions; explain the annotations to the developer(s)."
 													className={"flex-1 resize-none"}
 													maxlength={1_000}
@@ -114,11 +116,15 @@ export function FeedbackWidget() {
 
 									<div className={"mt-auto flex flex-col gap-2 w-full"}>
 										<Dialog.Close>
-											<Button className={"w-full"} variant="outline">
+											<Button
+												disabled={loading}
+												className={"w-full"}
+												variant="outline"
+											>
 												Close
 											</Button>
 										</Dialog.Close>
-										<Button className={"w-full"}>
+										<Button disabled={loading} className={"w-full"}>
 											<Send />
 											Send Feedback
 										</Button>
