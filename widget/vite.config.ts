@@ -1,15 +1,21 @@
-import path from "node:path";
+import preact from "@preact/preset-vite";
 import tailwindcss from "@tailwindcss/vite";
-import react from "@vitejs/plugin-react";
 import { defineConfig } from "vite";
-import tsconfigPaths from "vite-tsconfig-paths";
 
-// https://vite.dev/config/
+// https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [react(), tailwindcss(), tsconfigPaths()],
-	resolve: {
-		alias: {
-			"@": path.resolve(__dirname, "./src"),
+	plugins: [tailwindcss(), preact()],
+	build: {
+		lib: {
+			entry: "src/index.tsx",
+			name: "FeedbackWidget",
+			fileName: "feedback-widget",
+			formats: ["iife"], // Important: single file bundle
+		},
+		rollupOptions: {
+			output: {
+				inlineDynamicImports: true,
+			},
 		},
 	},
 });
