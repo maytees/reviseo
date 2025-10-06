@@ -3,6 +3,7 @@ import { ChevronDown, type LucideIcon } from "lucide-react";
 import { Slot as SlotPrimitive } from "radix-ui";
 import type * as React from "react";
 import { cn } from "../../lib/utils";
+import { Tooltip, TooltipContent, TooltipTrigger } from "./tooltip";
 
 const buttonVariants = cva(
 	"cursor-pointer group whitespace-nowrap focus-visible:outline-hidden inline-flex items-center justify-center has-data-[arrow=true]:justify-between whitespace-nowrap text-sm font-medium ring-offset-background transition-[color,box-shadow] disabled:pointer-events-none disabled:opacity-60 [&_svg]:shrink-0",
@@ -382,14 +383,17 @@ function Button({
 	underline,
 	asChild = false,
 	placeholder = false,
+	tooltip,
 	...props
 }: React.ComponentProps<"button"> &
 	VariantProps<typeof buttonVariants> & {
 		selected?: boolean;
 		asChild?: boolean;
+		tooltip?: string;
 	}) {
 	const Comp = asChild ? SlotPrimitive.Slot : "button";
-	return (
+
+	const button = (
 		<Comp
 			data-slot="button"
 			className={cn(
@@ -411,6 +415,19 @@ function Button({
 			{...props}
 		/>
 	);
+
+	if (tooltip) {
+		return (
+			<Tooltip>
+				<TooltipTrigger asChild>{button}</TooltipTrigger>
+				<TooltipContent side="right" className="z-[99999]">
+					{tooltip}
+				</TooltipContent>
+			</Tooltip>
+		);
+	}
+
+	return button;
 }
 
 interface ButtonArrowProps extends React.SVGProps<SVGSVGElement> {
