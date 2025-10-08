@@ -1,21 +1,31 @@
 import preact from "@preact/preset-vite";
-import tailwindcss from "@tailwindcss/vite";
+import tailwindcss from "tailwindcss";
 import { defineConfig } from "vite";
 
-// https://vitejs.dev/config/
 export default defineConfig({
-	plugins: [tailwindcss(), preact()],
+	plugins: [preact()],
 	build: {
 		lib: {
 			entry: "src/index.tsx",
 			name: "FeedbackWidget",
 			fileName: "feedback-widget",
-			formats: ["iife"], // Important: single file bundle
+			formats: ["iife"],
 		},
 		rollupOptions: {
 			output: {
 				inlineDynamicImports: true,
 			},
 		},
+		cssCodeSplit: false,
+	},
+	css: {
+		postcss: {
+			plugins: [tailwindcss()],
+		},
+	},
+	define: {
+		"process.env.IS_PREACT": JSON.stringify("true"),
+		"process.env.NODE_ENV": JSON.stringify("production"),
+		"process.env": JSON.stringify({}),
 	},
 });
