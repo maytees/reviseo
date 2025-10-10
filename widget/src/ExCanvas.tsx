@@ -55,12 +55,12 @@ const ExCanvas = ({
 
 			setInitialData({
 				elements: [imageElement],
-				appState: { viewBackgroundColor: "#f8eeec" },
+				appState: { viewBackgroundColor: "#F8EEEC" },
 				files: {
 					screenshot: {
 						id: "screenshot",
 						dataURL: imageUrl,
-						mimeType: "image/svg+xml",
+						mimeType: "image/svg",
 						created: Date.now(),
 						lastRetrieved: Date.now(),
 					},
@@ -79,12 +79,12 @@ const ExCanvas = ({
 	return (
 		<>
 			{pending || imageLoading || !imageUrl ? (
-				<div className="w-full h-full flex flex-col justify-center items-center">
+				<div className="flex flex-col items-center justify-center w-full h-full">
 					<Button variant="outline" size="icon">
 						<Loader2 className="animate-spin" />
 					</Button>
 					<h1>Loading Screenshot</h1>
-					<p className="text-muted-foreground text-sm">
+					<p className="text-sm text-muted-foreground">
 						Please wait while we load the preview.
 					</p>
 				</div>
