@@ -1,6 +1,8 @@
 "use client";
 import { motion } from "framer-motion";
 import { BentoFeatures } from "@/components/landing/BentoFeatures";
+import { FAQ } from "@/components/landing/FAQ";
+import { Footer } from "@/components/landing/Footer";
 import Hero from "@/components/landing/Hero";
 import { Navbar } from "@/components/landing/Navbar";
 import Noise from "@/components/landing/Noise";
@@ -11,7 +13,7 @@ import { ShootingStars } from "@/components/ui/shadcn-io/shooting-stars";
 
 export default function Home() {
 	return (
-		<div className="min-h-scren w-full min-h-screen pb-[300vh] overflow-x-hidden relative">
+		<div className="min-h-scren w-full min-h-screen overflow-x-hidden relative">
 			<ShootingStars
 				starColor="#9E00FF"
 				className="-z-30"
@@ -118,6 +120,8 @@ export default function Home() {
 			<Problems />
 			<BentoFeatures />
 			<Pricing />
+			<FAQ />
+			<Footer />
 		</div>
 	);
 }

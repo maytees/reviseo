@@ -70,7 +70,11 @@ const itemVariants = {
 
 export function Pricing() {
 	return (
-		<section className="mt-48 w-full flex flex-col items-center justify-center px-4 sm:px-6 md:px-8">
+		// biome-ignore lint/correctness/useUniqueElementIds: goon
+		<section
+			id="pricing"
+			className="mt-48 w-full flex flex-col items-center justify-center px-4 sm:px-6 md:px-8"
+		>
 			<div className="flex flex-col items-center justify-center gap-4 max-w-3xl">
 				<motion.h2
 					initial={{ opacity: 0, scale: 1.1, y: 100 }}
