@@ -5,6 +5,7 @@ import { FAQ } from "@/components/landing/FAQ";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
 import Hero from "@/components/landing/Hero";
+import { HowItWorks } from "@/components/landing/HowItWorks";
 import { Navbar } from "@/components/landing/Navbar";
 import Noise from "@/components/landing/Noise";
 import { Pricing } from "@/components/landing/Pricing";
@@ -120,6 +121,7 @@ export default function Home() {
 			<UsedWith />
 			<Problems />
 			<BentoFeatures />
+			<HowItWorks />
 			<Pricing />
 			<FAQ />
 			<FinalCTA />
