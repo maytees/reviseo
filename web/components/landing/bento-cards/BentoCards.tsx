@@ -663,7 +663,7 @@ export function TrackChangesCard() {
 								scale: [1, 1.05, 1],
 							}}
 							transition={{
-								delay: 0.3,
+								delay: 0.5,
 								duration: 0.5,
 								scale: {
 									duration: 2,
@@ -688,7 +688,7 @@ export function TrackChangesCard() {
 								opacity: [0.5, 1, 0.5],
 							}}
 							transition={{
-								delay: 0.4,
+								delay: 0.7,
 								duration: 2,
 								repeat: Number.POSITIVE_INFINITY,
 								ease: "easeInOut",
@@ -701,7 +701,7 @@ export function TrackChangesCard() {
 						<motion.div
 							initial={{ opacity: 0, y: 20 }}
 							whileInView={{ opacity: 1, y: 0 }}
-							transition={{ delay: 0.5, duration: 0.5 }}
+							transition={{ delay: 0.9, duration: 0.5 }}
 							viewport={{ once: true }}
 							className="flex items-center justify-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-full"
 						>
@@ -720,7 +720,7 @@ export function TrackChangesCard() {
 								opacity: [0.5, 1, 0.5],
 							}}
 							transition={{
-								delay: 0.6,
+								delay: 1.1,
 								duration: 2,
 								repeat: Number.POSITIVE_INFINITY,
 								ease: "easeInOut",
@@ -733,7 +733,7 @@ export function TrackChangesCard() {
 						<motion.div
 							initial={{ opacity: 0, y: 20 }}
 							whileInView={{ opacity: 1, y: 0 }}
-							transition={{ delay: 0.7, duration: 0.5 }}
+							transition={{ delay: 1.3, duration: 0.5 }}
 							viewport={{ once: true }}
 							className="flex items-center justify-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 bg-green-500/10 border border-green-500/30 rounded-full"
 						>
@@ -751,19 +751,19 @@ export function TrackChangesCard() {
 					<motion.div
 						initial={{ opacity: 0, y: 10 }}
 						whileInView={{ opacity: 1, y: 0 }}
-						transition={{ duration: 0.5, delay: 0.8 }}
+						transition={{ duration: 0.5, delay: 1.5 }}
 						viewport={{ once: true }}
 						className="mt-3 p-3 bg-background/50 rounded-lg border border-border"
 					>
 						<div className="flex items-start gap-2">
 							<div className="w-8 h-8 bg-gradient-to-br from-primary to-purple-500 rounded flex-shrink-0" />
 							<div className="flex-1 min-w-0">
-								<p className="text-xs font-medium text-foreground truncate font-alegreya">
+								<p className="text-sm font-medium text-foreground truncate font-alegreya">
 									Update homepage design
 								</p>
 								<div className="flex items-center gap-1.5 mt-1">
 									<span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
-									<span className="text-[10px] font-medium text-amber-700 dark:text-amber-400">
+									<span className="text-xs font-alegreya font-bold text-amber-700 dark:text-amber-400">
 										In Progress
 									</span>
 								</div>
