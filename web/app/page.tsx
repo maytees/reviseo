@@ -2,6 +2,7 @@
 import { motion } from "framer-motion";
 import { BentoFeatures } from "@/components/landing/BentoFeatures";
 import { FAQ } from "@/components/landing/FAQ";
+import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
 import Hero from "@/components/landing/Hero";
 import { Navbar } from "@/components/landing/Navbar";
@@ -121,6 +122,7 @@ export default function Home() {
 			<BentoFeatures />
 			<Pricing />
 			<FAQ />
+			<FinalCTA />
 			<Footer />
 		</div>
 	);
