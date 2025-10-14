@@ -1,7 +1,7 @@
 "use client";
 
 import { AnimatePresence } from "framer-motion";
-import { useState } from "react";
+import { useState, useTransition } from "react";
 import type { ClientFormData, WebsiteFormData } from "@/lib/validations";
 import { completeOnboarding } from "../actions";
 import { OnboardingStepper } from "./OnboardingStepper";
@@ -40,23 +40,33 @@ export function OnboardingFlow({ user }: OnboardingFlowProps) {
 	});
 	const [showSuccess, setShowSuccess] = useState(false);
 
+	// Pending states per-submit step
+	const [isWebsitePending, startWebsiteTransition] = useTransition();
+	const [isClientPending, startClientTransition] = useTransition();
+	const [, startCompleteTransition] = useTransition();
+
 	const handleWebsiteSubmit = (data: WebsiteFormData) => {
-		const projectId = generateProjectId();
-		setFormData((prev) => ({ ...prev, ...data, projectId }));
-		setCurrentStep(2);
+		startWebsiteTransition(() => {
+			const projectId = generateProjectId();
+			setFormData((prev) => ({ ...prev, ...data, projectId }));
+			setCurrentStep(2);
+		});
 	};
 
 	const handleClientSubmit = async (data: ClientFormData) => {
-		setFormData((prev) => ({ ...prev, ...data }));
-		setShowSuccess(true);
-
-		// TODO: Save website and client data to your database
-		console.log("Final form data:", { ...formData, ...data });
+		startClientTransition(() => {
+			setFormData((prev) => ({ ...prev, ...data }));
+			setShowSuccess(true);
+			// TODO: Save website and client data to your database
+			console.log("Final form data:", { ...formData, ...data });
+		});
 	};
 
 	const handleComplete = async () => {
 		// Mark onboarding as complete and redirect to dashboard
-		await completeOnboarding();
+		startCompleteTransition(() => {
+			void completeOnboarding();
+		});
 	};
 
 	return (
@@ -72,7 +82,6 @@ export function OnboardingFlow({ user }: OnboardingFlowProps) {
 					<AnimatePresence mode="wait">
 						{showSuccess ? (
 							<SuccessStep
-								key="success"
 								clientEmail={formData.clientEmail}
 								onComplete={handleComplete}
 							/>
@@ -80,16 +89,15 @@ export function OnboardingFlow({ user }: OnboardingFlowProps) {
 							<>
 								{currentStep === 0 && (
 									<WelcomeStep
-										key="welcome"
 										onNext={() => setCurrentStep(1)}
 										userName={user.name || user.email.split("@")[0]}
 									/>
 								)}
 								{currentStep === 1 && (
 									<CreateWebsiteStep
-										key="create-website"
 										onNext={handleWebsiteSubmit}
 										onBack={() => setCurrentStep(0)}
+										isPending={isWebsitePending}
 										defaultValues={{
 											websiteName: formData.websiteName,
 											websiteUrl: formData.websiteUrl,
@@ -98,7 +106,6 @@ export function OnboardingFlow({ user }: OnboardingFlowProps) {
 								)}
 								{currentStep === 2 && (
 									<InstallWidgetStep
-										key="install-widget"
 										onNext={() => setCurrentStep(3)}
 										onBack={() => setCurrentStep(1)}
 										projectId={formData.projectId}
@@ -106,9 +113,9 @@ export function OnboardingFlow({ user }: OnboardingFlowProps) {
 								)}
 								{currentStep === 3 && (
 									<InviteClientStep
-										key="invite-client"
 										onSubmit={handleClientSubmit}
 										onBack={() => setCurrentStep(2)}
+										isPending={isClientPending}
 										defaultValues={{
 											clientName: formData.clientName,
 											clientEmail: formData.clientEmail,

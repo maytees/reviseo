@@ -14,12 +14,14 @@ import { type ClientFormData, clientSchema } from "@/lib/validations";
 interface InviteClientStepProps {
 	onSubmit: (data: ClientFormData) => void;
 	onBack: () => void;
+	isPending?: boolean;
 	defaultValues?: Partial<ClientFormData>;
 }
 
 export function InviteClientStep({
 	onSubmit,
 	onBack,
+	isPending = false,
 	defaultValues,
 }: InviteClientStepProps) {
 	const clientNameId = useId();
@@ -72,6 +74,7 @@ export function InviteClientStep({
 								errors.clientName ? `${clientNameId}-error` : undefined
 							}
 							className="h-10 font-alegreya"
+							disabled={isPending}
 						/>
 						{errors.clientName && (
 							<p
@@ -101,6 +104,7 @@ export function InviteClientStep({
 									: `${clientEmailId}-helper`
 							}
 							className="h-10 font-alegreya"
+							disabled={isPending}
 						/>
 						{errors.clientEmail ? (
 							<p
@@ -134,10 +138,15 @@ export function InviteClientStep({
 						variant="outline"
 						onClick={onBack}
 						className="font-alegreya"
+						disabled={isPending}
 					>
 						← Back
 					</Button>
-					<Button type="submit" disabled={!isValid} className="font-alegreya">
+					<Button
+						type="submit"
+						disabled={!isValid || isPending}
+						className="font-alegreya"
+					>
 						Send Invite & Finish
 					</Button>
 				</div>

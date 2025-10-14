@@ -12,12 +12,14 @@ import { type WebsiteFormData, websiteSchema } from "@/lib/validations";
 interface CreateWebsiteStepProps {
 	onNext: (data: WebsiteFormData) => void;
 	onBack: () => void;
+	isPending?: boolean;
 	defaultValues?: Partial<WebsiteFormData>;
 }
 
 export function CreateWebsiteStep({
 	onNext,
 	onBack,
+	isPending = false,
 	defaultValues,
 }: CreateWebsiteStepProps) {
 	const websiteNameId = useId();
@@ -66,6 +68,7 @@ export function CreateWebsiteStep({
 							id={websiteNameId}
 							placeholder="My Client's Portfolio"
 							{...register("websiteName")}
+							disabled={isPending}
 							aria-describedby={
 								errors.websiteName
 									? `${websiteNameId}-error`
@@ -102,6 +105,7 @@ export function CreateWebsiteStep({
 							type="url"
 							placeholder="https://example.com"
 							{...register("websiteUrl")}
+							disabled={isPending}
 							aria-describedby={
 								errors.websiteUrl
 									? `${websiteUrlId}-error`
@@ -133,10 +137,15 @@ export function CreateWebsiteStep({
 						variant="outline"
 						onClick={onBack}
 						className="font-alegreya"
+						disabled={isPending}
 					>
 						← Back
 					</Button>
-					<Button type="submit" disabled={!isValid} className="font-alegreya">
+					<Button
+						type="submit"
+						disabled={!isValid || isPending}
+						className="font-alegreya"
+					>
 						Continue →
 					</Button>
 				</div>
