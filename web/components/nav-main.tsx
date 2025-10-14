@@ -6,7 +6,6 @@ import { usePathname } from "next/navigation";
 import {
 	SidebarGroup,
 	SidebarGroupContent,
-	SidebarGroupLabel,
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
@@ -24,9 +23,7 @@ export function NavMain({
 	const pathname = usePathname();
 	return (
 		<SidebarGroup>
-			<SidebarGroupLabel>Main</SidebarGroupLabel>
 			<SidebarGroupContent className="flex flex-col gap-2">
-				<SidebarMenu></SidebarMenu>
 				<SidebarMenu>
 					{items.map((item) => (
 						<SidebarMenuItem key={item.title}>

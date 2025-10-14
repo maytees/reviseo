@@ -19,156 +19,42 @@ export function SiteHeader() {
 		const segments = path.split("/").filter(Boolean);
 		const breadcrumbs = [];
 
-		// Main nav items
-		if (segments[0] === "home") {
+		// Dashboard
+		if (segments[0] === "dashboard") {
 			breadcrumbs.push({
-				label: "Home",
-				href: "/home",
+				label: "Dashboard",
+				href: "/dashboard",
 				isLast: segments[1] === undefined,
 			});
 		}
 
-		if (segments[0] === "calendar") {
+		// Websites
+		if (segments[0] === "websites") {
 			breadcrumbs.push({
-				label: "Calendar",
-				href: "/calendar",
+				label: "Websites",
+				href: "/websites",
 				isLast: segments[1] === undefined,
 			});
 		}
 
-		if (segments[0] === "notes") {
+		// Clients
+		if (segments[0] === "clients") {
 			breadcrumbs.push({
-				label: "Notes",
-				href: "/notes",
+				label: "Clients",
+				href: "/clients",
 				isLast: segments[1] === undefined,
 			});
-			if (segments[1] === "create") {
-				breadcrumbs.push({
-					label: "Create",
-					href: "/notes/create",
-					isLast: true,
-				});
-			}
 		}
 
-		if (segments[0] === "assignments") {
-			breadcrumbs.push({
-				label: "Assignments",
-				href: "/assignments",
-				isLast: segments[1] === undefined,
-			});
-			if (segments[1] === "create") {
-				breadcrumbs.push({
-					label: "Create",
-					href: "/assignments/create",
-					isLast: true,
-				});
-			}
-		}
-
-		if (segments[0] === "courses") {
-			breadcrumbs.push({
-				label: "Courses",
-				href: "/courses",
-				isLast: segments[1] === undefined,
-			});
-			if (segments[1] === "create") {
-				breadcrumbs.push({
-					label: "Create",
-					href: "/courses/create",
-					isLast: true,
-				});
-			}
-		}
-
-		// Study tools
-		if (segments[0] === "quiz") {
-			breadcrumbs.push({
-				label: "Study",
-				href: "/study",
-				isLast: false,
-			});
-			breadcrumbs.push({
-				label: "Quiz",
-				href: "/quiz",
-				isLast: true,
-			});
-		}
-
-		if (segments[0] === "flashcards") {
-			breadcrumbs.push({
-				label: "Study",
-				href: "/study",
-				isLast: false,
-			});
-			breadcrumbs.push({
-				label: "Flashcards",
-				href: "/flashcards",
-				isLast: true,
-			});
-		}
-
-		if (segments[0] === "pomodoro") {
-			breadcrumbs.push({
-				label: "Study",
-				href: "/study",
-				isLast: false,
-			});
-			breadcrumbs.push({
-				label: "Pomodoro",
-				href: "/pomodoro",
-				isLast: true,
-			});
-		}
-
-		// Stats section
-		if (segments[0] === "progress") {
-			breadcrumbs.push({
-				label: "Stats",
-				href: "/stats",
-				isLast: false,
-			});
-			breadcrumbs.push({
-				label: "Progress",
-				href: "/progress",
-				isLast: true,
-			});
-		}
-
-		if (segments[0] === "streaks") {
-			breadcrumbs.push({
-				label: "Stats",
-				href: "/stats",
-				isLast: false,
-			});
-			breadcrumbs.push({
-				label: "Streaks",
-				href: "/streaks",
-				isLast: true,
-			});
-		}
-
-		if (segments[0] === "milestones") {
-			breadcrumbs.push({
-				label: "Stats",
-				href: "/stats",
-				isLast: false,
-			});
-			breadcrumbs.push({
-				label: "Milestones",
-				href: "/milestones",
-				isLast: true,
-			});
-		}
-
-		// Secondary nav
+		// Settings
 		if (segments[0] === "settings") {
 			breadcrumbs.push({
 				label: "Settings",
 				href: "/settings",
-				isLast: true,
+				isLast: segments[1] === undefined,
 			});
 		}
+
 		return breadcrumbs;
 	};
 

@@ -2,7 +2,7 @@
 
 import { GithubIcon, Loader, Loader2, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, useTransition } from "react";
+import { useId, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -10,7 +10,6 @@ import {
 	CardContent,
 	CardDescription,
 	CardHeader,
-	CardHeading,
 	CardTitle,
 } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -19,6 +18,7 @@ import { authClient } from "@/lib/auth-client";
 
 export function LoginForm() {
 	const router = useRouter();
+	const emailId = useId();
 	const [githubPending, startGithubTransition] = useTransition();
 	const [emailPending, startEmailTransition] = useTransition();
 	const [email, setEmail] = useState("");
@@ -27,10 +27,10 @@ export function LoginForm() {
 		startGithubTransition(async () => {
 			await authClient.signIn.social({
 				provider: "github",
-				callbackURL: "/courses",
+				callbackURL: "/dashboard",
 				fetchOptions: {
 					onSuccess: () => {
-						toast.success("Singed in with Github, you will be redirected...");
+						toast.success("Signed in with Github, you will be redirected...");
 					},
 					onError: () => {
 						toast.error("Internal Server Error");
@@ -51,29 +51,30 @@ export function LoginForm() {
 						router.push(`/verify-request?email=${email}`);
 					},
 					onError: () => {
-						toast.error("Erorr sending email");
+						toast.error("Error sending email");
 					},
 				},
 			});
 		});
 	}
 	return (
-		<Card>
-			<CardHeader>
-				<CardHeading className="py-4">
-					<CardTitle className="text-xl">Welcome Back!</CardTitle>
-					<CardDescription>
-						Login with your Github or Email Account
-					</CardDescription>
-				</CardHeading>
+		<Card className="border-border py-7 px-3 bg-gradient-to-br from-card to-card/50 backdrop-blur-sm shadow-xl">
+			<CardHeader className="space-y-1 py-2">
+				<CardTitle className="text-2xl sm:text-3xl font-bold font-caudex text-center">
+					Welcome Back!
+				</CardTitle>
+				<CardDescription className="text-base sm:text-lg text-center font-alegreya">
+					Sign in to access your dashboard
+				</CardDescription>
 			</CardHeader>
 
-			<CardContent className="flex flex-col gap-4">
+			<CardContent className="flex flex-col gap-5">
 				<Button
 					disabled={githubPending}
 					onClick={signInWithGithub}
-					className="w-full"
+					className="w-full h-11 font-alegreya"
 					variant="outline"
+					size="lg"
 				>
 					{githubPending ? (
 						<>
@@ -88,29 +89,35 @@ export function LoginForm() {
 					)}
 				</Button>
 
-				<div className="relative text-sm text-center after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t after:border-border">
-					<span className="relative z-10 px-2 bg-card text-muted-foreground">
-						Or continue with
-					</span>
-				</div>
-
-				<div className="flex flex-col gap-3">
-					<div className="grid gap-2">
-						<Label htmlFor="email">Email</Label>
+				<div className="flex flex-col gap-4">
+					<div className="grid gap-2.5">
+						<Label
+							htmlFor={emailId}
+							className="text-base font-alegreya font-medium"
+						>
+							Email
+						</Label>
 						<Input
+							id={emailId}
 							value={email}
 							onChange={(e) => setEmail(e.target.value)}
 							type="email"
-							placeholder="m@example.com"
+							placeholder="you@example.com"
+							className="h-11 font-alegreya"
 							required
 						/>
 					</div>
 
-					<Button onClick={signInWithEmail} disabled={emailPending}>
+					<Button
+						onClick={signInWithEmail}
+						disabled={emailPending}
+						className="h-11 font-alegreya"
+						size="lg"
+					>
 						{emailPending ? (
 							<>
 								<Loader2 className="size-4 animate-spin" />
-								<span>Loading...</span>
+								<span>Sending...</span>
 							</>
 						) : (
 							<>

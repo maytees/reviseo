@@ -24,6 +24,8 @@ model User {
   sessions  Session[]
   accounts  Account[]
 
+  hasCompletedOnboarding Boolean? @default(false)
+
   @@unique([email])
   @@map("user")
 }

@@ -9,7 +9,11 @@ export default async function LoginPage() {
 	});
 
 	if (session) {
-		return redirect("/courses");
+		// Check if user has completed onboarding
+		if (!session.user.hasCompletedOnboarding) {
+			return redirect("/onboarding");
+		}
+		return redirect("/dashboard");
 	}
 	return <LoginForm />;
 }

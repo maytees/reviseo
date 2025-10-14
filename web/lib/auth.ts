@@ -10,6 +10,16 @@ export const auth = betterAuth({
 	database: prismaAdapter(prisma, {
 		provider: "postgresql", // or "mysql", "postgresql", ...etc
 	}),
+	user: {
+		additionalFields: {
+			hasCompletedOnboarding: {
+				type: "boolean",
+				required: false,
+				defaultValue: false,
+				input: false, // don't allow user to manually set this
+			},
+		},
+	},
 	socialProviders: {
 		github: {
 			clientId: env.AUTH_GITHUB_CLIENT_ID,
@@ -22,9 +32,10 @@ export const auth = betterAuth({
 			expiresIn: 60 * 10, // Ten minutes
 			async sendVerificationOTP({ email, otp }) {
 				await resend.emails.send({
-					from: "Molnr <molnr@molnr.app>",
+					// TODO: Use reviseo domain
+					from: "Reviseo <onboarding@molnr.app>",
 					to: [email],
-					subject: "Molnr - Verify your email",
+					subject: "Reviseo - Verify your email",
 					react: OtpEmail({ otp, email }),
 				});
 			},
