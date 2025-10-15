@@ -2,8 +2,12 @@
 
 import { AnimatePresence } from "framer-motion";
 import { useState, useTransition } from "react";
+import { toast } from "sonner";
+import type { UserOnboardingDataType } from "@/app/data/user/get-user-onboarding-data";
+import { tryCatch } from "@/lib/try-catch";
 import type { ClientFormData, WebsiteFormData } from "@/lib/validations";
 import { completeOnboarding } from "../actions";
+import { createWebsiteOnboarding } from "./actions";
 import { OnboardingStepper } from "./OnboardingStepper";
 import { CreateWebsiteStep } from "./steps/CreateWebsiteStep";
 import { InstallWidgetStep } from "./steps/InstallWidgetStep";
@@ -13,23 +17,12 @@ import { WelcomeStep } from "./steps/WelcomeStep";
 
 const STEPS = [
 	{ label: "Welcome" },
-	{ label: "Create Website" },
-	{ label: "Install Widget" },
-	{ label: "Invite Client" },
+	{ label: "Website" },
+	{ label: "Widget" },
+	{ label: "Invite" },
 ];
 
-function generateProjectId(): string {
-	return `proj_${Math.random().toString(36).substring(2, 15)}`;
-}
-
-interface OnboardingFlowProps {
-	user: {
-		name: string | null;
-		email: string;
-	};
-}
-
-export function OnboardingFlow({ user }: OnboardingFlowProps) {
+export function OnboardingFlow(props: { userData: UserOnboardingDataType }) {
 	const [currentStep, setCurrentStep] = useState(0);
 	const [formData, setFormData] = useState({
 		websiteName: "",
@@ -44,17 +37,43 @@ export function OnboardingFlow({ user }: OnboardingFlowProps) {
 	const [isWebsitePending, startWebsiteTransition] = useTransition();
 	const [isClientPending, startClientTransition] = useTransition();
 	const [, startCompleteTransition] = useTransition();
+	const handleWebsiteSubmit = ({
+		websiteName,
+		websiteUrl,
+	}: WebsiteFormData) => {
+		startWebsiteTransition(async () => {
+			// await new Promise((resolve) => setTimeout(resolve, 1000));
+			// const projectId = generateProjectId();
+			const { data: result, error } = await tryCatch(
+				createWebsiteOnboarding({ websiteName, websiteUrl }),
+			);
 
-	const handleWebsiteSubmit = (data: WebsiteFormData) => {
-		startWebsiteTransition(() => {
-			const projectId = generateProjectId();
-			setFormData((prev) => ({ ...prev, ...data, projectId }));
-			setCurrentStep(2);
+			if (error) {
+				toast.error(error.message);
+				return;
+			}
+
+			if (result.status === "success") {
+				const projectId = result.message;
+
+				setFormData((prev) => ({
+					...prev,
+					websiteName,
+					websiteUrl,
+					projectId,
+				}));
+				setCurrentStep(2);
+				return;
+			}
+
+			// Error
+			toast.error(result.message);
 		});
 	};
 
 	const handleClientSubmit = async (data: ClientFormData) => {
-		startClientTransition(() => {
+		startClientTransition(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 1500));
 			setFormData((prev) => ({ ...prev, ...data }));
 			setShowSuccess(true);
 			// TODO: Save website and client data to your database
@@ -64,7 +83,8 @@ export function OnboardingFlow({ user }: OnboardingFlowProps) {
 
 	const handleComplete = async () => {
 		// Mark onboarding as complete and redirect to dashboard
-		startCompleteTransition(() => {
+		startCompleteTransition(async () => {
+			await new Promise((resolve) => setTimeout(resolve, 800));
 			void completeOnboarding();
 		});
 	};
@@ -90,7 +110,11 @@ export function OnboardingFlow({ user }: OnboardingFlowProps) {
 								{currentStep === 0 && (
 									<WelcomeStep
 										onNext={() => setCurrentStep(1)}
-										userName={user.name || user.email.split("@")[0]}
+										userName={
+											props.userData?.name ||
+											props.userData?.email.split("@")[0] ||
+											undefined
+										}
 									/>
 								)}
 								{currentStep === 1 && (

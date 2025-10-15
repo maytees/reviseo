@@ -36,17 +36,17 @@ export function OnboardingStepper({
 										backgroundColor: isCompleted
 											? "hsl(142 76% 36%)"
 											: isActive
-												? "hsl(var(--primary))"
+												? "var(--primary)"
 												: "transparent",
 										borderColor: isCompleted
 											? "hsl(142 76% 36%)"
 											: isActive
-												? "hsl(var(--primary))"
-												: "hsl(var(--border))",
+												? "var(--primary)"
+												: "var(--border)",
 									}}
 									transition={{ duration: 0.4, ease: "easeOut" }}
 									className={cn(
-										"w-8 h-8 rounded-full border-2 flex items-center justify-center relative z-10",
+										"size-10 rounded-full border-2 flex items-center justify-center relative z-10",
 										"transition-all duration-400",
 									)}
 								>
@@ -61,7 +61,7 @@ export function OnboardingStepper({
 									) : (
 										<span
 											className={cn(
-												"text-xs font-medium font-alegreya",
+												"text-2xl mb-1 font-medium font-alegreya",
 												isActive
 													? "text-primary-foreground"
 													: "text-muted-foreground",
@@ -73,10 +73,10 @@ export function OnboardingStepper({
 								</motion.div>
 
 								{/* Step Label */}
-								<div className="absolute top-10 text-center w-20">
+								<div className="absolute top-10 text-center w-20 mt-5">
 									<p
 										className={cn(
-											"text-[10px] sm:text-xs font-medium transition-colors duration-300 font-alegreya",
+											"text-base font-medium transition-colors duration-300 font-alegreya",
 											isActive || isCompleted
 												? "text-foreground"
 												: "text-muted-foreground",
@@ -89,7 +89,7 @@ export function OnboardingStepper({
 
 							{/* Connecting Line */}
 							{!isLast && (
-								<div className="flex-1 h-[2px] mx-1 sm:mx-2 relative bg-border">
+								<div className="flex-1 h-[px] mx-1 sm:mx-2 relative bg-border">
 									<motion.div
 										initial={{ width: "0%" }}
 										animate={{

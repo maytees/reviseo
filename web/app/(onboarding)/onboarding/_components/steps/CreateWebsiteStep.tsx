@@ -43,11 +43,11 @@ export function CreateWebsiteStep({
 			transition={{ duration: 0.3, ease: "easeOut" }}
 			className="space-y-6 py-4"
 		>
-			<div className="space-y-1 text-center">
-				<h2 className="text-xl sm:text-2xl font-bold font-caudex">
+			<div className="space-y-1  text-center">
+				<h2 className="text-2xl sm:text-4xl font-bold font-caudex">
 					Create your first website
 				</h2>
-				<p className="text-sm text-muted-foreground font-alegreya">
+				<p className="text-base text-muted-foreground font-alegreya">
 					Add the website where you want to collect client feedback
 				</p>
 			</div>
@@ -60,7 +60,7 @@ export function CreateWebsiteStep({
 					<div className="space-y-2">
 						<Label
 							htmlFor={websiteNameId}
-							className="text-sm font-alegreya font-medium"
+							className="text-base font-alegreya font-medium"
 						>
 							Website Name
 						</Label>
@@ -79,14 +79,14 @@ export function CreateWebsiteStep({
 						{errors.websiteName ? (
 							<p
 								id={`${websiteNameId}-error`}
-								className="text-xs text-destructive font-alegreya"
+								className="text-sm text-destructive font-alegreya"
 							>
 								{errors.websiteName.message}
 							</p>
 						) : (
 							<p
 								id={`${websiteNameId}-helper`}
-								className="text-xs text-muted-foreground font-alegreya"
+								className="text-sm text-muted-foreground font-alegreya"
 							>
 								A friendly name for your project
 							</p>
@@ -96,7 +96,7 @@ export function CreateWebsiteStep({
 					<div className="space-y-2">
 						<Label
 							htmlFor={websiteUrlId}
-							className="text-sm font-alegreya font-medium"
+							className="text-base font-alegreya font-medium"
 						>
 							Website URL
 						</Label>
@@ -116,14 +116,14 @@ export function CreateWebsiteStep({
 						{errors.websiteUrl ? (
 							<p
 								id={`${websiteUrlId}-error`}
-								className="text-xs text-destructive font-alegreya"
+								className="text-sm text-destructive font-alegreya"
 							>
 								{errors.websiteUrl.message}
 							</p>
 						) : (
 							<p
 								id={`${websiteUrlId}-helper`}
-								className="text-xs text-muted-foreground font-alegreya"
+								className="text-sm text-muted-foreground font-alegreya"
 							>
 								Where the widget will be installed
 							</p>

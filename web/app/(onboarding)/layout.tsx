@@ -10,10 +10,10 @@ export default function OnboardingLayout({
 		<div className="relative min-h-screen w-full overflow-hidden">
 			{/* Background Gradient */}
 			<div
-				className="absolute -top-10 -left-56 w-[700px] h-[700px] pointer-events-none -z-30 blur-3xl opacity-30"
+				className="absolute top-[40vh] opacity-30 left-1/2 -translate-x-1/2 w-full h-[1000px] pointer-events-none -z-50 blur-3xl "
 				style={{
 					background:
-						"radial-gradient(circle, oklch(0.5053 0.2350 286.8637), transparent 70%)",
+						"radial-gradient(circle, var(--secondary), transparent 80%)",
 				}}
 			/>
 

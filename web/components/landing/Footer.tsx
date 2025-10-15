@@ -8,9 +8,9 @@ import { FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
 
 const footerLinks = {
 	product: [
-		{ name: "Features", href: "#features" },
-		{ name: "Pricing", href: "#pricing" },
-		{ name: "FAQ", href: "#faq" },
+		{ name: "Features", href: "/#features" },
+		{ name: "Pricing", href: "/#pricing" },
+		{ name: "FAQ", href: "/#faq" },
 		{ name: "Integrations", href: "/integrations" },
 		{ name: "Changelog", href: "/changelog" },
 	],

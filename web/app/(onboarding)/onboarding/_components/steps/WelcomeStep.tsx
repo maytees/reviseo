@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 
 interface WelcomeStepProps {
 	onNext: () => void;
-	userName: string;
+	userName: string | undefined;
 }
 
 export function WelcomeStep({ onNext, userName }: WelcomeStepProps) {
@@ -28,10 +28,12 @@ export function WelcomeStep({ onNext, userName }: WelcomeStepProps) {
 			</motion.div>
 
 			<div className="space-y-2 max-w-2xl mx-auto">
-				<h2 className="text-2xl sm:text-3xl font-bold font-caudex">
-					Welcome to Reviseo, {userName}!
+				<h2 className="text-3xl sm:text-4xl font-bold font-caudex">
+					{userName
+						? `Welcome to Reviseo, ${userName.at(0)?.toUpperCase()}${userName.substring(1)}!`
+						: "Welcome to Reviseo!"}
 				</h2>
-				<p className="text-sm sm:text-base text-muted-foreground font-alegreya">
+				<p className="text-base sm:text-lg text-muted-foreground font-alegreya">
 					Let's get you set up in 3 quick steps
 				</p>
 			</div>
@@ -44,12 +46,12 @@ export function WelcomeStep({ onNext, userName }: WelcomeStepProps) {
 					className="flex flex-col items-center gap-2 p-4 rounded-lg bg-card/50 border border-border/50"
 				>
 					<div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-						<span className="text-sm font-bold text-primary font-alegreya">
+						<span className="text-base font-bold text-primary font-alegreya">
 							1
 						</span>
 					</div>
-					<p className="text-sm font-medium font-caudex">Create Website</p>
-					<p className="text-xs text-muted-foreground font-alegreya text-center">
+					<p className="text-base font-medium font-caudex">Create Website</p>
+					<p className="text-sm text-muted-foreground font-alegreya text-center">
 						Add your site details
 					</p>
 				</motion.div>
@@ -61,12 +63,12 @@ export function WelcomeStep({ onNext, userName }: WelcomeStepProps) {
 					className="flex flex-col items-center gap-2 p-4 rounded-lg bg-card/50 border border-border/50"
 				>
 					<div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-						<span className="text-sm font-bold text-primary font-alegreya">
+						<span className="text-base font-bold text-primary font-alegreya">
 							2
 						</span>
 					</div>
-					<p className="text-sm font-medium font-caudex">Install Widget</p>
-					<p className="text-xs text-muted-foreground font-alegreya text-center">
+					<p className="text-base font-medium font-caudex">Install Widget</p>
+					<p className="text-sm text-muted-foreground font-alegreya text-center">
 						One line of code
 					</p>
 				</motion.div>
@@ -78,12 +80,12 @@ export function WelcomeStep({ onNext, userName }: WelcomeStepProps) {
 					className="flex flex-col items-center gap-2 p-4 rounded-lg bg-card/50 border border-border/50"
 				>
 					<div className="w-8 h-8 rounded-full bg-primary/20 flex items-center justify-center">
-						<span className="text-sm font-bold text-primary font-alegreya">
+						<span className="text-base font-bold text-primary font-alegreya">
 							3
 						</span>
 					</div>
-					<p className="text-sm font-medium font-caudex">Invite Client</p>
-					<p className="text-xs text-muted-foreground font-alegreya text-center">
+					<p className="text-base font-medium font-caudex">Invite Client</p>
+					<p className="text-sm text-muted-foreground font-alegreya text-center">
 						Send invite link
 					</p>
 				</motion.div>

@@ -2,6 +2,7 @@
 
 import { motion } from "framer-motion";
 import { Check, Copy } from "lucide-react";
+import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -44,17 +45,17 @@ export function InstallWidgetStep({
 			className="space-y-6 py-4"
 		>
 			<div className="space-y-1 text-center">
-				<h2 className="text-xl sm:text-2xl font-bold font-caudex">
+				<h2 className="text-2xl sm:text-3xl font-bold font-caudex">
 					Install the widget
 				</h2>
-				<p className="text-sm text-muted-foreground font-alegreya">
+				<p className="text-base text-muted-foreground font-alegreya">
 					Add this code snippet before the closing &lt;/body&gt; tag
 				</p>
 			</div>
 
 			<div className="max-w-2xl mx-auto space-y-4">
 				<div className="relative">
-					<div className="bg-background rounded-lg p-4 font-mono text-xs sm:text-sm overflow-x-auto border border-border">
+					<div className="bg-background rounded-lg p-4 font-mono text-sm sm:text-base overflow-x-auto border border-border">
 						<pre className="text-foreground">
 							<code>
 								<span className="text-purple-400">{`<script`}</span>
@@ -78,7 +79,7 @@ export function InstallWidgetStep({
 						variant="outline"
 						size="sm"
 						onClick={handleCopy}
-						className="absolute top-2 right-2 bg-card border-border hover:bg-muted font-alegreya text-xs"
+						className="absolute top-2 right-2 bg-card border-border hover:bg-muted font-alegreya text-sm"
 					>
 						{copied ? (
 							<>
@@ -95,14 +96,18 @@ export function InstallWidgetStep({
 				</div>
 
 				<div className="bg-accent/30 border border-border rounded-lg p-3">
-					<p className="text-xs text-muted-foreground font-alegreya">
-						<span className="font-medium text-foreground font-caudex">
+					<p className="text-sm text-muted-foreground font-alegreya">
+						<span className="font-medium text-foreground font-alegreya">
 							Tip:
 						</span>{" "}
-						For React, Next.js, or WordPress,{" "}
-						<a href="/docs" className="text-primary hover:underline">
+						To learn how to import for your platform,{" "}
+						<Link
+							target="_blank"
+							href="/docs"
+							className="text-primary font-alegreya"
+						>
 							check our guides
-						</a>
+						</Link>
 						.
 					</p>
 				</div>
@@ -116,7 +121,7 @@ export function InstallWidgetStep({
 					<Button
 						variant="ghost"
 						onClick={onNext}
-						className="font-alegreya text-sm"
+						className="font-alegreya text-base"
 					>
 						Skip
 					</Button>

@@ -55,9 +55,9 @@ const Navbar = ({
 	},
 	menu = [
 		{ title: "Home", url: "/" },
-		{ title: "Features", url: "#features" },
-		{ title: "Pricing", url: "#pricing" },
-		{ title: "FAQ", url: "#faq" },
+		{ title: "Features", url: "/#features" },
+		{ title: "Pricing", url: "/#pricing" },
+		{ title: "FAQ", url: "/#faq" },
 	],
 	auth = {
 		getStarted: { title: "Get Started", url: "#" },

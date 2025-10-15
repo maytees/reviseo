@@ -46,10 +46,10 @@ export function InviteClientStep({
 			className="space-y-6 py-4"
 		>
 			<div className="space-y-1 text-center">
-				<h2 className="text-xl sm:text-2xl font-bold font-caudex">
+				<h2 className="text-2xl sm:text-3xl font-bold font-caudex">
 					Invite your first client
 				</h2>
-				<p className="text-sm text-muted-foreground font-alegreya">
+				<p className="text-base text-muted-foreground font-alegreya">
 					Send them a secure invite link to start giving feedback
 				</p>
 			</div>
@@ -62,7 +62,7 @@ export function InviteClientStep({
 					<div className="space-y-2">
 						<Label
 							htmlFor={clientNameId}
-							className="text-sm font-alegreya font-medium"
+							className="text-base font-alegreya font-medium"
 						>
 							Client Name
 						</Label>
@@ -79,7 +79,7 @@ export function InviteClientStep({
 						{errors.clientName && (
 							<p
 								id={`${clientNameId}-error`}
-								className="text-xs text-destructive font-alegreya"
+								className="text-sm text-destructive font-alegreya"
 							>
 								{errors.clientName.message}
 							</p>
@@ -89,7 +89,7 @@ export function InviteClientStep({
 					<div className="space-y-2">
 						<Label
 							htmlFor={clientEmailId}
-							className="text-sm font-alegreya font-medium"
+							className="text-base font-alegreya font-medium"
 						>
 							Client Email
 						</Label>
@@ -109,14 +109,14 @@ export function InviteClientStep({
 						{errors.clientEmail ? (
 							<p
 								id={`${clientEmailId}-error`}
-								className="text-xs text-destructive font-alegreya"
+								className="text-sm text-destructive font-alegreya"
 							>
 								{errors.clientEmail.message}
 							</p>
 						) : (
 							<p
 								id={`${clientEmailId}-helper`}
-								className="text-xs text-muted-foreground font-alegreya"
+								className="text-sm text-muted-foreground font-alegreya"
 							>
 								We'll send them an invite link
 							</p>
@@ -126,7 +126,7 @@ export function InviteClientStep({
 
 				<Alert className="border-border bg-accent/30">
 					<Info className="h-4 w-4" />
-					<AlertDescription className="text-xs font-alegreya">
+					<AlertDescription className="text-sm font-alegreya">
 						Your client will receive an email with a secure link to access the
 						widget.
 					</AlertDescription>
