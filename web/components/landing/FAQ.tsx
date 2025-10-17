@@ -38,8 +38,8 @@ const faqs = [
 
 export function FAQ() {
 	return (
+		// biome-ignore lint/correctness/useUniqueElementIds: <explanation>
 		<section
-			// eslint-disable-next-line react/no-string-literals
 			id="faq"
 			className="mt-48 w-full flex flex-col items-center justify-center px-4 sm:px-6 md:px-8"
 		>

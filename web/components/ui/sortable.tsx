@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
 import {
@@ -584,6 +583,7 @@ function KanbanOverlay({ children, className }: KanbanOverlayProps) {
 		height: number;
 	} | null>(null);
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: <explanation>
 	React.useEffect(() => {
 		if (activeId) {
 			const element = document.querySelector(
@@ -596,7 +596,6 @@ function KanbanOverlay({ children, className }: KanbanOverlayProps) {
 		} else {
 			setDimensions(null);
 		}
-	// eslint-disable-next-line react-hooks/exhaustive-deps
 	}, [activeId]);
 
 	const style = {
