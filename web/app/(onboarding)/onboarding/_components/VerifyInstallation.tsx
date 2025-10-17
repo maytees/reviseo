@@ -46,7 +46,7 @@ const VerifyInstallation = ({ projectId }: VerifyInstallationProps) => {
         setState("error");
         toast.error(data.error || "Widget not found on your website");
       }
-    } catch (error) {
+    } catch {
       setState("error");
       toast.error("Failed to verify installation");
     }
