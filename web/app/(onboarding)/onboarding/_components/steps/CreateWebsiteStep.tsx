@@ -2,18 +2,27 @@
 
 import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
-import { useId } from "react";
+import { useId, useState } from "react";
 import { useForm } from "react-hook-form";
+import type { UserOnboardingDataType } from "@/app/data/user/get-user-onboarding-data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
+import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
 import { type WebsiteFormData, websiteSchema } from "@/lib/validations";
 
 interface CreateWebsiteStepProps {
-	onNext: (data: WebsiteFormData) => void;
+	onNext: (data: WebsiteFormData & { existingWebsiteId?: string }) => void;
 	onBack: () => void;
 	isPending?: boolean;
 	defaultValues?: Partial<WebsiteFormData>;
+	userData: UserOnboardingDataType;
 }
 
 export function CreateWebsiteStep({
@@ -21,19 +30,39 @@ export function CreateWebsiteStep({
 	onBack,
 	isPending = false,
 	defaultValues,
+	userData,
 }: CreateWebsiteStepProps) {
 	const websiteNameId = useId();
 	const websiteUrlId = useId();
+	const [selectedWebsiteId, setSelectedWebsiteId] = useState<string | null>(
+		null,
+	);
+
+	const existingWebsites = userData?.developerWebsites || [];
+	const hasExistingWebsites = existingWebsites.length > 0;
 
 	const {
 		register,
 		handleSubmit,
 		formState: { errors, isValid },
+		setValue,
 	} = useForm<WebsiteFormData>({
 		resolver: zodResolver(websiteSchema),
 		mode: "onChange",
 		defaultValues,
 	});
+
+	const handleExistingWebsiteSelect = (websiteId: string) => {
+		setSelectedWebsiteId(websiteId);
+		const website = existingWebsites.find((w) => w.id === websiteId);
+		if (website) {
+			onNext({
+				websiteName: website.name,
+				websiteUrl: website.url,
+				existingWebsiteId: website.id,
+			});
+		}
+	};
 
 	return (
 		<motion.div
@@ -45,12 +74,58 @@ export function CreateWebsiteStep({
 		>
 			<div className="space-y-1  text-center">
 				<h2 className="text-2xl sm:text-4xl font-bold font-caudex">
-					Create your first website
+					{hasExistingWebsites
+						? "Select or create a website"
+						: "Create your first website"}
 				</h2>
 				<p className="text-base text-muted-foreground font-alegreya">
-					Add the website where you want to collect client feedback
+					{hasExistingWebsites
+						? "Choose an existing website or add a new one"
+						: "Add the website where you want to collect client feedback"}
 				</p>
 			</div>
+
+			{hasExistingWebsites && (
+				<div className="max-w-2xl mx-auto">
+					<div className="bg-accent/20 border border-border rounded-lg p-4">
+						<Label className="text-base font-alegreya font-medium mb-3 block">
+							Select Existing Website
+						</Label>
+						<Select onValueChange={handleExistingWebsiteSelect}>
+							<SelectTrigger className="w-full h-11 font-alegreya">
+								<SelectValue placeholder="Choose a website..." />
+							</SelectTrigger>
+							<SelectContent>
+								{existingWebsites.map((website) => (
+									<SelectItem
+										key={website.id}
+										value={website.id}
+										className="font-alegreya"
+									>
+										<div className="flex flex-col items-start">
+											<span className="font-medium">{website.name}</span>
+											<span className="text-xs text-muted-foreground">
+												{website.url}
+											</span>
+										</div>
+									</SelectItem>
+								))}
+							</SelectContent>
+						</Select>
+					</div>
+
+					<div className="relative my-6">
+						<div className="absolute inset-0 flex items-center">
+							<span className="w-full border-t border-border" />
+						</div>
+						<div className="relative flex justify-center text-xs uppercase">
+							<span className="bg-background px-2 text-muted-foreground font-alegreya">
+								Or create new
+							</span>
+						</div>
+					</div>
+				</div>
+			)}
 
 			<form
 				onSubmit={handleSubmit(onNext)}

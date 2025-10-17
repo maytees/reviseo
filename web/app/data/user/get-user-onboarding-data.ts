@@ -15,8 +15,10 @@ export async function getUserOnboardingData() {
 			email: true,
 			developerWebsites: {
 				select: {
+					id: true,
 					url: true,
 					name: true,
+					projectId: true,
 				},
 			},
 		},

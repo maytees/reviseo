@@ -47,8 +47,11 @@ model UserRole {
 model Website {
   id        String @id @default(cuid())
   name      String
-  url       String
+  url       String @unique
   projectId String @unique @default(uuid())
+
+  widgetInstalled Boolean   @default(false)
+  verifiedAt      DateTime?
 
   developerId String
   developer   User   @relation("DeveloperWebsites", fields: [developerId], references: [id])
