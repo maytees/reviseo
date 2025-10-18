@@ -10,19 +10,18 @@ import VerifyInstallation from "../VerifyInstallation";
 
 interface InstallWidgetStepProps {
   onNext: () => void;
-  onBack: () => void;
   projectId: string;
 }
 
 export function InstallWidgetStep({
   onNext,
-  onBack,
   projectId,
 }: InstallWidgetStepProps) {
   const [copied, setCopied] = useState(false);
 
-  const codeSnippet = `<script
-  src="https://cdn.reviseo.com/widget.js"
+  const codeSnippet = `<link rel="stylesheet" href="https://reviseo.app/cdn/reviseo.css">
+<script
+  src="https://reviseo.app/cdn/reviseo.js"
   data-project-id="${projectId}"
 ></script>`;
 
@@ -59,12 +58,23 @@ export function InstallWidgetStep({
           <div className="bg-background rounded-lg p-4 font-mono text-sm sm:text-base overflow-x-auto border border-border">
             <pre className="text-foreground">
               <code>
+                <span className="text-purple-400">{`<link`}</span>{" "}
+                <span className="text-blue-400">rel</span>
+                <span className="text-slate-400">=</span>
+                <span className="text-green-400">"stylesheet"</span>{" "}
+                <span className="text-blue-400">href</span>
+                <span className="text-slate-400">=</span>
+                <span className="text-green-400">
+                  "https://reviseo.app/cdn/reviseo.css"
+                </span>
+                <span className="text-purple-400">{`>`}</span>
+                {"\n"}
                 <span className="text-purple-400">{`<script`}</span>
                 {"\n  "}
                 <span className="text-blue-400">src</span>
                 <span className="text-slate-400">=</span>
                 <span className="text-green-400">
-                  "https://cdn.reviseo.com/widget.js"
+                  "https://reviseo.app/cdn/reviseo.js"
                 </span>
                 {"\n  "}
                 <span className="text-blue-400">data-project-id</span>
@@ -114,10 +124,7 @@ export function InstallWidgetStep({
         <VerifyInstallation projectId={projectId} />
       </div>
 
-      <div className="flex justify-between pt-2 max-w-2xl mx-auto">
-        <Button variant="outline" onClick={onBack} className="font-alegreya">
-          ← Back
-        </Button>
+      <div className="flex justify-end pt-2 max-w-2xl mx-auto">
         <div className="flex gap-2">
           <Button
             variant="ghost"

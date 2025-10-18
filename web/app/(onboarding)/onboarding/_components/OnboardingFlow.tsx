@@ -150,14 +150,12 @@ export function OnboardingFlow(props: { userData: UserOnboardingDataType }) {
                 {currentStep === 2 && (
                   <InstallWidgetStep
                     onNext={() => setCurrentStep(3)}
-                    onBack={() => setCurrentStep(1)}
                     projectId={formData.projectId}
                   />
                 )}
                 {currentStep === 3 && (
                   <InviteClientStep
                     onSubmit={handleClientSubmit}
-                    onBack={() => setCurrentStep(2)}
                     isPending={isClientPending}
                     defaultValues={{
                       clientName: formData.clientName,

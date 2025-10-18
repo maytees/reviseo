@@ -81,7 +81,7 @@ body {
   background: rgba(10, 10, 10, 0.95);
   backdrop-filter: blur(10px);
   padding: 20px 0;
-  z-index: 1000;
+  z-index: 500;
   transition: all 0.3s ease;
 }
 
@@ -111,8 +111,15 @@ body {
 }
 
 @keyframes pulse {
-  0%, 100% { opacity: 1; }
-  50% { opacity: 0.6; }
+
+  0%,
+  100% {
+    opacity: 1;
+  }
+
+  50% {
+    opacity: 0.6;
+  }
 }
 
 .nav-links {
@@ -197,8 +204,15 @@ body {
 }
 
 @keyframes float {
-  0%, 100% { transform: translateY(0px); }
-  50% { transform: translateY(-30px); }
+
+  0%,
+  100% {
+    transform: translateY(0px);
+  }
+
+  50% {
+    transform: translateY(-30px);
+  }
 }
 
 .hero-container {
@@ -229,6 +243,7 @@ body {
     opacity: 0;
     transform: translateX(-50px);
   }
+
   to {
     opacity: 1;
     transform: translateX(0);
@@ -260,8 +275,13 @@ body {
 }
 
 @keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
 }
 
 /* ================================
@@ -809,7 +829,7 @@ body {
   background-clip: text;
 }
 
-.form-content > p {
+.form-content>p {
   color: var(--text-secondary);
   margin-bottom: 30px;
 }
@@ -859,7 +879,7 @@ body {
   color: var(--secondary-color);
 }
 
-.countdown-section > p {
+.countdown-section>p {
   color: var(--text-secondary);
   margin-bottom: 30px;
   font-size: 1.1rem;
@@ -1148,7 +1168,7 @@ body {
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 2000;
+  z-index: 100;
   opacity: 0;
   visibility: hidden;
   transition: all 0.3s ease;

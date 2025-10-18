@@ -23,110 +23,81 @@ export default function OtpEmail({
     <Html>
       <Head />
       <Preview>Your verification code for Reviseo</Preview>
-      <Tailwind
-        config={{
-          darkMode: "class",
-          theme: {
-            extend: {
-              fontFamily: {
-                sans: ["var(--font-sans)"],
-              },
-              colors: {
-                brand: "#0a0a0a",
-                muted: "#fafafa",
-                background: "hsl(var(--background))",
-                foreground: "hsl(var(--foreground))",
-                card: {
-                  DEFAULT: "hsl(var(--card))",
-                  foreground: "hsl(var(--card-foreground))",
-                },
-                popover: {
-                  DEFAULT: "hsl(var(--popover))",
-                  foreground: "hsl(var(--popover-foreground))",
-                },
-                primary: {
-                  DEFAULT: "hsl(var(--primary))",
-                  foreground: "hsl(var(--primary-foreground))",
-                },
-                secondary: {
-                  DEFAULT: "hsl(var(--secondary))",
-                  foreground: "hsl(var(--secondary-foreground))",
-                },
-                accent: {
-                  DEFAULT: "hsl(var(--accent))",
-                  foreground: "hsl(var(--accent-foreground))",
-                },
-                destructive: {
-                  DEFAULT: "hsl(var(--destructive))",
-                  foreground: "hsl(var(--destructive-foreground))",
-                },
-                border: "hsl(var(--border))",
-                input: "hsl(var(--input))",
-                ring: "hsl(var(--ring))",
-                chart: {
-                  "1": "hsl(var(--chart-1))",
-                  "2": "hsl(var(--chart-2))",
-                  "3": "hsl(var(--chart-3))",
-                  "4": "hsl(var(--chart-4))",
-                  "5": "hsl(var(--chart-5))",
-                },
-              },
-              borderRadius: {
-                lg: "var(--radius)",
-                md: "calc(var(--radius) - 3.5px)",
-                sm: "calc(var(--radius) - 4px)",
-              },
-            },
-          },
-        }}
-      >
-        <Body className="font-sans bg-gray-50">
-          <Container className="px-4 py-8 mx-auto">
-            <Section className="max-w-md p-8 mx-auto text-left bg-white border border-gray-200 rounded-lg">
-              <Section className="flex justify-start mb-6">
+      <Tailwind>
+        <Body className="font-sans">
+          <Container className="px-4 py-12 mx-auto">
+            {/* Main Card */}
+            <Section
+              className="max-w-md mx-auto text-left bg-white rounded-2xl overflow-hidden"
+              style={{
+                boxShadow:
+                  "0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
+              }}
+            >
+              {/* Header */}
+              <Section
+                className="px-8 pt-8 pb-6"
+                style={{
+                  backgroundColor: "oklch(0.5053 0.2350 286.8637)",
+                }}
+              >
                 <Img
-                  src={`https://reviseo.app/logo.svg`}
-                  width="32"
-                  height="32"
+                  src="https://reviseo.app/logo.png"
+                  width="40"
+                  height="40"
                   alt="Reviseo"
+                  className="mb-4"
                 />
-              </Section>
-
-              <Section className="mb-4">
-                <Text className="m-0 text-xl font-bold text-gray-900">
-                  Reviseo
+                <Text className="m-0 text-2xl font-bold text-white">
+                  Verify Your Email
                 </Text>
-                <Text className="m-0 mt-1 text-sm text-gray-600">
-                  Your verification code
+                <Text className="m-0 mt-2 text-sm text-white/80">
+                  Welcome to Reviseo
                 </Text>
               </Section>
 
-              <Section className="mb-6">
-                <Text className="mb-4 text-base text-gray-700">
-                  Here&apos;s your verification code for {email}. Enter this
-                  code to complete your sign-in:
+              {/* Content */}
+              <Section className="px-8 py-8">
+                <Text className="mb-6 text-base text-gray-700">
+                  Hi there! Enter this verification code to sign in to your
+                  account:
                 </Text>
-              </Section>
 
-              <Section className="mb-6">
-                <CodeInline className="px-4 py-2 font-mono text-2xl font-bold tracking-wider text-gray-900 bg-gray-100 rounded-md">
-                  {otp}
-                </CodeInline>
-              </Section>
+                {/* OTP Code Box */}
+                <Section
+                  className="mb-6 p-6 rounded-xl text-center"
+                  style={{
+                    backgroundColor: "oklch(0.9708 0.0045 134.8496)",
+                    border: "2px dashed oklch(0.5053 0.2350 286.8637)",
+                  }}
+                >
+                  <CodeInline
+                    className="font-mono text-4xl font-bold tracking-[0.5em]"
+                    style={{
+                      color: "oklch(0.5053 0.2350 286.8637)",
+                    }}
+                  >
+                    {otp}
+                  </CodeInline>
+                </Section>
 
-              <Section className="mb-4">
-                <Text className="text-sm text-gray-500">
-                  This code will expire in 10 minutes. If you didn&apos;t
-                  request this code, you can safely ignore this email.
+                <Text className="mb-2 text-sm text-gray-600">
+                  <strong>Email:</strong> {email}
+                </Text>
+                <Text className="mb-4 text-xs text-gray-500">
+                  This code expires in 10 minutes. If you didn&apos;t request
+                  this, please ignore this email.
                 </Text>
               </Section>
             </Section>
 
-            <Hr className="mt-8 mb-6 border-gray-200" />
-
-            <Section className="mb-4 text-sm text-left text-gray-500">
-              <Text className="p-0 m-0">
-                © 2025 Molnr. All rights reserved.
+            {/* Footer */}
+            <Section className="mt-8 text-center">
+              <Text className="m-0 mb-2 text-xs text-gray-400">
+                © 2025 Reviseo. All rights reserved.
+              </Text>
+              <Text className="m-0 text-xs text-gray-500">
+                Visual feedback, simplified.
               </Text>
             </Section>
           </Container>
