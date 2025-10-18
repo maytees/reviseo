@@ -1,89 +1,124 @@
 "use server";
 
+import { addDays } from "date-fns";
+import { v4 } from "uuid";
 import { requireUser } from "@/app/data/require-user";
+import ClientInviteEmail from "@/components/email/client-invite-email";
 import { prisma } from "@/lib/db";
+import { env } from "@/lib/env";
 import { getDomain } from "@/lib/getDomain";
+import { resend } from "@/lib/resend";
 import type { ApiResponse } from "@/lib/types";
 import type { ClientFormData, WebsiteFormData } from "@/lib/validations";
 import { PrismaClientKnownRequestError } from "@/prisma/generated/client/runtime/library";
 
 export async function inviteClient({
-  clientName,
-  clientEmail,
-}: ClientFormData): Promise<ApiResponse> {
-  const user = await requireUser();
+	clientName,
+	clientEmail,
+	websiteId,
+	websiteName,
+	websiteUrl,
+}: ClientFormData &
+	WebsiteFormData & { websiteId: string }): Promise<ApiResponse> {
+	const user = await requireUser();
+	const token = v4();
 
-  try {
-  } catch {
-    // if (e instanceof PrismaClientKnownRequestError) {
-    //   switch (e.code) {
-    //     case "P2002": {
-    //       return {
-    //         status: "error",
-    //         message: `Website domain ${url} already taken!`,
-    //       };
-    //     }
-    //     default:
-    //       return {
-    //         status: "error",
-    //         message: `Failed to create website: ${e.code}`,
-    //       };
-    //   }
-    // }
+	try {
+		// Create invite
+		const invite = await prisma.invite.create({
+			data: {
+				email: clientEmail,
+				token,
+				// Expires in 7 days
+				expiresAt: addDays(new Date(), 7),
+				websiteId,
+			},
+		});
 
-    console.error("Failed to send email:\n", e);
-    return {
-      status: "error",
-      message: `Failed to send email`,
-    };
-  }
+		// Send invite
+		const email = await resend.emails.send({
+			// TODO: Use reviseo domain
+			from: "Reviseo <onboarding@reviseo.app>",
+			to: [clientEmail],
+			subject: "Reviseo - You have an invite!",
+			react: ClientInviteEmail({
+				clientName,
+				inviteUrl: `${env.BETTER_AUTH_URL}/invite/accept?token=${token}`,
+				// TODO: Fix fields
+				developerName: user.name,
+				websiteName,
+				websiteUrl,
+			}),
+		});
+
+		if (!email.error)
+			return {
+				status: "success",
+				message: "Succesfully sent invite to client",
+			};
+
+		// Delete invite, since invite didn't send
+		await prisma.invite.delete({
+			where: {
+				id: invite.id,
+			},
+		});
+
+		return {
+			status: "error",
+			message: "Failed to send email",
+		};
+	} catch (e) {
+		console.error("Failed to send email:\n", e);
+
+		return {
+			status: "error",
+			message: `Failed to create invite`,
+		};
+	}
 }
 
 export async function createWebsiteOnboarding({
-  websiteName,
-  websiteUrl,
+	websiteName,
+	websiteUrl,
 }: WebsiteFormData): Promise<ApiResponse> {
-  const user = await requireUser();
-  const url = getDomain(websiteUrl);
+	const user = await requireUser();
+	const url = getDomain(websiteUrl);
 
-  try {
-    const newWebsite = await prisma.website.create({
-      data: {
-        name: websiteName,
-        url: websiteUrl,
-        developerId: user.id,
-      },
-    });
+	try {
+		const newWebsite = await prisma.website.create({
+			data: {
+				name: websiteName,
+				url: websiteUrl,
+				developerId: user.id,
+			},
+		});
 
-    return {
-      status: "success",
-      message: newWebsite.projectId,
-      // data: {
-      // 	websiteId: newWebsite.id,
-      // 	projectId: newWebsite.projectId,
-      // },
-    };
-  } catch (e: unknown) {
-    if (e instanceof PrismaClientKnownRequestError) {
-      switch (e.code) {
-        case "P2002": {
-          return {
-            status: "error",
-            message: `Website domain ${url} already taken!`,
-          };
-        }
-        default:
-          return {
-            status: "error",
-            message: `Failed to create website: ${e.code}`,
-          };
-      }
-    }
+		return {
+			status: "success",
+			message: newWebsite.projectId,
+		};
+	} catch (e: unknown) {
+		if (e instanceof PrismaClientKnownRequestError) {
+			switch (e.code) {
+				case "P2002": {
+					return {
+						status: "error",
+						message: `Website domain ${url} already taken!`,
+					};
+				}
+				default:
+					return {
+						status: "error",
+						message: `Failed to create website: ${e.code}`,
+					};
+			}
+		}
 
-    console.error("Failed to create website:\n", e);
-    return {
-      status: "error",
-      message: `Failed to create website`,
-    };
-  }
+		console.error("Failed to create website:\n", e);
+		return {
+			status: "error",
+			message: `Failed to create website`,
+		};
+	}
 }
