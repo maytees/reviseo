@@ -38,11 +38,11 @@ export function SuccessStep({ clientEmail, onComplete }: SuccessStepProps) {
 				<h2 className="text-2xl sm:text-3xl font-bold font-caudex">
 					You're all set!
 				</h2>
-				<p className="text-sm sm:text-base text-muted-foreground font-alegreya">
+				<p className="text-sm sm:text-base text-muted-foreground font-inter">
 					Invite sent to{" "}
 					<span className="text-foreground font-medium">{clientEmail}</span>
 				</p>
-				<p className="text-xs text-muted-foreground font-alegreya">
+				<p className="text-xs text-muted-foreground font-inter">
 					Redirecting to your dashboard...
 				</p>
 			</div>

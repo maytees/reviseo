@@ -68,7 +68,7 @@ export function FinalCTA() {
 							whileInView={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.6, delay: 0.3 }}
 							viewport={{ once: true }}
-							className="text-sm max-w-lg sm:text-base md:text-lg lg:text-xl text-center text-muted-foreground font-alegreya"
+							className="text-sm max-w-lg sm:text-base md:text-lg lg:text-xl text-center text-muted-foreground font-inter"
 						>
 							Start saving time today with Reviseo. Make your clients happy with
 							feedback done right.

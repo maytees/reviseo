@@ -5,7 +5,7 @@ export default function SettingsPage() {
 				<h1 className="text-3xl font-bold font-caudex">Settings</h1>
 			</div>
 			<div className="flex-1">
-				<p className="text-muted-foreground font-alegreya">
+				<p className="text-muted-foreground font-inter">
 					Configure your account settings and preferences.
 				</p>
 			</div>

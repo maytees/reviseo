@@ -3,8 +3,8 @@
 import { addDays } from "date-fns";
 import { v4 } from "uuid";
 import { requireUser } from "@/app/data/require-user";
-import ClientInviteEmail from "@/components/email/client-invite-email";
 import { prisma } from "@/lib/db";
+import ClientInviteEmail from "@/lib/email/client-invite-email";
 import { env } from "@/lib/env";
 import { getDomain } from "@/lib/getDomain";
 import { resend } from "@/lib/resend";

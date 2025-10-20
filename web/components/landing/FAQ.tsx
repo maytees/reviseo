@@ -73,7 +73,7 @@ export function FAQ() {
 						delay: 0.2,
 					}}
 					viewport={{ once: true }}
-					className="text-lg sm:text-xl md:text-2xl text-muted-foreground text-center font-alegreya"
+					className="text-lg sm:text-xl md:text-2xl text-muted-foreground text-center font-inter"
 				>
 					Everything you need to know about Reviseo
 				</motion.p>
@@ -123,7 +123,7 @@ export function FAQ() {
 												{faq.question}
 											</span>
 										</AccordionTrigger>
-										<AccordionContent className="text-sm sm:text-base text-muted-foreground font-alegreya leading-relaxed pb-5">
+										<AccordionContent className="text-sm sm:text-base text-muted-foreground font-inter leading-relaxed pb-5">
 											{faq.answer}
 										</AccordionContent>
 									</AccordionItem>
@@ -142,7 +142,7 @@ export function FAQ() {
 				viewport={{ once: true }}
 				className="mt-12 text-center"
 			>
-				<p className="text-base sm:text-lg text-muted-foreground font-alegreya">
+				<p className="text-base sm:text-lg text-muted-foreground font-inter">
 					Still have questions?{" "}
 					<a
 						href="/contact"

@@ -95,7 +95,7 @@ export function Pricing() {
 						delay: 0.2,
 					}}
 					viewport={{ once: true }}
-					className="text-lg sm:text-xl md:text-2xl text-muted-foreground text-center font-alegreya"
+					className="text-lg sm:text-xl md:text-2xl text-muted-foreground text-center font-inter"
 				>
 					Start free, scale as you grow. No hidden fees, cancel anytime.
 				</motion.p>
@@ -184,12 +184,12 @@ export function Pricing() {
 												{plan.price}
 											</span>
 											{plan.period && (
-												<span className="text-lg text-muted-foreground font-alegreya">
+												<span className="text-lg text-muted-foreground font-inter">
 													{plan.period}
 												</span>
 											)}
 										</div>
-										<p className="mt-2 text-sm sm:text-base text-muted-foreground font-alegreya">
+										<p className="mt-2 text-sm sm:text-base text-muted-foreground font-inter">
 											{plan.description}
 										</p>
 									</div>
@@ -214,7 +214,7 @@ export function Pricing() {
 														strokeWidth={3}
 													/>
 												</div>
-												<span className="text-sm sm:text-base text-foreground font-alegreya">
+												<span className="text-sm sm:text-base text-foreground font-inter">
 													{feature}
 												</span>
 											</motion.li>
@@ -252,7 +252,7 @@ export function Pricing() {
 				viewport={{ once: true }}
 				className="mt-16 text-center"
 			>
-				<p className="text-sm sm:text-base text-muted-foreground font-alegreya">
+				<p className="text-sm sm:text-base text-muted-foreground font-inter">
 					All plans include a 14-day free trial. No credit card required.{" "}
 					<Link
 						href="/pricing"

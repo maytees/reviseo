@@ -81,7 +81,7 @@ export function Footer() {
 							/>
 							<h1 className="text-4xl font-bold font-caudex">Reviseo</h1>
 						</Link>
-						<p className="text-sm text-muted-foreground font-alegreya max-w-xs leading-relaxed">
+						<p className="text-sm text-muted-foreground font-inter max-w-xs leading-relaxed">
 							Visual feedback for web freelancers. Simplify client website
 							revisions with easy annotated screenshots.
 						</p>
@@ -129,7 +129,7 @@ export function Footer() {
 								<li key={link.name}>
 									<Link
 										href={link.href}
-										className="text-sm text-muted-foreground hover:text-foreground transition-colors font-alegreya"
+										className="text-sm text-muted-foreground hover:text-foreground transition-colors font-inter"
 									>
 										{link.name}
 									</Link>
@@ -153,7 +153,7 @@ export function Footer() {
 								<li key={link.name}>
 									<Link
 										href={link.href}
-										className="text-sm text-muted-foreground hover:text-foreground transition-colors font-alegreya"
+										className="text-sm text-muted-foreground hover:text-foreground transition-colors font-inter"
 									>
 										{link.name}
 									</Link>
@@ -177,7 +177,7 @@ export function Footer() {
 								<li key={link.name}>
 									<Link
 										href={link.href}
-										className="text-sm text-muted-foreground hover:text-foreground transition-colors font-alegreya"
+										className="text-sm text-muted-foreground hover:text-foreground transition-colors font-inter"
 									>
 										{link.name}
 									</Link>
@@ -201,7 +201,7 @@ export function Footer() {
 								<li key={link.name}>
 									<Link
 										href={link.href}
-										className="text-sm text-muted-foreground hover:text-foreground transition-colors font-alegreya"
+										className="text-sm text-muted-foreground hover:text-foreground transition-colors font-inter"
 									>
 										{link.name}
 									</Link>
@@ -220,7 +220,7 @@ export function Footer() {
 					className="pt-8 border-t border-border/50"
 				>
 					<div className="flex flex-col sm:flex-row justify-center items-center gap-4">
-						<p className="text-sm text-muted-foreground font-alegreya">
+						<p className="text-sm text-muted-foreground font-inter">
 							© {new Date().getFullYear()} Reviseo. All rights reserved.
 						</p>
 					</div>

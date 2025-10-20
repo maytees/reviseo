@@ -5,7 +5,7 @@ export default function WebsitesPage() {
 				<h1 className="text-3xl font-bold font-caudex">Websites</h1>
 			</div>
 			<div className="flex-1">
-				<p className="text-muted-foreground font-alegreya">
+				<p className="text-muted-foreground font-inter">
 					Manage your client websites and feedback widgets.
 				</p>
 			</div>

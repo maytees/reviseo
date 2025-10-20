@@ -57,7 +57,7 @@ export function HowItWorks() {
 						delay: 0.2,
 					}}
 					viewport={{ once: true }}
-					className="text-xl sm:text-2xl md:text-3xl text-muted-foreground text-center font-alegreya"
+					className="text-xl sm:text-2xl md:text-3xl text-muted-foreground text-center font-inter"
 				>
 					From setup to feedback in 3 simple steps
 				</motion.p>
@@ -103,11 +103,11 @@ export function HowItWorks() {
 								Install the widget
 							</h3>
 						</div>
-						<p className="text-lg sm:text-xl text-muted-foreground leading-relaxed font-alegreya">
+						<p className="text-lg sm:text-xl text-muted-foreground leading-relaxed font-inter">
 							Copy one line of code and paste it into your client's website.
 							Works with any platform in under 60 seconds.
 						</p>
-						<p className="text-base text-muted-foreground/80 font-alegreya">
+						<p className="text-base text-muted-foreground/80 font-inter">
 							No backend changes needed. Just drop in the script tag and you're
 							done.
 						</p>
@@ -145,11 +145,11 @@ export function HowItWorks() {
 								Invite your client
 							</h3>
 						</div>
-						<p className="text-lg sm:text-xl text-muted-foreground leading-relaxed font-alegreya">
+						<p className="text-lg sm:text-xl text-muted-foreground leading-relaxed font-inter">
 							Create a client profile and send them a secure invite link. They
 							sign up once and can access all their assigned websites.
 						</p>
-						<p className="text-base text-muted-foreground/80 font-alegreya">
+						<p className="text-base text-muted-foreground/80 font-inter">
 							One click to copy the invite link. Send via email, Slack, or
 							however you communicate.
 						</p>
@@ -181,12 +181,12 @@ export function HowItWorks() {
 								Get clear feedback
 							</h3>
 						</div>
-						<p className="text-lg sm:text-xl text-muted-foreground leading-relaxed font-alegreya">
+						<p className="text-lg sm:text-xl text-muted-foreground leading-relaxed font-inter">
 							Your client clicks the feedback button, draws what they want
 							changed, and submits. You see it instantly in your dashboard with
 							full context.
 						</p>
-						<p className="text-base text-muted-foreground/80 font-alegreya">
+						<p className="text-base text-muted-foreground/80 font-inter">
 							Screenshot, annotations, page URL, and browser info—all captured
 							automatically.
 						</p>
@@ -302,18 +302,18 @@ function EmailInviteVisual() {
 					{/* Email Header */}
 					<div className="space-y-3">
 						<div className="flex items-center gap-3">
-							<span className="text-base font-medium text-muted-foreground font-alegreya">
+							<span className="text-base font-medium text-muted-foreground font-inter">
 								To:
 							</span>
-							<span className="text-base text-foreground font-alegreya">
+							<span className="text-base text-foreground font-inter">
 								john@clientco.com
 							</span>
 						</div>
 						<div className="flex items-center gap-3">
-							<span className="text-base font-medium text-muted-foreground font-alegreya">
+							<span className="text-base font-medium text-muted-foreground font-inter">
 								Subject:
 							</span>
-							<span className="text-base text-foreground font-alegreya">
+							<span className="text-base text-foreground font-inter">
 								Website Feedback Access
 							</span>
 						</div>
@@ -323,8 +323,8 @@ function EmailInviteVisual() {
 
 					{/* Email Body */}
 					<div className="space-y-4">
-						<p className="text-foreground font-alegreya">Hi John,</p>
-						<p className="text-muted-foreground leading-relaxed font-alegreya">
+						<p className="text-foreground font-inter">Hi John,</p>
+						<p className="text-muted-foreground leading-relaxed font-inter">
 							You can now give feedback on your website using Reviseo. Click
 							below to get started:
 						</p>
@@ -340,7 +340,7 @@ function EmailInviteVisual() {
 								whileInView={{ scale: 1 }}
 								transition={{ delay: 0.8, type: "spring" }}
 								viewport={{ once: true }}
-								className="flex items-center gap-1 text-sm text-green-600 shrink-0 font-alegreya"
+								className="flex items-center gap-1 text-sm text-green-600 shrink-0 font-inter"
 							>
 								<Check className="w-3 h-3" />
 								Copied
@@ -378,7 +378,7 @@ function DashboardVisual() {
 			<div className="grid grid-cols-2 gap-4">
 				{/* Client View */}
 				<div className="col-span-2 bg-card rounded-lg overflow-hidden shadow-xl border border-border p-4">
-					<div className="text-sm font-medium text-muted-foreground mb-3 font-alegreya">
+					<div className="text-sm font-medium text-muted-foreground mb-3 font-inter">
 						Client's View
 					</div>
 					<div className="rounded aspect-video relative overflow-hidden">
@@ -391,7 +391,7 @@ function DashboardVisual() {
 							className="w-full h-full object-cover"
 						/>
 					</div>
-					<p className="text-sm text-muted-foreground/80 mt-3 font-alegreya">
+					<p className="text-sm text-muted-foreground/80 mt-3 font-inter">
 						Clients annotate screenshots directly in an Excalidraw canvas,
 						adding a title, detailed description, and categorizing feedback as
 						bugs or features.
@@ -401,7 +401,7 @@ function DashboardVisual() {
 				{/* Dashboard Notification */}
 				<div className="col-span-2 bg-card rounded-lg overflow-hidden shadow-xl border border-border p-4">
 					<div className="flex items-center justify-between mb-4">
-						<div className="text-sm font-medium text-muted-foreground font-alegreya">
+						<div className="text-sm font-medium text-muted-foreground font-inter">
 							Your Dashboard
 						</div>
 						<motion.div
@@ -421,7 +421,7 @@ function DashboardVisual() {
 							</div>
 							<div className="flex-2 min-w-0">
 								<div className="flex items-center gap-3 mb-1">
-									<span className="text-base font-medium text-foreground font-alegreya">
+									<span className="text-base font-medium text-foreground font-inter">
 										John Smith
 									</span>
 									<motion.span
@@ -434,7 +434,7 @@ function DashboardVisual() {
 										New
 									</motion.span>
 								</div>
-								<p className="text-base text-muted-foreground line-clamp-3 font-alegreya">
+								<p className="text-base text-muted-foreground line-clamp-3 font-inter">
 									Make this bigger - Homepage
 								</p>
 								<div className="flex items-center gap-1.5 mt-1">
@@ -442,7 +442,7 @@ function DashboardVisual() {
 										<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
 										<span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
 									</span>
-									<p className="text-base text-muted-foreground/69 font-alegreya">
+									<p className="text-base text-muted-foreground/69 font-inter">
 										Just now
 									</p>
 								</div>

@@ -84,7 +84,7 @@ export function ExcalidrawBentoCard() {
 						<h3 className="mb-1.5 text-balance text-xl font-bold text-foreground sm:mb-2 sm:text-2xl md:text-3xl font-caudex">
 							Annotate with Ease
 						</h3>
-						<p className="text-pretty text-sm text-muted-foreground sm:text-base md:text-lg font-alegreya">
+						<p className="text-pretty text-sm text-muted-foreground sm:text-base md:text-lg font-inter">
 							Draw, sketch, and highlight directly on feedback using the proven
 							Excalidraw canvas trusted by hundreds of thousands of people.
 						</p>
@@ -138,7 +138,7 @@ export function ExcalidrawBentoCard() {
 								<div className="flex h-4 w-4 items-center justify-center rounded-full bg-primary/10 sm:h-5 sm:w-5">
 									<Check className="h-2.5 w-2.5 text-primary sm:h-3 sm:w-3" />
 								</div>
-								<span className="text-sm text-foreground sm:text-base font-alegreya">
+								<span className="text-sm text-foreground sm:text-base font-inter">
 									{feature}
 								</span>
 							</motion.div>
@@ -198,7 +198,7 @@ export function QuickInstallCard() {
 						<h4 className="text-lg font-semibold font-caudex">
 							Get started instantly
 						</h4>
-						<p className="mt-1 text-base text-muted-foreground font-alegreya">
+						<p className="mt-1 text-base text-muted-foreground font-inter">
 							Add a simple script tag or use our React, Vue, or Vanilla
 							components.
 						</p>
@@ -294,7 +294,7 @@ export function OrbitingCirclesCard() {
 					<h4 className="text-lg font-semibold font-caudex">
 						Works everywhere
 					</h4>
-					<p className="mt-1 text-base text-muted-foreground font-alegreya">
+					<p className="mt-1 text-base text-muted-foreground font-inter">
 						From vanilla JavaScript to React, Vue, and more, to no-code
 						platforms like Webflow and WordPress integrate Reviseo anywhere.
 					</p>
@@ -428,7 +428,7 @@ export function CollaborationCard() {
 						<h4 className="text-lg font-semibold font-caudex">
 							Easy For Clients
 						</h4>
-						<p className="mt-1 text-base text-muted-foreground font-alegreya">
+						<p className="mt-1 text-base text-muted-foreground font-inter">
 							Send email invites to clients. Simple onboarding with secure,
 							invite only access.
 						</p>
@@ -497,7 +497,7 @@ export function InviteOnlyVisualCard() {
 						<h4 className="text-lg font-semibold font-caudex">
 							Only For Your Clients
 						</h4>
-						<p className="mt-1 text-sm sm:text-base text-muted-foreground font-alegreya">
+						<p className="mt-1 text-sm sm:text-base text-muted-foreground font-inter">
 							Only invited clients see the widget. Random website visitors won't
 							see anything.
 						</p>
@@ -550,7 +550,7 @@ export function InviteOnlyVisualCard() {
 								<div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center">
 									<Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />
 								</div>
-								<span className="text-xs font-medium text-foreground font-alegreya">
+								<span className="text-xs font-medium text-foreground font-inter">
 									Client
 								</span>
 							</motion.div>
@@ -586,7 +586,7 @@ export function InviteOnlyVisualCard() {
 								<div className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center">
 									<X className="w-2.5 h-2.5 text-white" strokeWidth={3} />
 								</div>
-								<span className="text-xs font-medium text-foreground font-alegreya">
+								<span className="text-xs font-medium text-foreground font-inter">
 									Visitor
 								</span>
 							</motion.div>
@@ -646,7 +646,7 @@ export function TrackChangesCard() {
 						<h4 className="text-lg font-semibold font-caudex">
 							Keep Clients In The Loop
 						</h4>
-						<p className="mt-1 text-base text-muted-foreground font-alegreya">
+						<p className="mt-1 text-base text-muted-foreground font-inter">
 							Let your clients see every step of the way. Update feedback status
 							so they always know what you're working on.
 						</p>
@@ -758,12 +758,12 @@ export function TrackChangesCard() {
 						<div className="flex items-start gap-2">
 							<div className="w-8 h-8 bg-gradient-to-br from-primary to-purple-500 rounded flex-shrink-0" />
 							<div className="flex-1 min-w-0">
-								<p className="text-sm font-medium text-foreground truncate font-alegreya">
+								<p className="text-sm font-medium text-foreground truncate font-inter">
 									Update homepage design
 								</p>
 								<div className="flex items-center gap-1.5 mt-1">
 									<span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
-									<span className="text-xs font-alegreya font-bold text-amber-700 dark:text-amber-400">
+									<span className="text-xs font-inter font-bold text-amber-700 dark:text-amber-400">
 										In Progress
 									</span>
 								</div>

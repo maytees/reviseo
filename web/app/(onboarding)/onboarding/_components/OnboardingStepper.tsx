@@ -61,7 +61,7 @@ export function OnboardingStepper({
 									) : (
 										<span
 											className={cn(
-												"text-2xl mb-1 font-medium font-alegreya",
+												"text-lg  font-medium font-caudex",
 												isActive
 													? "text-primary-foreground"
 													: "text-muted-foreground",
@@ -76,7 +76,7 @@ export function OnboardingStepper({
 								<div className="absolute top-10 text-center w-20 mt-5">
 									<p
 										className={cn(
-											"text-base font-medium transition-colors duration-300 font-alegreya",
+											"text-base font-medium transition-colors duration-300 font-inter",
 											isActive || isCompleted
 												? "text-foreground"
 												: "text-muted-foreground",

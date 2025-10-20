@@ -190,7 +190,7 @@ const renderMenuItem = (item: MenuItem) => {
 		<NavigationMenuItem key={item.title}>
 			<NavigationMenuLink
 				href={item.url}
-				className="font-alegreya bg-background hover:bg-muted hover:text-accent-foreground group inline-flex h-10 w-max text-lg items-center justify-center rounded-md px-4 py-2  font-medium transition-colors"
+				className="font-inter bg-background hover:bg-muted hover:text-accent-foreground group inline-flex h-10 w-max text-lg items-center justify-center rounded-md px-4 py-2  font-medium transition-colors"
 			>
 				{item.title}
 			</NavigationMenuLink>
@@ -203,7 +203,7 @@ const renderMobileMenuItem = (item: MenuItem) => {
 		<Link
 			key={item.title}
 			href={item.url}
-			className="text-lg hover:text-accent-foreground font-semibold font-alegreya"
+			className="text-lg hover:text-accent-foreground font-semibold font-inter"
 		>
 			{item.title}
 		</Link>

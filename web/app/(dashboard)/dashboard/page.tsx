@@ -5,7 +5,7 @@ export default function DashboardPage() {
 				<h1 className="text-3xl font-bold font-caudex">Dashboard</h1>
 			</div>
 			<div className="flex-1">
-				<p className="text-muted-foreground font-alegreya">
+				<p className="text-muted-foreground font-inter">
 					Welcome to your Reviseo dashboard.
 				</p>
 			</div>

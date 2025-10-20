@@ -5,7 +5,7 @@ export default function ClientsPage() {
 				<h1 className="text-3xl font-bold font-caudex">Clients</h1>
 			</div>
 			<div className="flex-1">
-				<p className="text-muted-foreground font-alegreya">
+				<p className="text-muted-foreground font-inter">
 					Manage your clients and send invite links.
 				</p>
 			</div>

@@ -78,7 +78,7 @@ export function CreateWebsiteStep({
 						? "Select or create a website"
 						: "Create your first website"}
 				</h2>
-				<p className="text-base text-muted-foreground font-alegreya">
+				<p className="text-base text-muted-foreground font-inter">
 					{hasExistingWebsites
 						? "Choose an existing website or add a new one"
 						: "Add the website where you want to collect client feedback"}
@@ -88,11 +88,11 @@ export function CreateWebsiteStep({
 			{hasExistingWebsites && (
 				<div className="max-w-2xl mx-auto">
 					<div className="bg-accent/20 border border-border rounded-lg p-4">
-						<Label className="text-base font-alegreya font-medium mb-3 block">
+						<Label className="text-base font-inter font-medium mb-3 block">
 							Select Existing Website
 						</Label>
 						<Select onValueChange={handleExistingWebsiteSelect}>
-							<SelectTrigger className="w-full h-11 font-alegreya">
+							<SelectTrigger className="w-full h-11 font-inter">
 								<SelectValue placeholder="Choose a website..." />
 							</SelectTrigger>
 							<SelectContent>
@@ -100,7 +100,7 @@ export function CreateWebsiteStep({
 									<SelectItem
 										key={website.id}
 										value={website.id}
-										className="font-alegreya"
+										className="font-inter"
 									>
 										<div className="flex flex-col items-start">
 											<span className="font-medium">{website.name}</span>
@@ -119,7 +119,7 @@ export function CreateWebsiteStep({
 							<span className="w-full border-t border-border" />
 						</div>
 						<div className="relative flex justify-center text-xs uppercase">
-							<span className="bg-background px-2 text-muted-foreground font-alegreya">
+							<span className="bg-background px-2 text-muted-foreground font-inter">
 								Or create new
 							</span>
 						</div>
@@ -135,7 +135,7 @@ export function CreateWebsiteStep({
 					<div className="space-y-2">
 						<Label
 							htmlFor={websiteNameId}
-							className="text-base font-alegreya font-medium"
+							className="text-base font-inter font-medium"
 						>
 							Website Name
 						</Label>
@@ -149,19 +149,19 @@ export function CreateWebsiteStep({
 									? `${websiteNameId}-error`
 									: `${websiteNameId}-helper`
 							}
-							className="h-10 font-alegreya"
+							className="h-10 font-inter"
 						/>
 						{errors.websiteName ? (
 							<p
 								id={`${websiteNameId}-error`}
-								className="text-sm text-destructive font-alegreya"
+								className="text-sm text-destructive font-inter"
 							>
 								{errors.websiteName.message}
 							</p>
 						) : (
 							<p
 								id={`${websiteNameId}-helper`}
-								className="text-sm text-muted-foreground font-alegreya"
+								className="text-sm text-muted-foreground font-inter"
 							>
 								A friendly name for your project
 							</p>
@@ -171,7 +171,7 @@ export function CreateWebsiteStep({
 					<div className="space-y-2">
 						<Label
 							htmlFor={websiteUrlId}
-							className="text-base font-alegreya font-medium"
+							className="text-base font-inter font-medium"
 						>
 							Website URL
 						</Label>
@@ -186,19 +186,19 @@ export function CreateWebsiteStep({
 									? `${websiteUrlId}-error`
 									: `${websiteUrlId}-helper`
 							}
-							className="h-10 font-alegreya"
+							className="h-10 font-inter"
 						/>
 						{errors.websiteUrl ? (
 							<p
 								id={`${websiteUrlId}-error`}
-								className="text-sm text-destructive font-alegreya"
+								className="text-sm text-destructive font-inter"
 							>
 								{errors.websiteUrl.message}
 							</p>
 						) : (
 							<p
 								id={`${websiteUrlId}-helper`}
-								className="text-sm text-muted-foreground font-alegreya"
+								className="text-sm text-muted-foreground font-inter"
 							>
 								Where the widget will be installed
 							</p>
@@ -211,7 +211,7 @@ export function CreateWebsiteStep({
 						type="button"
 						variant="outline"
 						onClick={onBack}
-						className="font-alegreya"
+						className="font-inter"
 						disabled={isPending}
 					>
 						← Back
@@ -219,7 +219,7 @@ export function CreateWebsiteStep({
 					<Button
 						type="submit"
 						disabled={!isValid || isPending}
-						className="font-alegreya"
+						className="font-inter"
 					>
 						Continue →
 					</Button>
