@@ -34,7 +34,8 @@ export default function OtpEmail({ otp, email }: OtpEmailProps) {
 								}}
 							>
 								<Img
-									src="https://reviseo.app/logo.png"
+									src="abc"
+									srcSet="https://reviseo.app/logo.svg"
 									width="40"
 									height="40"
 									alt="Reviseo"
