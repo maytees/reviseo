@@ -50,7 +50,7 @@ export async function inviteClient({
 			subject: "Reviseo - You have an invite!",
 			react: ClientInviteEmail({
 				clientName,
-				inviteUrl: `${env.BETTER_AUTH_URL}/invite/accept?token=${token}`,
+				inviteUrl: `${env.BETTER_AUTH_URL}/invite?token=${token}`,
 				// TODO: Fix fields
 				developerName: user.name,
 				websiteName,

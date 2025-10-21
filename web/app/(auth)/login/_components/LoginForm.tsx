@@ -2,7 +2,7 @@
 
 import { GithubIcon, Loader, Loader2, Send } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useId, useState, useTransition } from "react";
+import { useEffect, useId, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,12 +22,22 @@ export function LoginForm() {
 	const [githubPending, startGithubTransition] = useTransition();
 	const [emailPending, startEmailTransition] = useTransition();
 	const [email, setEmail] = useState("");
+	const [isClientInvite, setClientInvite] = useState(false);
+
+	useEffect(() => {
+		if (localStorage.getItem("token")) {
+			setClientInvite(true);
+			return;
+		}
+
+		setClientInvite(false);
+	}, []);
 
 	async function signInWithGithub() {
 		startGithubTransition(async () => {
 			await authClient.signIn.social({
 				provider: "github",
-				callbackURL: "/dashboard",
+				callbackURL: !isClientInvite ? "/dashboard" : "/invite",
 				fetchOptions: {
 					onSuccess: () => {
 						toast.success("Signed in with Github, you will be redirected...");
@@ -48,7 +58,9 @@ export function LoginForm() {
 				fetchOptions: {
 					onSuccess: () => {
 						toast.success("Email sent");
-						router.push(`/verify-request?email=${email}`);
+						router.push(
+							`/verify-request?email=${email}${isClientInvite ? "&ci=true" : ""}`,
+						);
 					},
 					onError: () => {
 						toast.error("Error sending email");

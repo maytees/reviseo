@@ -18,6 +18,39 @@ export const auth = betterAuth({
 				defaultValue: false,
 				input: false, // don't allow user to manually set this
 			},
+			// "developer" | "client" | "admin"
+			role: {
+				type: "string",
+				required: false,
+				defaultValue: "developer",
+				input: false, // don't allow user to manually set this
+				returned: true,
+			},
+		},
+	},
+	databaseHooks: {
+		user: {
+			create: {
+				after: async (user) => {
+					// Check if user has a pending invite (means they're a client)
+					const invite = await prisma.invite.findFirst({
+						where: {
+							email: user.email,
+							status: "PENDING",
+							expiresAt: { gt: new Date() },
+						},
+					});
+
+					// If invite exists, set role to client
+					if (invite) {
+						await prisma.user.update({
+							where: { id: user.id },
+							data: { role: "client" },
+						});
+					}
+					// Otherwise keeps default "developer" role
+				},
+			},
 		},
 	},
 	socialProviders: {
@@ -26,7 +59,6 @@ export const auth = betterAuth({
 			clientSecret: env.AUTH_GITHUB_SECRET,
 		},
 	},
-
 	plugins: [
 		emailOTP({
 			expiresIn: 60 * 10, // Ten minutes

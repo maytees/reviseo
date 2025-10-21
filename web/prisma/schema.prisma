@@ -28,22 +28,6 @@ enum InviteStatus {
   REVOKED
 }
 
-model Role {
-  id    Int        @id @default(autoincrement())
-  name  String     @unique
-  users UserRole[]
-}
-
-model UserRole {
-  userId    String
-  roleId    Int
-  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-  role      Role     @relation(fields: [roleId], references: [id], onDelete: Cascade)
-  createdAt DateTime @default(now())
-
-  @@id([userId, roleId])
-}
-
 model Website {
   id        String @id @default(cuid())
   name      String
@@ -124,13 +108,14 @@ model User {
   sessions  Session[]
   accounts  Account[]
 
+  // Better Auth additional fields
   hasCompletedOnboarding Boolean? @default(false)
+  role                   String?  @default("developer")
 
   // Reviseo relations
   developerWebsites Website[]  @relation("DeveloperWebsites")
   clientWebsites    Website[]  @relation("ClientWebsites")
   feedback          Feedback[]
-  roles             UserRole[]
 
   @@unique([email])
   @@map("user")

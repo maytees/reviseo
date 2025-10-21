@@ -35,17 +35,18 @@ function VerifyRequest() {
 	const [emailPending, startTranstion] = useTransition();
 	const params = useSearchParams();
 	const email = params.get("email") as string;
+	const isClientInvite = params.get("ci") as string | null;
 	const isOtpCompleted = otp.length === 6;
 
 	function verifyOtp() {
 		startTranstion(async () => {
 			await authClient.signIn.emailOtp({
-				email: email,
-				otp: otp,
+				email,
+				otp,
 				fetchOptions: {
 					onSuccess: () => {
 						toast.success("Email verified");
-						router.push("/onboarding");
+						router.push(`${!isClientInvite ? "/onboarding" : "/invite"}`);
 					},
 					onError: (error: ErrorContext) => {
 						toast.error(error.error.message);
