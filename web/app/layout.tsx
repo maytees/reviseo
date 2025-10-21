@@ -43,12 +43,7 @@ export default function RootLayout({
 			<body
 				className={`${inter.variable} ${caudex.variable} ${inter.variable} antialiased`}
 			>
-				<ThemeProvider
-					attribute="class"
-					defaultTheme="system"
-					enableSystem
-					disableTransitionOnChange
-				>
+				<ThemeProvider attribute="class" defaultTheme="dark">
 					{children}
 					<Toaster position="bottom-right" />
 				</ThemeProvider>
