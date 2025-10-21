@@ -1,7 +1,7 @@
 "use client";
 
 import { motion } from "framer-motion";
-import { Check, Copy } from "lucide-react";
+import { Check, ChevronLeft, ChevronRight, Copy } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
@@ -10,11 +10,13 @@ import VerifyInstallation from "../VerifyInstallation";
 
 interface InstallWidgetStepProps {
 	onNext: () => void;
+	onBack: () => void;
 	projectId: string;
 }
 
 export function InstallWidgetStep({
 	onNext,
+	onBack,
 	projectId,
 }: InstallWidgetStepProps) {
 	const [copied, setCopied] = useState(false);
@@ -122,7 +124,10 @@ export function InstallWidgetStep({
 				<VerifyInstallation projectId={projectId} />
 			</div>
 
-			<div className="flex justify-end pt-2 max-w-2xl mx-auto">
+			<div className="flex justify-between pt-2 max-w-2xl mx-auto">
+				<Button variant="outline" onClick={onBack} className="font-inter">
+					<ChevronLeft /> Edit Website
+				</Button>
 				<div className="flex gap-2">
 					<Button
 						variant="ghost"
@@ -132,7 +137,7 @@ export function InstallWidgetStep({
 						Skip
 					</Button>
 					<Button onClick={onNext} className="font-inter">
-						Continue →
+						Continue <ChevronRight />
 					</Button>
 				</div>
 			</div>

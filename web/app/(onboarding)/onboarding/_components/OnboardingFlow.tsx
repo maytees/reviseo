@@ -7,7 +7,11 @@ import type { UserOnboardingDataType } from "@/app/data/user/get-user-onboarding
 import { tryCatch } from "@/lib/try-catch";
 import type { ClientFormData, WebsiteFormData } from "@/lib/validations";
 import { completeOnboarding } from "../actions";
-import { createWebsiteOnboarding, inviteClient } from "./actions";
+import {
+	createWebsiteOnboarding,
+	inviteClient,
+	updateWebsiteOnboarding,
+} from "./actions";
 import { OnboardingStepper } from "./OnboardingStepper";
 import { CreateWebsiteStep } from "./steps/CreateWebsiteStep";
 import { InstallWidgetStep } from "./steps/InstallWidgetStep";
@@ -33,6 +37,7 @@ export function OnboardingFlow(props: { userData: UserOnboardingDataType }) {
 		websiteId: "",
 	});
 	const [showSuccess, setShowSuccess] = useState(false);
+	const [isEditingWebsite, setIsEditingWebsite] = useState(false);
 
 	// Pending states per-submit step
 	const [isWebsitePending, startWebsiteTransition] = useTransition();
@@ -58,9 +63,42 @@ export function OnboardingFlow(props: { userData: UserOnboardingDataType }) {
 						projectId: existingWebsite.projectId,
 						websiteId: existingWebsite.id,
 					}));
+					setIsEditingWebsite(false);
 					setCurrentStep(2);
 					return;
 				}
+			}
+
+			// If editing an existing website, update it
+			if (isEditingWebsite && formData.websiteId) {
+				const { data: result, error } = await tryCatch(
+					updateWebsiteOnboarding({
+						websiteId: formData.websiteId,
+						websiteName,
+						websiteUrl,
+					}),
+				);
+
+				if (error) {
+					toast.error(error.message);
+					return;
+				}
+
+				if (result.status === "success") {
+					setFormData((prev) => ({
+						...prev,
+						websiteName,
+						websiteUrl,
+					}));
+					toast.success("Website updated successfully!");
+					setIsEditingWebsite(false);
+					setCurrentStep(2);
+					return;
+				}
+
+				// Error
+				toast.error(result.message);
+				return;
 			}
 
 			// Create new website
@@ -74,14 +112,14 @@ export function OnboardingFlow(props: { userData: UserOnboardingDataType }) {
 			}
 
 			if (result.status === "success") {
-				const projectId = result.message;
-
 				setFormData((prev) => ({
 					...prev,
 					websiteName,
 					websiteUrl,
-					projectId,
+					projectId: result.data.projectId,
+					websiteId: result.data.websiteId,
 				}));
+				setIsEditingWebsite(false);
 				setCurrentStep(2);
 				return;
 			}
@@ -132,6 +170,11 @@ export function OnboardingFlow(props: { userData: UserOnboardingDataType }) {
 		});
 	};
 
+	const handleEditWebsite = () => {
+		setIsEditingWebsite(true);
+		setCurrentStep(1);
+	};
+
 	return (
 		<div className="min-h-[calc(100vh-6rem)] flex flex-col items-center justify-center px-4 sm:px-6 py-8">
 			<div className="w-full flex flex-col items-center max-w-4xl">
@@ -175,6 +218,7 @@ export function OnboardingFlow(props: { userData: UserOnboardingDataType }) {
 								{currentStep === 2 && (
 									<InstallWidgetStep
 										onNext={() => setCurrentStep(3)}
+										onBack={handleEditWebsite}
 										projectId={formData.projectId}
 									/>
 								)}

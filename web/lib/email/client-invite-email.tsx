@@ -52,7 +52,7 @@ export default function ClientInviteEmail({
 								}}
 							>
 								<Img
-									src="abc"
+									src="https://reviseo.app/logo.svg"
 									srcSet="https://reviseo.app/logo.svg"
 									width="40"
 									height="40"

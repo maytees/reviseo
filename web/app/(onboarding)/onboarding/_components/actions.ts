@@ -23,6 +23,13 @@ export async function inviteClient({
 	const user = await requireUser();
 	const token = v4();
 
+	if (user.email === clientEmail) {
+		return {
+			status: "error",
+			message: "Cannot invite yourself!",
+		};
+	}
+
 	try {
 		// Create invite
 		const invite = await prisma.invite.create({
@@ -81,7 +88,12 @@ export async function inviteClient({
 export async function createWebsiteOnboarding({
 	websiteName,
 	websiteUrl,
-}: WebsiteFormData): Promise<ApiResponse> {
+}: WebsiteFormData): Promise<
+	ApiResponse<{
+		projectId: string;
+		websiteId: string;
+	}>
+> {
 	const user = await requireUser();
 	const url = getDomain(websiteUrl);
 
@@ -96,7 +108,11 @@ export async function createWebsiteOnboarding({
 
 		return {
 			status: "success",
-			message: newWebsite.projectId,
+			data: {
+				projectId: newWebsite.projectId,
+				websiteId: newWebsite.id,
+			},
+			message: "Created website successfully",
 		};
 	} catch (e: unknown) {
 		if (e instanceof PrismaClientKnownRequestError) {
@@ -119,6 +135,70 @@ export async function createWebsiteOnboarding({
 		return {
 			status: "error",
 			message: `Failed to create website`,
+		};
+	}
+}
+
+export async function updateWebsiteOnboarding({
+	websiteId,
+	websiteName,
+	websiteUrl,
+}: WebsiteFormData & { websiteId: string }): Promise<ApiResponse> {
+	const user = await requireUser();
+	const url = getDomain(websiteUrl);
+
+	try {
+		// Verify the website belongs to the user
+		const existingWebsite = await prisma.website.findFirst({
+			where: {
+				id: websiteId,
+				developerId: user.id,
+			},
+		});
+
+		if (!existingWebsite) {
+			return {
+				status: "error",
+				message: "Website not found or unauthorized",
+			};
+		}
+
+		// Update the website
+		await prisma.website.update({
+			where: {
+				id: websiteId,
+			},
+			data: {
+				name: websiteName,
+				url: websiteUrl,
+			},
+		});
+
+		return {
+			status: "success",
+			message: "Website updated successfully",
+		};
+	} catch (e: unknown) {
+		if (e instanceof PrismaClientKnownRequestError) {
+			switch (e.code) {
+				case "P2002": {
+					return {
+						status: "error",
+						message: `Website domain ${url} already taken!`,
+					};
+				}
+				default:
+					return {
+						status: "error",
+						message: `Failed to update website: ${e.code}`,
+					};
+			}
+		}
+
+		console.error("Failed to update website:\n", e);
+		return {
+			status: "error",
+			message: `Failed to update website`,
 		};
 	}
 }
