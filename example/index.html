@@ -12,9 +12,8 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
 
-  <link rel="stylesheet" href="https://reviseo.app/cdn/reviseo.css">
-  <script src="https://reviseo.app/cdn/reviseo.js" data-project-id="18314ae4-934c-4df1-b4d5-02a6c10df63e"></script>
-
+  <!-- <link rel="stylesheet" href="https://reviseo.app/cdn/reviseo.css"> -->
+  <!-- <script src="https://reviseo.app/cdn/reviseo.js" data-project-id="18314ae4-934c-4df1-b4d5-02a6c10df63e"></script> -->
 </head>
 
 <body>
@@ -554,6 +553,37 @@
   </div>
 
   <script src="script.js"></script>
+
+  <script>
+    (function (w, document) {
+      const reviseoContainer = document.createElement("div")
+      reviseoContainer.id = "reviseo-container"
+      reviseoContainer.style.zIndex = 2_147_483_647
+      reviseoContainer.style.position = "fixed"
+
+      const iframe = document.createElement("iframe");
+      iframe.src = "https://carlota-nonfrigid-freya.ngrok-free.app/widget/trigger"
+      iframe.style.cssText = "position:fixed;bottom:20px;right:20px;width:56px;height:56px;border:none;"
+      iframe.id = "reviseowidget"
+      reviseoContainer.appendChild(iframe)
+
+      document.body.appendChild(reviseoContainer)
+
+      window.addEventListener('message', (event) => {
+        if (!event.data.type) return;
+
+        console.log(event.origin, "is origin")
+        console.log(event.data.type, "is type")
+
+        // TODO: change to reviseo.app
+        if (event.origin !== "https://carlota-nonfrigid-freya.ngrok-free.app") return;
+
+        if (event.data.type === 'OPEN_FORM') {
+          // formIframe.style.display = 'block';
+        }
+      })
+    })(window, document);
+  </script>
 </body>
 
 </html>
