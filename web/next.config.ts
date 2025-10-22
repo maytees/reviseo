@@ -9,6 +9,8 @@ const nextConfig: NextConfig = {
 			"inst-fs-pdx-prod.inscloudgate.net",
 		],
 	},
+	// this shopws with the widget, which is why its false
+	devIndicators: false,
 };
 
 export default nextConfig;

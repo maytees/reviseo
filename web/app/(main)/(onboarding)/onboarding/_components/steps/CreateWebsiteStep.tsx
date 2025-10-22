@@ -4,7 +4,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { motion } from "framer-motion";
 import { useId, useState } from "react";
 import { useForm } from "react-hook-form";
-import type { UserOnboardingDataType } from "@/app/data/user/get-user-onboarding-data";
+import type { UserOnboardingDataType } from "@/app/(main)/data/user/get-user-onboarding-data";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";

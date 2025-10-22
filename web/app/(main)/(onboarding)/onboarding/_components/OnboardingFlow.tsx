@@ -3,7 +3,7 @@
 import { AnimatePresence } from "framer-motion";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import type { UserOnboardingDataType } from "@/app/data/user/get-user-onboarding-data";
+import type { UserOnboardingDataType } from "@/app/(main)/data/user/get-user-onboarding-data";
 import { tryCatch } from "@/lib/try-catch";
 import type { ClientFormData, WebsiteFormData } from "@/lib/validations";
 import { completeOnboarding } from "../actions";

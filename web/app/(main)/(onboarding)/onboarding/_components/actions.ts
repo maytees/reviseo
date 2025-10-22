@@ -2,7 +2,7 @@
 
 import { addDays } from "date-fns";
 import { v4 } from "uuid";
-import { requireUser } from "@/app/data/require-user";
+import { requireUser } from "@/app/(main)/data/require-user";
 import { prisma } from "@/lib/db";
 import ClientInviteEmail from "@/lib/email/client-invite-email";
 import { env } from "@/lib/env";

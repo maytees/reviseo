@@ -95,7 +95,7 @@ const Navbar = ({
 	return (
 		<section
 			className={cn(
-				"py-4 px-4 max-w-7xl rounded-3xl backdrop-blur-sm shadow-[inset_0_4px_8px_0_rgba(0,0,0,0.3)] md:px-16 lg:px-28 xl:px-32 w-full transition-all duration-300",
+				"py-4 px-4 max-w-7xl fixed mt-16 rounded-3xl backdrop-blur-sm shadow-[inset_0_4px_8px_0_rgba(0,0,0,0.3)] md:px-16 lg:px-28 xl:px-32 w-full transition-all duration-300",
 				scrolled ? "bg-background/30" : "bg-background/70",
 				visible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0",
 			)}
@@ -190,7 +190,7 @@ const renderMenuItem = (item: MenuItem) => {
 		<NavigationMenuItem key={item.title}>
 			<NavigationMenuLink
 				href={item.url}
-				className="font-inter bg-background hover:bg-muted hover:text-accent-foreground group inline-flex h-10 w-max text-lg items-center justify-center rounded-md px-4 py-2  font-medium transition-colors"
+				className="font-caudex hover:bg-muted hover:text-accent-foreground group inline-flex h-10 w-max text-lg items-center justify-center rounded-md px-4 py-2  font-medium transition-colors"
 			>
 				{item.title}
 			</NavigationMenuLink>

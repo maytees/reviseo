@@ -23,6 +23,7 @@ export function LoginForm() {
 	const [emailPending, startEmailTransition] = useTransition();
 	const [email, setEmail] = useState("");
 	const [isClientInvite, setClientInvite] = useState(false);
+	const [isSuccess, setIsSuccess] = useState(false);
 
 	useEffect(() => {
 		if (localStorage.getItem("token")) {
@@ -41,6 +42,7 @@ export function LoginForm() {
 				fetchOptions: {
 					onSuccess: () => {
 						toast.success("Signed in with Github, you will be redirected...");
+						setIsSuccess(true);
 					},
 					onError: () => {
 						toast.error("Internal Server Error");
@@ -58,6 +60,7 @@ export function LoginForm() {
 				fetchOptions: {
 					onSuccess: () => {
 						toast.success("Email sent");
+						setIsSuccess(true);
 						router.push(
 							`/verify-request?email=${email}${isClientInvite ? "&ci=true" : ""}`,
 						);
@@ -82,7 +85,7 @@ export function LoginForm() {
 
 			<CardContent className="flex flex-col gap-5">
 				<Button
-					disabled={githubPending}
+					disabled={githubPending || isSuccess}
 					onClick={signInWithGithub}
 					className="w-full h-11 font-inter"
 					variant="outline"
@@ -112,6 +115,7 @@ export function LoginForm() {
 						<Input
 							id={emailId}
 							value={email}
+							disabled={emailPending || isSuccess}
 							onChange={(e) => setEmail(e.target.value)}
 							type="email"
 							placeholder="you@example.com"
@@ -122,7 +126,7 @@ export function LoginForm() {
 
 					<Button
 						onClick={signInWithEmail}
-						disabled={emailPending}
+						disabled={emailPending || isSuccess}
 						className="h-11 font-inter"
 						size="lg"
 					>
