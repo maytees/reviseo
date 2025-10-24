@@ -26,7 +26,7 @@ const TriggerButton = () => {
 		console.log(session, "session");
 		console.log(session?.user, "session.user");
 		console.log(isPending, "is pending");
-		console.log(error, "error");
+		// console.log(error, "error");
 		window.parent.postMessage({ type: "OPEN_FORM" }, "*");
 	};
 

@@ -562,6 +562,10 @@
       reviseoContainer.style.position = "fixed"
 
       const iframe = document.createElement("iframe");
+      iframe.onerror = () => {
+        console.error("Error occured when rendering Reviseo widget, please contact support.")
+        iframe.style.display = "none"
+      }
       iframe.src = "https://disadvantageously-unconfinable-carma.ngrok-free.dev/widget/trigger"
       iframe.style.cssText = "position:fixed;bottom:20px;right:20px;width:64px;height:64px;margin: auto;border:none;"
       iframe.id = "reviseowidget"
