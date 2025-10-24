@@ -1,7 +1,7 @@
 "use client";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
-import { type MouseEventHandler, useEffect, useId } from "react";
+import { type MouseEventHandler, useEffect, useId, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { authClient } from "@/lib/auth-client";
 import { cn } from "@/lib/utils";
@@ -13,6 +13,7 @@ const TriggerButton = () => {
 		error,
 	} = authClient.useSession();
 
+	const [healthy, setHealthy] = useState(false);
 	const triggerId = useId();
 
 	useEffect(() => {
@@ -23,12 +24,34 @@ const TriggerButton = () => {
 	}, [isPending, error, session]);
 
 	const handleWidgetOpen: MouseEventHandler<HTMLButtonElement> = (e) => {
-		console.log(session, "session");
-		console.log(session?.user, "session.user");
-		console.log(isPending, "is pending");
+		// console.log(session, "session");
+		// console.log(session?.user, "session.user");
+		// console.log(isPending, "is pending");
 		// console.log(error, "error");
 		window.parent.postMessage({ type: "OPEN_FORM" }, "*");
 	};
+
+	useEffect(() => {
+		const parent = window.parent;
+		const origin = "*"; // or restrict later to your domain
+
+		// Send initial health check
+		parent.postMessage({ type: "HEALTH_CHECK" }, origin);
+
+		// Listen for parent confirmation
+		const handleMessage = (event: MessageEvent) => {
+			if (event.data?.type === "HEALTH_OK") {
+				setHealthy(true);
+				// Let parent know widget is ready to show
+				parent.postMessage({ type: "READY" }, origin);
+			}
+		};
+
+		window.addEventListener("message", handleMessage);
+		return () => window.removeEventListener("message", handleMessage);
+	}, []);
+
+	if (!healthy) return null; // hide everything until confirmed healthy
 
 	return (
 		<AnimatePresence>

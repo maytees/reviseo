@@ -534,7 +534,6 @@
       </div>
     </div>
   </footer>
-
   <!-- Back to Top Button -->
   <button class="back-to-top" id="backToTop">
     <i class="fas fa-chevron-up"></i>
@@ -556,38 +555,65 @@
 
   <script>
     (function (w, document) {
-      const reviseoContainer = document.createElement("div")
-      reviseoContainer.id = "reviseo-container"
-      reviseoContainer.style.zIndex = 2_147_483_647
-      reviseoContainer.style.position = "fixed"
+      const WIDGET_ORIGIN = "https://disadvantageously-unconfinable-carma.ngrok-free.dev";
+      const reviseoContainer = document.createElement("div");
+      reviseoContainer.id = "reviseo-container";
+      reviseoContainer.style.zIndex = 2_147_483_647;
+      reviseoContainer.style.position = "fixed";
 
       const iframe = document.createElement("iframe");
-      iframe.onerror = () => {
-        console.error("Error occured when rendering Reviseo widget, please contact support.")
-        iframe.style.display = "none"
-      }
-      iframe.src = "https://disadvantageously-unconfinable-carma.ngrok-free.dev/widget/trigger"
-      iframe.style.cssText = "position:fixed;bottom:20px;right:20px;width:64px;height:64px;margin: auto;border:none;"
-      iframe.id = "reviseowidget"
-      reviseoContainer.appendChild(iframe)
+      iframe.src = `${WIDGET_ORIGIN}/widget/trigger`;
+      iframe.id = "reviseo-trigger";
+      iframe.style.cssText =
+        "position:fixed;bottom:20px;right:20px;width:64px;height:64px;margin:auto;border:none;display:none;"; // hidden initially
+      reviseoContainer.appendChild(iframe);
 
-      document.body.appendChild(reviseoContainer)
+      document.body.appendChild(reviseoContainer);
 
-      window.addEventListener('message', (event) => {
-        if (!event.data.type) return;
+      // --- HEALTH CHECK TIMEOUT (prevent hanging forever)
+      let healthTimeout = setTimeout(() => {
+        console.error("Reviseo widget failed health check. Not showing iframe.");
+      }, 5000);
 
-        console.log(event.origin, "is origin")
-        console.log(event.data.type, "is type")
+      // --- Listen for messages
+      window.addEventListener("message", (event) => {
+        if (event.origin !== WIDGET_ORIGIN) return;
+        if (!event.data?.type) return;
 
-        // TODO: change to reviseo.app
-        if (event.origin !== "https://disadvantageously-unconfinable-carma.ngrok-free.dev") return;
+        switch (event.data.type) {
+          case "HEALTH_CHECK":
+            // Respond to health check
+            iframe.contentWindow.postMessage({ type: "HEALTH_OK" }, WIDGET_ORIGIN);
+            break;
 
-        if (event.data.type === 'OPEN_FORM') {
-          // formIframe.style.display = 'block';
+          case "READY":
+            // Widget reports it's ready after confirming health
+            clearTimeout(healthTimeout);
+            iframe.style.display = "block";
+            break;
+
+          case "OPEN_FORM":
+            const formIframe = document.createElement("iframe");
+            formIframe.onerror = () => {
+              console.error("Error occurred when rendering Reviseo modal.");
+              formIframe.style.display = "none";
+            };
+            formIframe.src = `${WIDGET_ORIGIN}/widget/modal`;
+            formIframe.style.cssText =
+              "display:block;position:fixed;bottom:0;right:0;width:100%;height:100%;border:none;";
+            formIframe.id = "reviseo-modal";
+            reviseoContainer.appendChild(formIframe);
+            break;
+
+          case "CLOSE_FORM":
+            const modal = document.getElementById("reviseo-modal");
+            if (modal) modal.remove();
+            break;
         }
-      })
+      });
     })(window, document);
   </script>
+
 </body>
 
 </html>
