@@ -23,7 +23,7 @@ const TriggerButton = () => {
 		console.log(error, "error");
 	}, [isPending, error, session]);
 
-	const handleWidgetOpen: MouseEventHandler<HTMLButtonElement> = (e) => {
+	const handleWidgetOpen: MouseEventHandler<HTMLButtonElement> = () => {
 		// console.log(session, "session");
 		// console.log(session?.user, "session.user");
 		// console.log(isPending, "is pending");

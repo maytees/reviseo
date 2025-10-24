@@ -3,10 +3,16 @@ import dynamic from "next/dynamic";
 
 import "@excalidraw/excalidraw/index.css";
 
-import { Loader2 } from "lucide-react";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
+import {
+	Empty,
+	EmptyDescription,
+	EmptyHeader,
+	EmptyMedia,
+	EmptyTitle,
+} from "@/components/ui/empty";
+import { Spinner } from "@/components/ui/spinner";
 
 const Excalidraw = dynamic(
 	async () => (await import("@excalidraw/excalidraw")).Excalidraw,
@@ -88,15 +94,21 @@ const ExCanvas = ({
 	return (
 		<>
 			{pending || imageLoading || !imageUrl ? (
-				<div className="flex flex-col items-center justify-center w-full h-full">
-					<Button variant="outline" size="icon">
-						<Loader2 className="animate-spin" />
-					</Button>
-					<h1>Loading Screenshot</h1>
-					<p className="text-sm text-muted-foreground">
-						Please wait while we load the preview.
-					</p>
-				</div>
+				<Empty className="flex flex-col items-center justify-center w-full h-full">
+					<EmptyHeader>
+						<EmptyMedia variant="icon">
+							<Spinner />
+						</EmptyMedia>
+						<EmptyTitle>Loading Screenshot</EmptyTitle>
+						<EmptyDescription>
+							Please wait while we load the preview screenshot.{" "}
+							<em>
+								Tip: If you're having trouble using Reviseo, feel free to send
+								us an issue request.
+							</em>
+						</EmptyDescription>
+					</EmptyHeader>
+				</Empty>
 			) : (
 				<slot>
 					<Excalidraw
