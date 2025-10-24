@@ -102,10 +102,6 @@ const ExCanvas = ({
 						<EmptyTitle>Loading Screenshot</EmptyTitle>
 						<EmptyDescription>
 							Please wait while we load the preview screenshot.{" "}
-							<em>
-								Tip: If you're having trouble using Reviseo, feel free to send
-								us an issue request.
-							</em>
 						</EmptyDescription>
 					</EmptyHeader>
 				</Empty>

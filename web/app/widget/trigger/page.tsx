@@ -16,12 +16,12 @@ const TriggerButton = () => {
 	const [healthy, setHealthy] = useState(false);
 	const triggerId = useId();
 
-	useEffect(() => {
-		console.log(session, "session");
-		console.log(session?.user, "session.user");
-		console.log(isPending, "is pending");
-		console.log(error, "error");
-	}, [isPending, error, session]);
+	// useEffect(() => {
+	// 	console.log(session, "session");
+	// 	console.log(session?.user, "session.user");
+	// 	console.log(isPending, "is pending");
+	// 	console.log(error, "error");
+	// }, [isPending, error, session]);
 
 	const handleWidgetOpen: MouseEventHandler<HTMLButtonElement> = () => {
 		// console.log(session, "session");
@@ -71,7 +71,8 @@ const TriggerButton = () => {
 					>
 						{/* <Bug className={"text-foreground"} /> */}
 						<Image
-							priority
+							loading="eager"
+							preload
 							src={"/logo.svg"}
 							width={35}
 							height={35}

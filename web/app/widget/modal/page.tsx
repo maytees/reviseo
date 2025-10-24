@@ -6,6 +6,8 @@ import {
 	ChevronRightIcon,
 	CircleAlertIcon,
 	CircleIcon,
+	ClockIcon,
+	GlobeIcon,
 	SparklesIcon,
 } from "lucide-react";
 import Image from "next/image";
@@ -58,6 +60,11 @@ const TYPE_CONFIG = {
 const ReviseoModal = () => {
 	const [open, setOpen] = useState(true);
 	const [step, setStep] = useState<"canvas" | "form">("canvas");
+	const [screenshotMetadata, setScreenshotMetadata] = useState({
+		timestamp: new Date(),
+		url: "",
+	});
+
 	const formId = useId();
 	const titleId = useId();
 	const descriptionId = useId();
@@ -69,6 +76,51 @@ const ReviseoModal = () => {
 			window.parent.postMessage({ type: "CLOSE_FORM" }, "*");
 		}
 	}, [open]);
+
+	// Request page URL from parent window
+	useEffect(() => {
+		// Request URL from parent
+		window.parent.postMessage({ type: "REQUEST_PAGE_URL" }, "*");
+
+		// Listen for URL response
+		const handleMessage = (event: MessageEvent) => {
+			if (event.data?.type === "PAGE_URL_RESPONSE") {
+				setScreenshotMetadata((prev) => ({
+					...prev,
+					url: event.data.url || "",
+				}));
+			}
+		};
+
+		window.addEventListener("message", handleMessage);
+		return () => window.removeEventListener("message", handleMessage);
+	}, []);
+
+	const formatTime = (date: Date) => {
+		return date.toLocaleTimeString("en-US", {
+			hour: "numeric",
+			minute: "2-digit",
+			hour12: true,
+		});
+	};
+
+	const formatDate = (date: Date) => {
+		return date.toLocaleDateString("en-US", {
+			month: "short",
+			day: "numeric",
+			year: "numeric",
+		});
+	};
+
+	const getUrlPath = (url: string) => {
+		try {
+			const urlObj = new URL(url);
+			const path = `${urlObj.pathname}${urlObj.search}${urlObj.hash}`;
+			return path || "/";
+		} catch {
+			return url;
+		}
+	};
 
 	const form = useForm<FeedbackFormData>({
 		resolver: zodResolver(feedbackFormSchema),
@@ -497,9 +549,36 @@ const ReviseoModal = () => {
 						)}
 					</div>
 				</div>
-				<DialogFooter className="items-end pt-2.5 sm:justify-start">
+				<DialogFooter className="flex-col gap-3 pt-4 sm:flex-row sm:justify-between sm:items-center border-border">
+					{/* Screenshot Metadata */}
+					<div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
+						<div className="flex items-center gap-1.5 min-w-fit">
+							<ClockIcon className="size-3.5 text-muted-foreground" />
+							<span className="text-xs text-muted-foreground">
+								{formatDate(screenshotMetadata.timestamp)} at{" "}
+								{formatTime(screenshotMetadata.timestamp)}
+							</span>
+						</div>
+						<div className="flex items-center gap-1.5 max-w-3xs">
+							<GlobeIcon className="size-3.5 text-muted-foreground" />
+							<span
+								className="text-xs truncate text-muted-foreground "
+								title={screenshotMetadata.url}
+							>
+								{getUrlPath(screenshotMetadata.url)}
+							</span>
+						</div>
+					</div>
+
+					{/* Reviseo Branding */}
 					<div className="flex items-center gap-1.5">
-						<Image src="/logo.svg" alt="Reviseo Logo" width={16} height={16} />
+						<Image
+							src="/logo.svg"
+							loading="eager"
+							alt="Reviseo Logo"
+							width={16}
+							height={16}
+						/>
 						<span className="text-xs text-muted-foreground">
 							Powered by{" "}
 							<Link

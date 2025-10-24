@@ -609,6 +609,17 @@
             const modal = document.getElementById("reviseo-modal");
             if (modal) modal.remove();
             break;
+
+          case "REQUEST_PAGE_URL":
+            // Send current page URL to modal iframe
+            const modalIframe = document.getElementById("reviseo-modal");
+            if (modalIframe && modalIframe.contentWindow) {
+              modalIframe.contentWindow.postMessage(
+                { type: "PAGE_URL_RESPONSE", url: window.location.href },
+                WIDGET_ORIGIN
+              );
+            }
+            break;
         }
       });
     })(window, document);
