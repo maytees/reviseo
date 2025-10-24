@@ -561,12 +561,18 @@ const ReviseoModal = () => {
 						</div>
 						<div className="flex items-center gap-1.5 max-w-3xs">
 							<GlobeIcon className="size-3.5 text-muted-foreground" />
-							<span
-								className="text-xs truncate text-muted-foreground "
-								title={screenshotMetadata.url}
-							>
-								{getUrlPath(screenshotMetadata.url)}
-							</span>
+							{screenshotMetadata.url ? (
+								<span
+									className="text-xs truncate text-muted-foreground "
+									title={screenshotMetadata.url}
+								>
+									{getUrlPath(screenshotMetadata.url)}
+								</span>
+							) : (
+								<span className="text-xs truncate text-muted-foreground">
+									Could not get path
+								</span>
+							)}
 						</div>
 					</div>
 
