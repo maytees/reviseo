@@ -3,6 +3,11 @@ import dynamic from "next/dynamic";
 
 import "@excalidraw/excalidraw/index.css";
 
+import type {
+	ExcalidrawElement,
+	ExcalidrawImageElement,
+} from "@excalidraw/excalidraw/element/types";
+import type { AppState } from "@excalidraw/excalidraw/types";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import {
@@ -21,14 +26,6 @@ const Excalidraw = dynamic(
 	},
 );
 
-// // Inject Excalidraw CSS into document head (outside shadow DOM) - only once
-// if (!document.getElementById("excalidraw-styles")) {
-// 	const excalidrawStyle = document.createElement("style");
-// 	excalidrawStyle.id = "excalidraw-styles";
-// 	excalidrawStyle.textContent = excalidrawCSS;
-// 	document.head.appendChild(excalidrawStyle);
-// }
-
 const ExCanvas = ({
 	imageUrl,
 	pending,
@@ -37,7 +34,10 @@ const ExCanvas = ({
 	pending: boolean;
 }) => {
 	// window.EXCALIDRAW_ASSET_PATH = "/";
-	const [initialData, setInitialData] = useState(undefined);
+	const [initialData, setInitialData] = useState<{
+		elements?: ExcalidrawElement[];
+		appState?: AppState;
+	}>();
 	const [imageLoading, setImageLoading] = useState(false);
 	const { theme } = useTheme();
 
@@ -52,17 +52,18 @@ const ExCanvas = ({
 		img.src = imageUrl;
 
 		img.onload = () => {
-			const imageElement = {
+			const imageElement: ExcalidrawImageElement = {
 				type: "image",
 				id: "screenshot-image",
 				x: 0,
 				y: 0,
 				width: img.width / 2,
 				height: img.height / 2,
-				fileId: "screenshot",
 				status: "saved",
 				locked: true,
 				version: 1,
+				scale: [1, 1],
+				fileId: "screenshot",
 				versionNonce: 1,
 				isDeleted: false,
 				seed: (Math.random() * 100000) | 0,

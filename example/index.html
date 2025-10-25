@@ -14,6 +14,8 @@
 
   <!-- <link rel="stylesheet" href="https://reviseo.app/cdn/reviseo.css"> -->
   <!-- <script src="https://reviseo.app/cdn/reviseo.js" data-project-id="18314ae4-934c-4df1-b4d5-02a6c10df63e"></script> -->
+  <script src="./dist/widget.iife.js"></script>
+
 </head>
 
 <body>
@@ -553,7 +555,7 @@
 
   <script src="script.js"></script>
 
-  <script>
+  <!-- <script>
     (function (w, document) {
       const WIDGET_ORIGIN = "https://disadvantageously-unconfinable-carma.ngrok-free.dev";
       const reviseoContainer = document.createElement("div");
@@ -620,10 +622,28 @@
               );
             }
             break;
+          case "REQUEST_PAGE_SCREENSHOT":
+            const mi = document.getElementById("reviseo-modal");
+            console.log("todo screenshot (dont mess with this right now)")
+            // if (mi && mi.contentWindow) {
+            //   modernScreenshot.domToSvg(document.body, {
+            //     filter: (e) => {
+            //       if (!(e instanceof HTMLElement)) return true;
+
+            //       return e.id !== "reviseo-container";
+            //     },
+            //   }).then((dataUrl) => {
+            //     mi.contentWindow.postMessage(
+            //       { type: "PAGE_URL_RESPONSE", url: window.location.href },
+            //       WIDGET_ORIGIN
+            //     );
+            //   });
+            // }
+            break;
         }
       });
     })(window, document);
-  </script>
+  </script> -->
 
 </body>
 

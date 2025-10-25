@@ -60,9 +60,16 @@ const TYPE_CONFIG = {
 const ReviseoModal = () => {
 	const [open, setOpen] = useState(true);
 	const [step, setStep] = useState<"canvas" | "form">("canvas");
-	const [screenshotMetadata, setScreenshotMetadata] = useState({
+	const [loading, setLoading] = useState<boolean>(false);
+
+	const [screenshotMetadata, setScreenshotMetadata] = useState<{
+		timestamp: Date;
+		url: string | null;
+		image: string | null;
+	}>({
 		timestamp: new Date(),
-		url: "",
+		url: null,
+		image: null,
 	});
 
 	const formId = useId();
@@ -70,31 +77,6 @@ const ReviseoModal = () => {
 	const descriptionId = useId();
 	const priorityId = useId();
 	const typeId = useId();
-
-	useEffect(() => {
-		if (!open) {
-			window.parent.postMessage({ type: "CLOSE_FORM" }, "*");
-		}
-	}, [open]);
-
-	// Request page URL from parent window
-	useEffect(() => {
-		// Request URL from parent
-		window.parent.postMessage({ type: "REQUEST_PAGE_URL" }, "*");
-
-		// Listen for URL response
-		const handleMessage = (event: MessageEvent) => {
-			if (event.data?.type === "PAGE_URL_RESPONSE") {
-				setScreenshotMetadata((prev) => ({
-					...prev,
-					url: event.data.url || "",
-				}));
-			}
-		};
-
-		window.addEventListener("message", handleMessage);
-		return () => window.removeEventListener("message", handleMessage);
-	}, []);
 
 	const formatTime = (date: Date) => {
 		return date.toLocaleTimeString("en-US", {
@@ -144,6 +126,61 @@ const ReviseoModal = () => {
 		console.log(data);
 	}
 
+	useEffect(() => {
+		if (!open) {
+			window.parent.postMessage({ type: "CLOSE_FORM" }, "*");
+			return;
+		}
+
+		// const captureScreenshot = async () => {
+		// 	domToSvg(window.parent.document.body, {
+		// 		filter: (e: Node) => {
+		// 			if (!(e instanceof HTMLElement)) return true;
+
+		// 			return e.id !== "reviseo-widget";
+		// 		},
+		// 	}).then((dataUrl) => {
+		// 		setScreenshotMetadata({
+		// 			...screenshotMetadata,
+		// 			image: dataUrl,
+		// 		});
+		// 	});
+		// };
+
+		// setLoading(true);
+		// captureScreenshot().finally(() => setLoading(false));
+	}, [open]);
+
+	// Request page URL from parent window
+	useEffect(() => {
+		// Request URL from parent
+		window.parent.postMessage({ type: "REQUEST_PAGE_URL" }, "*");
+		window.parent.postMessage({ type: "REQUEST_PAGE_SCREENSHOT" }, "*");
+		setLoading(true);
+
+		// Listen for URL response
+		const handleMessage = (event: MessageEvent) => {
+			switch (event.data?.type) {
+				case "PAGE_URL_RESPONSE":
+					setScreenshotMetadata((prev) => ({
+						...prev,
+						url: event.data.url || "",
+					}));
+					break;
+				case "PAGE_SCREENSHOT_RESPONSE":
+					setScreenshotMetadata((prev) => ({
+						...prev,
+						image: event.data.image || null,
+					}));
+					setLoading(false);
+					break;
+			}
+		};
+
+		window.addEventListener("message", handleMessage);
+		return () => window.removeEventListener("message", handleMessage);
+	}, []);
+
 	return (
 		<Dialog open={true} onOpenChange={setOpen}>
 			<DialogContent
@@ -179,7 +216,7 @@ const ReviseoModal = () => {
 					{/* Desktop Layout - Side by side */}
 					<div className="flex-row flex-1 hidden min-h-0 gap-3 md:flex">
 						<div className="w-full h-full border border-border rounded-2xl">
-							<ExCanvas pending={false} />
+							<ExCanvas pending={loading} />
 						</div>
 						<Card className="flex flex-col max-w-xs min-w-sm">
 							<CardContent className="flex flex-col flex-1 min-h-0">
