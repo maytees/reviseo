@@ -12,10 +12,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
   <link rel="stylesheet" href="styles.css">
 
-  <!-- <link rel="stylesheet" href="https://reviseo.app/cdn/reviseo.css"> -->
-  <!-- <script src="https://reviseo.app/cdn/reviseo.js" data-project-id="18314ae4-934c-4df1-b4d5-02a6c10df63e"></script> -->
   <script src="./dist/widget.iife.js"></script>
-
 </head>
 
 <body>
@@ -354,8 +351,8 @@
   </section>
 
   <!-- Lead Capture Form -->
-  <section class="lead-form">
-    <div class="container">
+  <section class="lead-form" id="lead-f">
+    <div class="container" id="divcontainera">
       <div class="form-content">
         <h2>Get Your FREE Sample</h2>
         <p>Try VoltRush risk-free. Just cover shipping!</p>
@@ -554,97 +551,9 @@
   </div>
 
   <script src="script.js"></script>
-
   <!-- <script>
-    (function (w, document) {
-      const WIDGET_ORIGIN = "https://disadvantageously-unconfinable-carma.ngrok-free.dev";
-      const reviseoContainer = document.createElement("div");
-      reviseoContainer.id = "reviseo-container";
-      reviseoContainer.style.zIndex = 2_147_483_647;
-      reviseoContainer.style.position = "fixed";
-
-      const iframe = document.createElement("iframe");
-      iframe.src = `${WIDGET_ORIGIN}/widget/trigger`;
-      iframe.id = "reviseo-trigger";
-      iframe.style.cssText =
-        "position:fixed;bottom:20px;right:20px;width:64px;height:64px;margin:auto;border:none;display:none;"; // hidden initially
-      reviseoContainer.appendChild(iframe);
-
-      document.body.appendChild(reviseoContainer);
-
-      // --- HEALTH CHECK TIMEOUT (prevent hanging forever)
-      let healthTimeout = setTimeout(() => {
-        console.error("Reviseo widget failed health check. Not showing iframe.");
-      }, 5000);
-
-      // --- Listen for messages
-      window.addEventListener("message", (event) => {
-        if (event.origin !== WIDGET_ORIGIN) return;
-        if (!event.data?.type) return;
-
-        switch (event.data.type) {
-          case "HEALTH_CHECK":
-            // Respond to health check
-            iframe.contentWindow.postMessage({ type: "HEALTH_OK" }, WIDGET_ORIGIN);
-            break;
-
-          case "READY":
-            // Widget reports it's ready after confirming health
-            clearTimeout(healthTimeout);
-            iframe.style.display = "block";
-            break;
-
-          case "OPEN_FORM":
-            const formIframe = document.createElement("iframe");
-            formIframe.onerror = () => {
-              console.error("Error occurred when rendering Reviseo modal.");
-              formIframe.style.display = "none";
-            };
-            formIframe.src = `${WIDGET_ORIGIN}/widget/modal`;
-            formIframe.style.cssText =
-              "display:block;position:fixed;bottom:0;right:0;width:100%;height:100%;border:none;";
-            formIframe.id = "reviseo-modal";
-            reviseoContainer.appendChild(formIframe);
-            break;
-
-          case "CLOSE_FORM":
-            const modal = document.getElementById("reviseo-modal");
-            if (modal) modal.remove();
-            break;
-
-          case "REQUEST_PAGE_URL":
-            // Send current page URL to modal iframe
-            const modalIframe = document.getElementById("reviseo-modal");
-            if (modalIframe && modalIframe.contentWindow) {
-              modalIframe.contentWindow.postMessage(
-                { type: "PAGE_URL_RESPONSE", url: window.location.href },
-                WIDGET_ORIGIN
-              );
-            }
-            break;
-          case "REQUEST_PAGE_SCREENSHOT":
-            const mi = document.getElementById("reviseo-modal");
-            console.log("todo screenshot (dont mess with this right now)")
-            // if (mi && mi.contentWindow) {
-            //   modernScreenshot.domToSvg(document.body, {
-            //     filter: (e) => {
-            //       if (!(e instanceof HTMLElement)) return true;
-
-            //       return e.id !== "reviseo-container";
-            //     },
-            //   }).then((dataUrl) => {
-            //     mi.contentWindow.postMessage(
-            //       { type: "PAGE_URL_RESPONSE", url: window.location.href },
-            //       WIDGET_ORIGIN
-            //     );
-            //   });
-            // }
-            break;
-        }
-      });
-    })(window, document);
+    --
   </script> -->
-
 </body>
 
 </html>
