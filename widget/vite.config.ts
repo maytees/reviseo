@@ -1,5 +1,4 @@
 import preact from "@preact/preset-vite";
-import tailwindcss from "tailwindcss";
 import { defineConfig } from "vite";
 
 export default defineConfig({
@@ -7,8 +6,8 @@ export default defineConfig({
 	build: {
 		lib: {
 			entry: "src/index.tsx",
-			name: "FeedbackWidget",
-			fileName: "feedback-widget",
+			name: "ReviseoWidget",
+			fileName: "widget",
 			formats: ["iife"],
 		},
 		rollupOptions: {
@@ -16,16 +15,5 @@ export default defineConfig({
 				inlineDynamicImports: true,
 			},
 		},
-		cssCodeSplit: false,
-	},
-	css: {
-		postcss: {
-			plugins: [tailwindcss()],
-		},
-	},
-	define: {
-		"process.env.IS_PREACT": JSON.stringify("true"),
-		"process.env.NODE_ENV": JSON.stringify("production"),
-		"process.env": JSON.stringify({}),
 	},
 });
