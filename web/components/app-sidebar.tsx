@@ -40,8 +40,8 @@ import {
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
 import { Skeleton } from "@/components/ui/skeleton";
-import { useSignOut } from "@/hooks/useSignOut";
 import { authClient } from "@/lib/auth-client";
+import { useSignOut } from "@/lib/hooks/useSignOut";
 
 const data = {
 	navMain: [

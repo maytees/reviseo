@@ -1,5 +1,6 @@
 import { z } from "zod";
 
+// Onboarding Forms
 export const websiteSchema = z.object({
 	websiteName: z.string().min(1, "Website name is required"),
 	websiteUrl: z
@@ -20,6 +21,7 @@ export const clientSchema = z.object({
 		.email("Please enter a valid email address"),
 });
 
+// Feedback Form
 export const feedbackFormSchema = z.object({
 	title: z
 		.string()
@@ -36,6 +38,12 @@ export const feedbackFormSchema = z.object({
 	}),
 });
 
+// Waitlist form
+export const waitlistSchema = z.object({
+	email: z.email(),
+});
+
 export type WebsiteFormData = z.infer<typeof websiteSchema>;
 export type ClientFormData = z.infer<typeof clientSchema>;
 export type FeedbackFormData = z.infer<typeof feedbackFormSchema>;
+export type WaitlistFormData = z.infer<typeof waitlistSchema>;

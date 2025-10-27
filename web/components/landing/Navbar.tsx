@@ -60,7 +60,7 @@ const Navbar = ({
 		{ title: "FAQ", url: "/#faq" },
 	],
 	auth = {
-		getStarted: { title: "Get Started", url: "#" },
+		getStarted: { title: "Join Waitlist", url: "/waitlist" },
 	},
 }: NavbarProps) => {
 	const [scrolled, setScrolled] = useState(false);
@@ -101,7 +101,7 @@ const Navbar = ({
 			)}
 		>
 			{/* Desktop Menu */}
-			<nav className="hidden justify-between lg:flex w-full items-center">
+			<nav className="items-center justify-between hidden w-full lg:flex">
 				{/* Logo */}
 				<Link href={logo.url} className="flex items-center gap-1">
 					<Image src={logo.src} width={32} height={32} alt={logo.alt} />
@@ -109,7 +109,7 @@ const Navbar = ({
 				</Link>
 
 				{/* Centered Navigation Links */}
-				<div className="flex items-center absolute left-1/2 transform -translate-x-1/2">
+				<div className="absolute flex items-center transform -translate-x-1/2 left-1/2">
 					<NavigationMenu>
 						<NavigationMenuList>
 							{menu.map((item) => renderMenuItem(item))}
@@ -119,7 +119,7 @@ const Navbar = ({
 
 				{/* CTA Button */}
 				<div className="flex gap-2">
-					<Button asChild size="lg" variant={"inset"}>
+					<Button asChild className="relative" size="lg" variant={"inset"}>
 						<Link className="relative" href={auth.getStarted.url}>
 							{auth.getStarted.title}
 							<BorderBeam
@@ -134,7 +134,7 @@ const Navbar = ({
 			</nav>
 
 			{/* Mobile Menu */}
-			<div className="lg:hidden  w-full">
+			<div className="w-full lg:hidden">
 				<div className="flex items-center justify-between w-full">
 					{/* Logo */}
 					<Link href={logo.url} className="flex items-center gap-2">
@@ -164,7 +164,7 @@ const Navbar = ({
 								<Accordion
 									type="single"
 									collapsible
-									className="flex w-full flex-col gap-4"
+									className="flex flex-col w-full gap-4"
 								>
 									{menu.map((item) => renderMobileMenuItem(item))}
 								</Accordion>
@@ -190,7 +190,7 @@ const renderMenuItem = (item: MenuItem) => {
 		<NavigationMenuItem key={item.title}>
 			<NavigationMenuLink
 				href={item.url}
-				className="font-caudex hover:bg-muted hover:text-accent-foreground group inline-flex h-10 w-max text-lg items-center justify-center rounded-md px-4 py-2  font-medium transition-colors"
+				className="inline-flex items-center justify-center h-10 px-4 py-2 text-lg font-medium transition-colors rounded-md font-caudex hover:bg-muted hover:text-accent-foreground group w-max"
 			>
 				{item.title}
 			</NavigationMenuLink>
@@ -203,7 +203,7 @@ const renderMobileMenuItem = (item: MenuItem) => {
 		<Link
 			key={item.title}
 			href={item.url}
-			className="text-lg hover:text-accent-foreground font-semibold font-inter"
+			className="text-lg font-semibold hover:text-accent-foreground font-inter"
 		>
 			{item.title}
 		</Link>

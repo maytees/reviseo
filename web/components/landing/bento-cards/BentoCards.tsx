@@ -43,10 +43,10 @@ export function ExcalidrawBentoCard() {
 			viewport={{ once: true }}
 			className="h-full "
 		>
-			<Card className="group h-full relative border-border bg-gradient-to-br from-card to-card/50 p-4 transition-all duration-300 hover:shadow-lg sm:p-6 md:p-8">
+			<Card className="relative h-full p-4 transition-all duration-300 group border-border bg-gradient-to-br from-card to-card/50 hover:shadow-lg sm:p-6 md:p-8">
 				{/* Background Pattern */}
 				<div className="absolute inset-0 opacity-5">
-					<svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
+					<svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
 						<title>Grid Pattern</title>
 						<defs>
 							<pattern
@@ -67,7 +67,7 @@ export function ExcalidrawBentoCard() {
 					</svg>
 				</div>
 
-				<div className="relative flex h-full flex-col">
+				<div className="relative flex flex-col h-full">
 					{/* Header */}
 					<div className="mb-4 sm:mb-6">
 						<motion.div
@@ -77,21 +77,21 @@ export function ExcalidrawBentoCard() {
 							viewport={{ once: true }}
 							className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary sm:mb-4 sm:px-3 sm:py-1.5 sm:text-sm"
 						>
-							<Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
+							<Pencil className="w-3 h-3 sm:h-4 sm:w-4" />
 							Powered by Excalidraw
 						</motion.div>
 
 						<h3 className="mb-1.5 text-balance text-xl font-bold text-foreground sm:mb-2 sm:text-2xl md:text-3xl font-caudex">
 							Annotate with Ease
 						</h3>
-						<p className="text-pretty text-sm text-muted-foreground sm:text-base md:text-lg font-inter">
+						<p className="text-sm text-pretty text-muted-foreground sm:text-base md:text-lg font-inter">
 							Draw, sketch, and highlight directly on feedback using the proven
 							Excalidraw canvas trusted by hundreds of thousands of people.
 						</p>
 					</div>
 
 					{/* Visual Demo Area */}
-					<div className="relative mb-4 flex-1 sm:mb-6">
+					<div className="relative flex-1 mb-4 sm:mb-6">
 						<motion.div
 							initial={{ opacity: 0 }}
 							whileInView={{ opacity: 1 }}
@@ -120,7 +120,7 @@ export function ExcalidrawBentoCard() {
 					</div>
 
 					{/* Features List */}
-					<div className="mb-4 grid gap-2 sm:mb-6 sm:grid-cols-2 sm:gap-3">
+					<div className="grid gap-2 mb-4 sm:mb-6 sm:grid-cols-2 sm:gap-3">
 						{[
 							"Easy to use",
 							"Handrawn aesthetic",
@@ -135,7 +135,7 @@ export function ExcalidrawBentoCard() {
 								viewport={{ once: true }}
 								className="flex items-center gap-2"
 							>
-								<div className="flex h-4 w-4 items-center justify-center rounded-full bg-primary/10 sm:h-5 sm:w-5">
+								<div className="flex items-center justify-center w-4 h-4 rounded-full bg-primary/10 sm:h-5 sm:w-5">
 									<Check className="h-2.5 w-2.5 text-primary sm:h-3 sm:w-3" />
 								</div>
 								<span className="text-sm text-foreground sm:text-base font-inter">
@@ -149,10 +149,10 @@ export function ExcalidrawBentoCard() {
 					<Link href="/blog/excalidraw-annotations">
 						<motion.button
 							whileHover={{ x: 4 }}
-							className="group/btn inline-flex items-center gap-2 text-xs font-medium text-primary transition-colors hover:text-primary/80 sm:text-sm"
+							className="inline-flex items-center gap-2 text-xs font-medium transition-colors group/btn text-primary hover:text-primary/80 sm:text-sm"
 						>
 							Learn more
-							<ArrowRight className="h-3 w-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
+							<ArrowRight className="w-3 h-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
 						</motion.button>
 					</Link>
 				</div>
@@ -169,7 +169,7 @@ export function QuickInstallCard() {
 			viewport={{ once: true }}
 			className="h-full"
 		>
-			<Card className="group h-full relative border-border bg-gradient-to-br from-card to-card/50 p-4 sm:p-6 overflow-hidden">
+			<Card className="relative h-full p-4 overflow-hidden group border-border bg-gradient-to-br from-card to-card/50 sm:p-6">
 				{/* Background Gradient */}
 				<motion.div
 					initial={{ opacity: 0, scale: 0.8 }}
@@ -183,7 +183,7 @@ export function QuickInstallCard() {
 					}}
 				/>
 
-				<div className="flex h-full flex-col gap-2 justify-between relative z-10">
+				<div className="relative z-10 flex flex-col justify-between h-full gap-2">
 					<div>
 						<motion.div
 							initial={{ scale: 0 }}
@@ -192,7 +192,7 @@ export function QuickInstallCard() {
 							viewport={{ once: true }}
 							className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary sm:px-3 sm:py-1.5"
 						>
-							<Download className="h-3 w-3 sm:h-4 sm:w-4" />
+							<Download className="w-3 h-3 sm:h-4 sm:w-4" />
 							Simple integration
 						</motion.div>
 						<h4 className="text-lg font-semibold font-caudex">
@@ -206,30 +206,24 @@ export function QuickInstallCard() {
 					<div className="mt-auto space-y-2">
 						<div className="rounded-md border border-border bg-muted/30 p-2.5 text-xs sm:text-sm font-mono">
 							<div className="text-muted-foreground">
-								&lt;link rel=&quot;stylesheet&quot;
-								href=&quot;reviseo.css&quot;&gt;
-							</div>
-						</div>
-						<div className="rounded-md border border-border bg-muted/30 p-2.5 text-xs sm:text-sm font-mono">
-							<div className="text-muted-foreground">
 								&lt;script src=&quot;reviseo.js&quot;&gt;&lt;/script&gt;
 							</div>
 						</div>
 						{/* <div className="flex items-center gap-3 text-xs text-muted-foreground">
 							<div className="flex items-center gap-1">
-								<div className="h-2 w-2 rounded-full bg-yellow-500" />
+								<div className="w-2 h-2 bg-yellow-500 rounded-full" />
 								<span>Vanilla</span>
 							</div>
 							<div className="flex items-center gap-1">
-								<div className="h-2 w-2 rounded-full bg-blue-500" />
+								<div className="w-2 h-2 bg-blue-500 rounded-full" />
 								<span>React</span>
 							</div>
 							<div className="flex items-center gap-1">
-								<div className="h-2 w-2 rounded-full bg-green-500" />
+								<div className="w-2 h-2 bg-green-500 rounded-full" />
 								<span>Vue</span>
 							</div>
 							<div className="flex items-center gap-1">
-								<div className="h-2 w-2 rounded-full bg-purple-500" />
+								<div className="w-2 h-2 bg-purple-500 rounded-full" />
 								<span>And more...</span>
 							</div>
 						</div> */}
@@ -237,10 +231,10 @@ export function QuickInstallCard() {
 					<Link href="/blog/quick-installation">
 						<motion.button
 							whileHover={{ x: 4 }}
-							className="group/btn inline-flex items-center gap-2 text-xs font-medium text-primary transition-colors hover:text-primary/80 sm:text-sm mt-2"
+							className="inline-flex items-center gap-2 mt-2 text-xs font-medium transition-colors group/btn text-primary hover:text-primary/80 sm:text-sm"
 						>
 							Learn more
-							<ArrowRight className="h-3 w-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
+							<ArrowRight className="w-3 h-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
 						</motion.button>
 					</Link>
 				</div>
@@ -272,7 +266,7 @@ export function OrbitingCirclesCard() {
 			viewport={{ once: true }}
 			className="h-full"
 		>
-			<Card className="relative h-full overflow-hidden border-border bg-gradient-to-br from-card to-card/50 p-4 sm:p-6">
+			<Card className="relative h-full p-4 overflow-hidden border-border bg-gradient-to-br from-card to-card/50 sm:p-6">
 				{/* Background Gradient */}
 				<motion.div
 					initial={{ opacity: 0, scale: 0.8 }}
@@ -286,9 +280,9 @@ export function OrbitingCirclesCard() {
 					}}
 				/>
 
-				<div className="flex h-full flex-col relative z-10">
+				<div className="relative z-10 flex flex-col h-full">
 					<div className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary sm:px-3 sm:py-1.5">
-						<Zap className="h-3 w-3 sm:h-4 sm:w-4" />
+						<Zap className="w-3 h-3 sm:h-4 sm:w-4" />
 						Universal compatibility
 					</div>
 					<h4 className="text-lg font-semibold font-caudex">
@@ -299,7 +293,7 @@ export function OrbitingCirclesCard() {
 						platforms like Webflow and WordPress integrate Reviseo anywhere.
 					</p>
 
-					<div className="relative flex-1 flex items-center justify-center mt-4">
+					<div className="relative flex items-center justify-center flex-1 mt-4">
 						<OrbitingCircles
 							iconSize={32}
 							radius={isLargeScreen ? 180 : 120}
@@ -334,7 +328,7 @@ export function OrbitingCirclesCard() {
 
 						{/* Center logo */}
 						<div className="absolute inset-0 flex items-center justify-center">
-							<div className="w-12 h-12 lg:w-16 lg:h-16 rounded-full bg-background border-2 border-primary/20 flex items-center justify-center shadow-lg">
+							<div className="flex items-center justify-center w-12 h-12 border-2 rounded-full shadow-lg lg:w-16 lg:h-16 bg-background border-primary/20">
 								<svg
 									width="24"
 									height="24"
@@ -384,10 +378,10 @@ export function OrbitingCirclesCard() {
 					<Link href="/blog/universal-compatibility">
 						<motion.button
 							whileHover={{ x: 4 }}
-							className="group/btn inline-flex items-center gap-2 text-xs font-medium text-primary transition-colors hover:text-primary/80 sm:text-sm mt-4"
+							className="inline-flex items-center gap-2 mt-4 text-xs font-medium transition-colors group/btn text-primary hover:text-primary/80 sm:text-sm"
 						>
 							Learn more
-							<ArrowRight className="h-3 w-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
+							<ArrowRight className="w-3 h-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
 						</motion.button>
 					</Link>
 				</div>
@@ -405,7 +399,7 @@ export function CollaborationCard() {
 			viewport={{ once: true }}
 			className="h-full"
 		>
-			<Card className="group h-full border-border bg-gradient-to-br from-card to-card/50 p-4 sm:p-6 relative overflow-hidden">
+			<Card className="relative h-full p-4 overflow-hidden group border-border bg-gradient-to-br from-card to-card/50 sm:p-6">
 				{/* Background Gradient */}
 				<motion.div
 					initial={{ opacity: 0, scale: 0.8 }}
@@ -419,10 +413,10 @@ export function CollaborationCard() {
 					}}
 				/>
 
-				<div className="flex h-full flex-col gap-2 justify-between relative z-10">
+				<div className="relative z-10 flex flex-col justify-between h-full gap-2">
 					<div>
 						<div className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary sm:px-3 sm:py-1.5">
-							<Users className="h-3 w-3 sm:h-4 sm:w-4" />
+							<Users className="w-3 h-3 sm:h-4 sm:w-4" />
 							Invite only access
 						</div>
 						<h4 className="text-lg font-semibold font-caudex">
@@ -433,7 +427,7 @@ export function CollaborationCard() {
 							invite only access.
 						</p>
 					</div>
-					<div className="mt-3 flex justify-end">
+					<div className="flex justify-end mt-3">
 						<motion.div
 							initial={{ scale: 0.8, opacity: 0 }}
 							whileInView={{ scale: 1, opacity: 1 }}
@@ -446,10 +440,10 @@ export function CollaborationCard() {
 					<Link href="/blog/client-collaboration">
 						<motion.button
 							whileHover={{ x: 4 }}
-							className="group/btn inline-flex items-center gap-2 text-xs font-medium text-primary transition-colors hover:text-primary/80 sm:text-sm"
+							className="inline-flex items-center gap-2 text-xs font-medium transition-colors group/btn text-primary hover:text-primary/80 sm:text-sm"
 						>
 							Learn more
-							<ArrowRight className="h-3 w-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
+							<ArrowRight className="w-3 h-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
 						</motion.button>
 					</Link>
 				</div>
@@ -467,7 +461,7 @@ export function InviteOnlyVisualCard() {
 			viewport={{ once: true }}
 			className="h-full"
 		>
-			<Card className="group h-full relative border-border bg-gradient-to-br from-card to-card/50 p-4 sm:p-6 overflow-hidden">
+			<Card className="relative h-full p-4 overflow-hidden group border-border bg-gradient-to-br from-card to-card/50 sm:p-6">
 				{/* Background Gradient */}
 				<motion.div
 					initial={{ opacity: 0, scale: 0.8 }}
@@ -481,7 +475,7 @@ export function InviteOnlyVisualCard() {
 					}}
 				/>
 
-				<div className="relative z-10 flex h-full flex-col">
+				<div className="relative z-10 flex flex-col h-full">
 					{/* Header */}
 					<div className="mb-3 sm:mb-4">
 						<motion.div
@@ -491,7 +485,7 @@ export function InviteOnlyVisualCard() {
 							viewport={{ once: true }}
 							className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary sm:px-3 sm:py-1.5"
 						>
-							<Shield className="h-3 w-3 sm:h-4 sm:w-4" />
+							<Shield className="w-3 h-3 sm:h-4 sm:w-4" />
 							Invite-only access
 						</motion.div>
 						<h4 className="text-lg font-semibold font-caudex">
@@ -504,7 +498,7 @@ export function InviteOnlyVisualCard() {
 					</div>
 
 					{/* Visual Demonstration - Toggle Comparison */}
-					<div className="flex-1 flex flex-col sm:flex-row items-center justify-center gap-4 sm:gap-6 md:gap-8 lg:gap-12 mt-2 sm:mt-4">
+					<div className="flex flex-col items-center justify-center flex-1 gap-4 mt-2 sm:flex-row sm:gap-6 md:gap-8 lg:gap-12 sm:mt-4">
 						{/* Client (Invited) Window */}
 						<motion.div
 							initial={{ opacity: 0, x: -20 }}
@@ -514,7 +508,7 @@ export function InviteOnlyVisualCard() {
 							className="flex flex-col items-center gap-2"
 						>
 							<div className="w-28 sm:w-24 md:w-32 lg:w-40">
-								<div className="bg-background rounded-lg border-2 border-border shadow-lg overflow-hidden">
+								<div className="overflow-hidden border-2 rounded-lg shadow-lg bg-background border-border">
 									{/* Browser chrome */}
 									<div className="bg-muted px-2 py-1.5 flex gap-1.5">
 										<div className="w-2 h-2 rounded-full bg-muted-foreground/30"></div>
@@ -522,7 +516,7 @@ export function InviteOnlyVisualCard() {
 										<div className="w-2 h-2 rounded-full bg-muted-foreground/30"></div>
 									</div>
 									{/* Content */}
-									<div className="p-3 h-20 sm:h-20 md:h-24 bg-background relative">
+									<div className="relative h-20 p-3 sm:h-20 md:h-24 bg-background">
 										<motion.div
 											initial={{ scale: 0 }}
 											whileInView={{ scale: 1 }}
@@ -533,7 +527,7 @@ export function InviteOnlyVisualCard() {
 												damping: 15,
 											}}
 											viewport={{ once: true }}
-											className="absolute bottom-2 right-2 w-7 h-7 sm:w-7 sm:h-7 md:w-8 md:h-8 rounded-full bg-primary flex items-center justify-center shadow-md"
+											className="absolute flex items-center justify-center rounded-full shadow-md bottom-2 right-2 w-7 h-7 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-primary"
 										>
 											<div className="w-2.5 h-2.5 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 rounded-full bg-background"></div>
 										</motion.div>
@@ -547,7 +541,7 @@ export function InviteOnlyVisualCard() {
 								viewport={{ once: true }}
 								className="flex items-center gap-1.5"
 							>
-								<div className="w-4 h-4 rounded-full bg-green-500 flex items-center justify-center">
+								<div className="flex items-center justify-center w-4 h-4 bg-green-500 rounded-full">
 									<Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />
 								</div>
 								<span className="text-xs font-medium text-foreground font-inter">
@@ -565,7 +559,7 @@ export function InviteOnlyVisualCard() {
 							className="flex flex-col items-center gap-2"
 						>
 							<div className="w-28 sm:w-24 md:w-32 lg:w-40">
-								<div className="bg-background rounded-lg border-2 border-border shadow-lg overflow-hidden">
+								<div className="overflow-hidden border-2 rounded-lg shadow-lg bg-background border-border">
 									{/* Browser chrome */}
 									<div className="bg-muted px-2 py-1.5 flex gap-1.5">
 										<div className="w-2 h-2 rounded-full bg-muted-foreground/30"></div>
@@ -573,7 +567,7 @@ export function InviteOnlyVisualCard() {
 										<div className="w-2 h-2 rounded-full bg-muted-foreground/30"></div>
 									</div>
 									{/* Content - Empty */}
-									<div className="p-3 h-20 sm:h-20 md:h-24 bg-background"></div>
+									<div className="h-20 p-3 sm:h-20 md:h-24 bg-background"></div>
 								</div>
 							</div>
 							<motion.div
@@ -583,7 +577,7 @@ export function InviteOnlyVisualCard() {
 								viewport={{ once: true }}
 								className="flex items-center gap-1.5"
 							>
-								<div className="w-4 h-4 rounded-full bg-red-500 flex items-center justify-center">
+								<div className="flex items-center justify-center w-4 h-4 bg-red-500 rounded-full">
 									<X className="w-2.5 h-2.5 text-white" strokeWidth={3} />
 								</div>
 								<span className="text-xs font-medium text-foreground font-inter">
@@ -596,10 +590,10 @@ export function InviteOnlyVisualCard() {
 					<Link href="/blog/invite-only-access">
 						<motion.button
 							whileHover={{ x: 4 }}
-							className="group/btn inline-flex items-center gap-2 text-xs font-medium text-primary transition-colors hover:text-primary/80 sm:text-sm mt-3 sm:mt-4"
+							className="inline-flex items-center gap-2 mt-3 text-xs font-medium transition-colors group/btn text-primary hover:text-primary/80 sm:text-sm sm:mt-4"
 						>
 							Learn more
-							<ArrowRight className="h-3 w-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
+							<ArrowRight className="w-3 h-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
 						</motion.button>
 					</Link>
 				</div>
@@ -617,7 +611,7 @@ export function TrackChangesCard() {
 			viewport={{ once: true }}
 			className="h-full"
 		>
-			<Card className="group h-full border-border bg-gradient-to-br from-card to-card/50 p-4 sm:p-6 relative overflow-hidden">
+			<Card className="relative h-full p-4 overflow-hidden group border-border bg-gradient-to-br from-card to-card/50 sm:p-6">
 				{/* Background Gradient */}
 				<motion.div
 					initial={{ opacity: 0, scale: 0.8 }}
@@ -631,7 +625,7 @@ export function TrackChangesCard() {
 					}}
 				/>
 
-				<div className="flex h-full flex-col gap-2 justify-between relative z-10">
+				<div className="relative z-10 flex flex-col justify-between h-full gap-2">
 					<div>
 						<motion.div
 							initial={{ scale: 0 }}
@@ -640,7 +634,7 @@ export function TrackChangesCard() {
 							viewport={{ once: true }}
 							className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary sm:px-3 sm:py-1.5"
 						>
-							<ListChecks className="h-3 w-3 sm:h-4 sm:w-4" />
+							<ListChecks className="w-3 h-3 sm:h-4 sm:w-4" />
 							Track progress
 						</motion.div>
 						<h4 className="text-lg font-semibold font-caudex">
@@ -653,7 +647,7 @@ export function TrackChangesCard() {
 					</div>
 
 					{/* Status Flow */}
-					<div className="flex items-center justify-center gap-2 sm:gap-3 mt-3">
+					<div className="flex items-center justify-center gap-2 mt-3 sm:gap-3">
 						{/* New Pill */}
 						<motion.div
 							initial={{ opacity: 0, y: 20 }}
@@ -753,17 +747,17 @@ export function TrackChangesCard() {
 						whileInView={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.5, delay: 1.5 }}
 						viewport={{ once: true }}
-						className="mt-3 p-3 bg-background/50 rounded-lg border border-border"
+						className="p-3 mt-3 border rounded-lg bg-background/50 border-border"
 					>
 						<div className="flex items-start gap-2">
-							<div className="w-8 h-8 bg-gradient-to-br from-primary to-purple-500 rounded flex-shrink-0" />
+							<div className="flex-shrink-0 w-8 h-8 rounded bg-gradient-to-br from-primary to-purple-500" />
 							<div className="flex-1 min-w-0">
-								<p className="text-sm font-medium text-foreground truncate font-inter">
+								<p className="text-sm font-medium truncate text-foreground font-inter">
 									Update homepage design
 								</p>
 								<div className="flex items-center gap-1.5 mt-1">
 									<span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
-									<span className="text-xs font-inter font-bold text-amber-700 dark:text-amber-400">
+									<span className="text-xs font-bold font-inter text-amber-700 dark:text-amber-400">
 										In Progress
 									</span>
 								</div>
@@ -774,10 +768,10 @@ export function TrackChangesCard() {
 					<Link href="/blog/track-feedback-progress">
 						<motion.button
 							whileHover={{ x: 4 }}
-							className="group/btn inline-flex items-center gap-2 text-xs font-medium text-primary transition-colors hover:text-primary/80 sm:text-sm mt-2"
+							className="inline-flex items-center gap-2 mt-2 text-xs font-medium transition-colors group/btn text-primary hover:text-primary/80 sm:text-sm"
 						>
 							Learn more
-							<ArrowRight className="h-3 w-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
+							<ArrowRight className="w-3 h-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
 						</motion.button>
 					</Link>
 				</div>

@@ -203,15 +203,26 @@
 				rotate(calc((var(--angle) * -1deg) - 360deg));
 		}
 	}
+
+	--animate-line-shadow: line-shadow 15s linear infinite;
+
+	@keyframes line-shadow {
+		0% {
+			background-position: 0 0;
+		}
+		100% {
+			background-position: 100% -100%;
+		}
+	}
 }
 
 @layer base {
 	* {
-		@apply border-border outline-ring/50 font-sans;
+		@apply font-sans border-border outline-ring/50;
 	}
 
 	body {
-		@apply bg-background text-foreground font-sans;
+		@apply font-sans bg-background text-foreground;
 	}
 
 	button:not([disabled]),

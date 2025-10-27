@@ -15,7 +15,7 @@ import { ShootingStars } from "@/components/ui/shadcn-io/shooting-stars";
 
 export default function Home() {
 	return (
-		<div className="min-h-scren w-full min-h-screen overflow-x-hidden relative">
+		<div className="relative w-full min-h-screen overflow-x-hidden min-h-scren">
 			<ShootingStars
 				starColor="#9E00FF"
 				className="-z-30"
@@ -113,10 +113,9 @@ export default function Home() {
 					backgroundSize: "32px 32px",
 				}}
 			/>
-			<div className="w-full pt-6 justify-center flex items-center px-2 sm:px-4 md:px-6 sticky top-4 z-50">
+			<div className="sticky z-50 flex items-center justify-center w-full px-2 pt-6 sm:px-4 md:px-6 top-4">
 				<Navbar />
 			</div>
-
 			<Hero />
 			<UsedWith />
 			<Problems />

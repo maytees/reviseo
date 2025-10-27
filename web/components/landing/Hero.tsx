@@ -1,36 +1,39 @@
 "use client";
-import { ChevronRight, PartyPopper } from "lucide-react";
+import { ChevronRight, Rocket } from "lucide-react";
 import { motion } from "motion/react";
-import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
+import Link from "next/link";
 import { Button } from "../ui/button";
 import HeroBadge from "../ui/hero-badge";
+import { HyperText } from "../ui/hyper-text";
 import { TextAnimate } from "../ui/TextAnimate";
 
 const Hero = () => {
 	return (
-		<section className="mt-32 w-full flex items-center justify-center px-4 sm:px-6 md:px-8">
-			<div className="flex flex-col h-full items-center justify-center gap-10 sm:gap-8 w-full">
-				<div className="flex flex-col items-center justify-center gap-3 sm:gap-4 w-full">
+		<section className="flex items-center justify-center w-full px-4 mt-32 sm:px-6 md:px-8">
+			<div className="flex flex-col items-center justify-center w-full h-full gap-10 sm:gap-8">
+				<div className="flex flex-col items-center justify-center w-full gap-3 sm:gap-4">
 					<motion.div
 						initial={{ opacity: 0, scale: 0.9, y: 100 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						transition={{ type: "spring", duration: 1.2, bounce: 0.15 }}
 					>
 						<HeroBadge
-							href="/blog/announcing-reviseo"
-							text="Now In Public Beta"
+							// href="/blog/announcing-reviseo"
+							href="/waitlist"
+							// text="Now In Public Beta"
+							text="Waitlist Available"
 							endIcon={<ChevronRight className="size-4" />}
-							icon={<PartyPopper className="size-4" />}
+							icon={<Rocket className="size-4" />}
 						/>
 					</motion.div>
 					<motion.h1
 						initial={{ opacity: 0, scale: 1.1, y: 100 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						transition={{ type: "spring", duration: 1.2, bounce: 0.1 }}
-						className="text-4xl sm:text-5xl md:text-6xl lg:text-7xl text-center max-w-3xl font-bold font-caudex px-2"
+						className="max-w-3xl px-2 text-4xl font-bold text-center sm:text-5xl md:text-6xl lg:text-7xl font-caudex"
 					>
 						Stop tracking client feedback with{" "}
-						<span className="font-caudex bg-gradient-to-r from-accent to-primary font-bold bg-clip-text italic text-transparent">
+						<span className="italic font-bold text-transparent font-caudex bg-gradient-to-r from-accent to-primary bg-clip-text">
 							endless
 						</span>{" "}
 						emails
@@ -42,15 +45,15 @@ const Hero = () => {
 						once
 						segmentClassName="text-base sm:text-lg md:text-xl text-muted-foreground font-inter"
 						by="word"
-						className="text-base sm:text-lg md:text-xl text-muted-foreground text-center w-full max-w-2xl font-inter px-2"
+						className="w-full max-w-2xl px-2 text-base text-center sm:text-lg md:text-xl text-muted-foreground font-inter"
 					>
-						Reviseo lets your clients annotate screenshots and requset changes
+						Reviseo lets your clients annotate screenshots and request changes
 						directly on your website. No more back and forth confusion between
 						you and your clients - see exactly what they want, and where they
 						want it.
 					</TextAnimate>
 				</div>
-				<div className="flex flex-col sm:flex-row gap-2 items-center w-full sm:w-auto px-2">
+				<div className="flex flex-col items-center w-full gap-2 px-2 sm:flex-row sm:w-auto">
 					<motion.div
 						initial={{ opacity: 0, scale: 1.1, y: 100 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -62,11 +65,14 @@ const Hero = () => {
 						}}
 						className="w-full sm:w-auto"
 					>
-						<Button size={"lg"} className="w-full sm:w-auto">
+						{/* <Button size={"lg"} className="w-full sm:w-auto">
 							Get Started
+						</Button> */}
+						<Button asChild size={"lg"} className="w-full sm:w-auto">
+							<Link href={"/waitlist"}>Join Waitlist</Link>
 						</Button>
 					</motion.div>
-					<motion.div
+					{/* <motion.div
 						initial={{ opacity: 0, scale: 1.1, y: 100 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						transition={{
@@ -80,7 +86,7 @@ const Hero = () => {
 						<Button size={"lg"} variant={"inset"} className="w-full sm:w-auto">
 							Watch Demo
 						</Button>
-					</motion.div>
+					</motion.div> */}
 				</div>
 				<motion.div
 					initial={{ opacity: 0, scale: 1.1, y: 100 }}
@@ -93,46 +99,51 @@ const Hero = () => {
 					}}
 					className="flex items-center gap-2 mt-20"
 				>
-					<div className="flex -space-x-2">
-						<Avatar className="border-2 border-background w-8 h-8 sm:w-10 sm:h-10">
+					{/* <div className="flex -space-x-2">
+						<Avatar className="w-8 h-8 border-2 border-background sm:w-10 sm:h-10">
 							<AvatarImage
 								src="https://avatars.githubusercontent.com/u/88842870?v=4"
 								alt="Freelancer 1"
 							/>
 							<AvatarFallback>F1</AvatarFallback>
 						</Avatar>
-						<Avatar className="border-2 border-background w-8 h-8 sm:w-10 sm:h-10">
+						<Avatar className="w-8 h-8 border-2 border-background sm:w-10 sm:h-10">
 							<AvatarImage
 								src="https://avatars.githubusercontent.com/u/178248637?s=130&v=4"
 								alt="Freelancer 2"
 							/>
 							<AvatarFallback>F2</AvatarFallback>
 						</Avatar>
-						<Avatar className="border-2 border-background w-8 h-8 sm:w-10 sm:h-10">
+						<Avatar className="w-8 h-8 border-2 border-background sm:w-10 sm:h-10">
 							<AvatarImage
 								src="https://avatars.githubusercontent.com/u/178248937?s=130&v=4"
 								alt="Freelancer 2"
 							/>
 							<AvatarFallback>F2</AvatarFallback>
 						</Avatar>
-						<Avatar className="border-2 border-background w-8 h-8 sm:w-10 sm:h-10">
+						<Avatar className="w-8 h-8 border-2 border-background sm:w-10 sm:h-10">
 							<AvatarImage
 								src="https://avatars.githubusercontent.com/u/178248737?s=130&v=4"
 								alt="Freelancer 2"
 							/>
 							<AvatarFallback>F2</AvatarFallback>
 						</Avatar>
-						<Avatar className="border-2 border-background w-8 h-8 sm:w-10 sm:h-10">
+						<Avatar className="w-8 h-8 border-2 border-background sm:w-10 sm:h-10">
 							<AvatarImage
 								src="https://avatars.githubusercontent.com/u/88744505?v=4"
 								alt="Freelancer 3"
 							/>
 							<AvatarFallback>F3</AvatarFallback>
 						</Avatar>
-					</div>
-					<span className="font-semibold text-muted-foreground font-inter">
+					</div> */}
+					{/* <span className="font-semibold text-muted-foreground font-inter"></span> */}
+					<HyperText
+						duration={4000}
+						delay={1}
+						className="text-sm font-light hover:cursor-pointer text-muted-foreground"
+					>
 						For freelancers by freelancers
-					</span>
+					</HyperText>
 				</motion.div>
 			</div>
 		</section>
