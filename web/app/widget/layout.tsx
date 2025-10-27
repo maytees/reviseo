@@ -1,0 +1,18 @@
+import { Inter } from "next/font/google";
+import "./widget.css";
+
+const inter = Inter({ subsets: ["latin"] });
+
+export default function WidgetLayout({
+	children,
+}: {
+	children: React.ReactNode;
+}) {
+	return (
+		<html lang="en" className={inter.className}>
+			<body className="flex items-center justify-center w-16 h-16 overflow-hidden bg-transparent">
+				{children}
+			</body>
+		</html>
+	);
+}

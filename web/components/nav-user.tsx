@@ -24,8 +24,8 @@ import {
 	SidebarMenuItem,
 	useSidebar,
 } from "@/components/ui/sidebar";
-import { useSignOut } from "@/hooks/useSignOut";
 import { authClient } from "@/lib/auth-client";
+import { useSignOut } from "@/lib/hooks/useSignOut";
 import { Skeleton } from "./ui/skeleton";
 
 export function NavUser() {
@@ -136,9 +136,8 @@ export function NavUser() {
 							</DropdownMenuItem>
 						</DropdownMenuGroup>
 						<DropdownMenuSeparator />
-						<DropdownMenuItem onClick={handleSignOut}>
+						<DropdownMenuItem variant="destructive" onClick={handleSignOut}>
 							<IconLogout />
-							Log out
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>

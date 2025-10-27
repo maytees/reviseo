@@ -1,20 +1,47 @@
 "use client";
 
-import { Globe, Home, Settings, Users } from "lucide-react";
+import {
+	IconCreditCard,
+	IconFileText,
+	IconLifebuoy,
+	IconMessageCircle,
+	IconNotification,
+	IconUserCircle,
+} from "@tabler/icons-react";
+import {
+	FileCheck,
+	Globe,
+	Home,
+	LineChart,
+	LogOutIcon,
+	Moon,
+	Settings,
+	Sun,
+	Users,
+	Zap,
+} from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
+import { useTheme } from "next-themes";
 import type * as React from "react";
 import { NavMain } from "@/components/nav-main";
-import { NavUser } from "@/components/nav-user";
+import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
+import { Button } from "@/components/ui/button";
 import {
 	Sidebar,
 	SidebarContent,
 	SidebarFooter,
+	SidebarGroup,
+	SidebarGroupContent,
+	SidebarGroupLabel,
 	SidebarHeader,
 	SidebarMenu,
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { Skeleton } from "@/components/ui/skeleton";
+import { authClient } from "@/lib/auth-client";
+import { useSignOut } from "@/lib/hooks/useSignOut";
 
 const data = {
 	navMain: [
@@ -39,9 +66,47 @@ const data = {
 			icon: Settings,
 		},
 	],
+	feedback: [
+		{
+			title: "All Feedback",
+			url: "/feedback",
+			icon: IconMessageCircle,
+		},
+		{
+			title: "In Review",
+			url: "/feedback/review",
+			icon: FileCheck,
+		},
+		{
+			title: "Analytics",
+			url: "/analytics",
+			icon: LineChart,
+		},
+	],
+	resources: [
+		{
+			title: "Documentation",
+			url: "/docs",
+			icon: IconFileText,
+		},
+		{
+			title: "Support",
+			url: "/support",
+			icon: IconLifebuoy,
+		},
+		{
+			title: "Changelog",
+			url: "/changelog",
+			icon: Zap,
+		},
+	],
 };
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
+	const { theme, setTheme } = useTheme();
+	const handleSignOut = useSignOut();
+	const { data: session, isPending } = authClient.useSession();
+
 	return (
 		<Sidebar {...props}>
 			<SidebarHeader>
@@ -67,11 +132,140 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 					</SidebarMenuItem>
 				</SidebarMenu>
 			</SidebarHeader>
+
 			<SidebarContent>
+				{/* Main Navigation */}
 				<NavMain items={data.navMain} />
+
+				{/* Feedback Management */}
+				<SidebarGroup>
+					<SidebarGroupLabel>Feedback</SidebarGroupLabel>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							{data.feedback.map((item) => (
+								<SidebarMenuItem key={item.title}>
+									<SidebarMenuButton asChild>
+										<Link href={item.url}>
+											<item.icon />
+											<span>{item.title}</span>
+										</Link>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+							))}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
+
+				{/* Resources */}
+				<SidebarGroup>
+					<SidebarGroupLabel>Resources</SidebarGroupLabel>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							{data.resources.map((item) => (
+								<SidebarMenuItem key={item.title}>
+									<SidebarMenuButton asChild>
+										<Link href={item.url}>
+											<item.icon />
+											<span>{item.title}</span>
+										</Link>
+									</SidebarMenuButton>
+								</SidebarMenuItem>
+							))}
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
+
+				{/* Account & Preferences */}
+				<SidebarGroup className="mt-auto">
+					<SidebarGroupLabel>Miscellaneous</SidebarGroupLabel>
+					<SidebarGroupContent>
+						<SidebarMenu>
+							<SidebarMenuItem>
+								<SidebarMenuButton asChild>
+									<Link href="/account">
+										<IconUserCircle />
+										<span>Account</span>
+									</Link>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+
+							<SidebarMenuItem>
+								<SidebarMenuButton asChild>
+									<Link href="/billing">
+										<IconCreditCard />
+										<span>Billing</span>
+									</Link>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+
+							<SidebarMenuItem>
+								<SidebarMenuButton asChild>
+									<Link href="/notifications">
+										<IconNotification />
+										<span>Notifications</span>
+									</Link>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+
+							<SidebarMenuItem>
+								<SidebarMenuButton
+									onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
+								>
+									<Sun className="dark:hidden" />{" "}
+									<Moon className="hidden dark:inline-block" />
+									<span className="dark:hidden">Light Mode</span>
+									<span className="hidden dark:inline-block">Dark Mode</span>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+						</SidebarMenu>
+					</SidebarGroupContent>
+				</SidebarGroup>
 			</SidebarContent>
+
 			<SidebarFooter>
-				<NavUser />
+				<SidebarMenu>
+					{isPending ? (
+						<SidebarMenuItem>
+							<SidebarMenuButton size="lg" className="cursor-default">
+								<Skeleton className="w-8 h-8 rounded-lg" />
+								<div className="flex-1 text-sm leading-tight text-left grid gap-1">
+									<Skeleton className="w-20 h-4" />
+									<Skeleton className="w-16 h-3" />
+								</div>
+							</SidebarMenuButton>
+						</SidebarMenuItem>
+					) : (
+						<SidebarMenuItem className="flex flex-row gap-2 py-1 px-1">
+							<Avatar className="rounded-lg">
+								<AvatarImage
+									src={
+										session?.user.image ??
+										`https://avatar.vercel.sh/${session?.user.email}`
+									}
+									alt={session?.user.name}
+								/>
+								<AvatarFallback className="rounded-lg">
+									{session?.user.name && session.user.name.length > 0
+										? session.user.name.charAt(0).toUpperCase()
+										: session?.user.email.charAt(0).toUpperCase()}
+								</AvatarFallback>
+							</Avatar>
+							<div className="flex-1 text-sm leading-tight text-left grid">
+								<span className="font-medium truncate">
+									{session?.user.name && session.user.name.length > 0
+										? session.user.name
+										: session?.user.email.split("@")[0]}
+								</span>
+								<span className="text-xs truncate text-muted-foreground">
+									{session?.user.email}
+								</span>
+							</div>
+							<Button variant={"outline"} onClick={handleSignOut} mode={"icon"}>
+								<LogOutIcon />
+							</Button>
+						</SidebarMenuItem>
+					)}
+				</SidebarMenu>
 			</SidebarFooter>
 		</Sidebar>
 	);

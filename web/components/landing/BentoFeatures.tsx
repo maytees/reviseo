@@ -59,7 +59,7 @@ export function BentoFeatures() {
 						delay: 0.2,
 					}}
 					viewport={{ once: true }}
-					className="text-lg sm:text-xl md:text-2xl text-muted-foreground text-center font-alegreya"
+					className="text-lg sm:text-xl md:text-2xl text-muted-foreground text-center font-inter"
 				>
 					Powerful tools designed to make client collaboration effortless and
 					efficient.

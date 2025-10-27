@@ -21,7 +21,7 @@ import {
 	TooltipProvider,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
-import { useIsMobile } from "@/hooks/use-mobile";
+import { useIsMobile } from "@/lib/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
 const SIDEBAR_COOKIE_NAME = "sidebar_state";
@@ -627,7 +627,7 @@ function SidebarMenuSkeleton({
 		>
 			{showIcon && (
 				<Skeleton
-					className="size-4 rounded-md"
+					className="rounded-md size-4"
 					data-sidebar="menu-skeleton-icon"
 				/>
 			)}

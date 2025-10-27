@@ -42,7 +42,7 @@ const UsedWith = () => {
 						bounce: 0.1,
 						delay: 0.2,
 					}}
-					className="text-base sm:text-lg md:text-xl text-muted-foreground text-center font-alegreya px-2"
+					className="text-base sm:text-lg md:text-xl text-muted-foreground text-center font-inter px-2"
 				>
 					Embeddable on any platform with a simple script tag
 				</motion.p>
@@ -88,9 +88,7 @@ const UsedWith = () => {
 								key={name}
 							>
 								<Icon className={`w-10 h-10 ${color}`} />
-								<span className="text-lg font-alegreya font-semibold">
-									{name}
-								</span>
+								<span className="text-lg font-inter font-semibold">{name}</span>
 							</div>
 						))}
 					</MarqueeContent>

@@ -2,7 +2,6 @@
 
 import { motion } from "framer-motion";
 import { Check, Sparkles, Zap } from "lucide-react";
-import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 
@@ -19,7 +18,7 @@ const plans = [
 			"Email notifications",
 			"Advanced analytics",
 		],
-		cta: "Get Started",
+		cta: "Coming Soon",
 		highlighted: false,
 		icon: Zap,
 	},
@@ -39,7 +38,7 @@ const plans = [
 			"Priority support",
 			"Advanced analytics",
 		],
-		cta: "Get Started",
+		cta: "Coming Soon",
 		highlighted: true,
 		icon: Sparkles,
 		badge: "Most Popular",
@@ -73,15 +72,15 @@ export function Pricing() {
 		// biome-ignore lint/correctness/useUniqueElementIds: goon
 		<section
 			id="pricing"
-			className="mt-48 w-full flex flex-col items-center justify-center px-4 sm:px-6 md:px-8"
+			className="flex flex-col items-center justify-center w-full px-4 mt-48 sm:px-6 md:px-8"
 		>
-			<div className="flex flex-col items-center justify-center gap-4 max-w-3xl">
+			<div className="flex flex-col items-center justify-center max-w-3xl gap-4">
 				<motion.h2
 					initial={{ opacity: 0, scale: 1.1, y: 100 }}
 					whileInView={{ opacity: 1, scale: 1, y: 0 }}
 					transition={{ type: "spring", duration: 1.2, bounce: 0.1 }}
 					viewport={{ once: true }}
-					className="text-3xl sm:text-4xl md:text-5xl text-center font-bold font-caudex"
+					className="text-3xl font-bold text-center sm:text-4xl md:text-5xl font-caudex"
 				>
 					Simple, transparent pricing
 				</motion.h2>
@@ -95,7 +94,7 @@ export function Pricing() {
 						delay: 0.2,
 					}}
 					viewport={{ once: true }}
-					className="text-lg sm:text-xl md:text-2xl text-muted-foreground text-center font-alegreya"
+					className="text-lg text-center sm:text-xl md:text-2xl text-muted-foreground font-inter"
 				>
 					Start free, scale as you grow. No hidden fees, cancel anytime.
 				</motion.p>
@@ -106,7 +105,7 @@ export function Pricing() {
 				initial="hidden"
 				whileInView="visible"
 				viewport={{ once: true, amount: 0.2 }}
-				className="flex flex-col md:flex-row items-stretch justify-center gap-0 mt-16 sm:mt-20 w-full max-w-5xl"
+				className="flex flex-col items-stretch justify-center w-full max-w-5xl gap-0 mt-16 md:flex-row sm:mt-20"
 			>
 				{plans.map((plan, index) => {
 					const Icon = plan.icon;
@@ -143,7 +142,7 @@ export function Pricing() {
 									}}
 								/>
 
-								<div className="relative z-10 h-full flex flex-col">
+								<div className="relative z-10 flex flex-col h-full">
 									{/* Badge */}
 									{plan.badge && (
 										<motion.div
@@ -155,7 +154,7 @@ export function Pricing() {
 												stiffness: 200,
 											}}
 											viewport={{ once: true }}
-											className="absolute -top-2 -right-2 px-3 py-1 rounded-full bg-primary text-primary-foreground text-xs font-medium"
+											className="absolute px-3 py-1 text-xs font-medium rounded-full -top-2 -right-2 bg-primary text-primary-foreground"
 										>
 											{plan.badge}
 										</motion.div>
@@ -173,29 +172,29 @@ export function Pricing() {
 										viewport={{ once: true }}
 										className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary w-fit"
 									>
-										<Icon className="h-4 w-4" />
+										<Icon className="w-4 h-4" />
 										{plan.name}
 									</motion.div>
 
 									{/* Price */}
 									<div className="mb-4">
 										<div className="flex items-baseline gap-1">
-											<span className="text-4xl sm:text-5xl font-bold font-caudex text-foreground">
+											<span className="text-4xl font-bold sm:text-5xl font-caudex text-foreground">
 												{plan.price}
 											</span>
 											{plan.period && (
-												<span className="text-lg text-muted-foreground font-alegreya">
+												<span className="text-lg text-muted-foreground font-inter">
 													{plan.period}
 												</span>
 											)}
 										</div>
-										<p className="mt-2 text-sm sm:text-base text-muted-foreground font-alegreya">
+										<p className="mt-2 text-sm sm:text-base text-muted-foreground font-inter">
 											{plan.description}
 										</p>
 									</div>
 
 									{/* Feaetures */}
-									<ul className="mb-6 space-y-3 flex-1">
+									<ul className="flex-1 mb-6 space-y-3">
 										{plan.features.map((feature) => (
 											<motion.li
 												key={feature}
@@ -210,11 +209,11 @@ export function Pricing() {
 											>
 												<div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 flex-shrink-0 mt-0.5">
 													<Check
-														className="h-3 w-3 text-primary"
+														className="w-3 h-3 text-primary"
 														strokeWidth={3}
 													/>
 												</div>
-												<span className="text-sm sm:text-base text-foreground font-alegreya">
+												<span className="text-sm sm:text-base text-foreground font-inter">
 													{feature}
 												</span>
 											</motion.li>
@@ -222,21 +221,22 @@ export function Pricing() {
 									</ul>
 
 									{/* CTA Button */}
-									<Link
+									{/* <Link
 										href={plan.name === "Enterprise" ? "/contact" : "/signup"}
 										className="w-full"
+									> */}
+									<Button
+										className={`w-full font-medium transition-all duration-300 ${
+											plan.highlighted
+												? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20"
+												: "bg-muted text-foreground hover:bg-muted/80"
+										}`}
+										disabled
+										size="lg"
 									>
-										<Button
-											className={`w-full font-medium transition-all duration-300 ${
-												plan.highlighted
-													? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20"
-													: "bg-muted text-foreground hover:bg-muted/80"
-											}`}
-											size="lg"
-										>
-											{plan.cta}
-										</Button>
-									</Link>
+										{plan.cta}
+									</Button>
+									{/* </Link> */}
 								</div>
 							</Card>
 						</motion.div>
@@ -252,11 +252,11 @@ export function Pricing() {
 				viewport={{ once: true }}
 				className="mt-16 text-center"
 			>
-				<p className="text-sm sm:text-base text-muted-foreground font-alegreya">
+				<p className="text-sm sm:text-base text-muted-foreground font-inter">
 					All plans include a 14-day free trial. No credit card required.{" "}
 					<Link
 						href="/pricing"
-						className="text-primary hover:underline font-medium"
+						className="font-medium text-primary hover:underline"
 					>
 						View detailed comparison →
 					</Link>
