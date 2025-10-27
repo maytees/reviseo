@@ -6,8 +6,13 @@ import "@excalidraw/excalidraw/index.css";
 import type {
 	ExcalidrawElement,
 	ExcalidrawImageElement,
+	FileId,
 } from "@excalidraw/excalidraw/element/types";
-import type { AppState, BinaryFiles } from "@excalidraw/excalidraw/types";
+import type {
+	AppState,
+	BinaryFiles,
+	DataURL,
+} from "@excalidraw/excalidraw/types";
 import { useTheme } from "next-themes";
 import { useEffect, useState } from "react";
 import {
@@ -57,6 +62,7 @@ const ExCanvas = ({
 
 			const imageElement: ExcalidrawImageElement = {
 				type: "image",
+				crop: null,
 				id: fileId,
 				x: 0,
 				y: 0,
@@ -66,7 +72,7 @@ const ExCanvas = ({
 				locked: true,
 				version: 1,
 				scale: [1, 1],
-				fileId: fileId,
+				fileId: fileId as FileId,
 				versionNonce: 1,
 				isDeleted: false,
 				seed: (Math.random() * 100000) | 0,
@@ -82,6 +88,7 @@ const ExCanvas = ({
 				frameId: null,
 				roundness: null,
 				boundElements: null,
+				index: null,
 				updated: Date.now(),
 				link: null,
 			};
@@ -94,8 +101,8 @@ const ExCanvas = ({
 				scrollToContent: true,
 				files: {
 					[fileId]: {
-						id: fileId,
-						dataURL: imageUrl,
+						id: fileId as FileId,
+						dataURL: imageUrl as DataURL,
 						mimeType: "image/png",
 						created: Date.now(),
 						lastRetrieved: Date.now(),
