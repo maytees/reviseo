@@ -42,9 +42,9 @@ export default function ThankYouWaitlistEmail() {
 							<Img
 								alt="Reviseo Logo"
 								className="rounded-none"
-								height={32}
-								src="https://www.reviseo.app/logo.png"
-								width={32}
+								height={48}
+								src="https://www.reviseo.app/logo48.png"
+								width={48}
 							/>
 						</Section>
 						<Section className="ml-[18px] inline-block max-w-[120px] text-left align-top">
