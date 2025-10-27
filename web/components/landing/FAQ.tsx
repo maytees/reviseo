@@ -38,7 +38,7 @@ const faqs = [
 
 export function FAQ() {
 	return (
-		// biome-ignore lint/correctness/useUniqueElementIds: <explanation>
+		// biome-ignore lint/correctness/useUniqueElementIds: faqq
 		<section
 			id="faq"
 			className="flex flex-col items-center justify-center w-full px-4 mt-48 sm:px-6 md:px-8"

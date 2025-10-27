@@ -1,4 +1,14 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { ChevronRight, Mail, Rocket } from "lucide-react";
+import { motion } from "motion/react";
+import Image from "next/image";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useTheme } from "next-themes";
+import { useEffect, useId, useState, useTransition } from "react";
+import { useForm } from "react-hook-form";
+import { toast } from "sonner";
 import { Footer } from "@/components/landing/Footer";
 import Noise from "@/components/landing/Noise";
 import {
@@ -8,8 +18,8 @@ import {
 	AlertIcon,
 	AlertTitle,
 } from "@/components/ui/alert";
-import { Badge } from "@/components/ui/badge";
 import { BorderBeam } from "@/components/ui/BorderBeam";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
 	Form,
@@ -19,22 +29,12 @@ import {
 	FormMessage,
 } from "@/components/ui/form";
 import { Input, InputWrapper } from "@/components/ui/input";
-import { ShootingStars } from "@/components/ui/shadcn-io/shooting-stars";
 import { LineShadowText } from "@/components/ui/ShadowText";
+import { ShootingStars } from "@/components/ui/shadcn-io/shooting-stars";
 import { Spotlight } from "@/components/ui/spotlight-new";
 import { useConfetti } from "@/lib/hooks/use-confetti";
 import { tryCatch } from "@/lib/try-catch";
 import { type WaitlistFormData, waitlistSchema } from "@/lib/validations";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ChevronRight, Mail, Rocket } from "lucide-react";
-import { motion } from "motion/react";
-import { useTheme } from "next-themes";
-import Image from "next/image";
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useEffect, useId, useState, useTransition } from "react";
-import { useForm } from "react-hook-form";
-import { toast } from "sonner";
 import { sendWaitlistInvite } from "./action";
 
 const WAITLIST_STORAGE_KEY = "reviseo_waitlist_joined";
@@ -58,7 +58,6 @@ const WaitlistPage = () => {
 	});
 
 	const onSubmit = (values: WaitlistFormData) => {
-
 		startTransition(async () => {
 			// Check if the email has already been used
 			const emailLower = values.email.toLowerCase();
