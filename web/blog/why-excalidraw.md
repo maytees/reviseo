@@ -8,7 +8,7 @@ authorRole: "Co-Founder & CEO"
 authorLinkedIn: "https://www.linkedin.com/in/ansh-sehgal-623167246/"
 seeMore: ["why-we-built-reviseo", "how-reviseo-works-complete-guide"]
 description: "Hand‑drawn, lightweight, and delightful—the perfect canvas for actionable feedback."
-slug: "excalidraw-integration"
+slug: "why-excalidraw"
 cover: "/excalidraw-dark.png"
 ---
 

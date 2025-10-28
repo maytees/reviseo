@@ -40,7 +40,7 @@ const socialLinks = [
 	{
 		name: "LinkedIn",
 		icon: FaLinkedin,
-		href: "https://linkedin.com/company/reviseo",
+		href: "https://linkedin.com/company/reviseoapp",
 	},
 	{ name: "Email", icon: Mail, href: "mailto:hello@reviseo.dev" },
 ];
