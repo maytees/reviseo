@@ -4,6 +4,7 @@
 /** biome-ignore-all lint/suspicious/noUnknownAtRules: biome needs patch */
 @import "tailwindcss";
 @import "tw-animate-css";
+@plugin "@tailwindcss/typography";
 
 @custom-variant dark (&:is(.dark *));
 
@@ -245,3 +246,17 @@
 		@apply bg-background text-foreground;
 	}
 }
+
+article > h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+	@apply font-caudex;
+}
+
+/* DEBUG FOR OVERFLOW */
+/* * {
+	outline: 1px solid red;
+} */

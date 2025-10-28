@@ -47,7 +47,7 @@ const socialLinks = [
 
 export function Footer() {
 	return (
-		<footer className="relative mt-48 w-full border-t border-border bg-gradient-to-b from-background to-muted/20">
+		<footer className="relative z-40 w-full mt-48 overflow-x-hidden border-t border-border bg-gradient-to-b from-background to-muted/20">
 			{/* Background Gradient */}
 			<motion.div
 				initial={{ opacity: 0, scale: 0.8 }}
@@ -61,9 +61,9 @@ export function Footer() {
 				}}
 			/>
 
-			<div className="relative z-10 mx-auto max-w-7xl px-4 sm:px-6 md:px-8 py-12 sm:py-16">
+			<div className="relative z-10 px-4 py-12 mx-auto max-w-7xl sm:px-6 md:px-8 sm:py-16">
 				{/* Main Footer Content */}
-				<div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-8 lg:gap-12 mb-12">
+				<div className="grid grid-cols-2 gap-8 mb-12 md:grid-cols-4 lg:grid-cols-6 lg:gap-12">
 					{/* Brand Section */}
 					<motion.div
 						initial={{ opacity: 0, y: 20 }}
@@ -81,7 +81,7 @@ export function Footer() {
 							/>
 							<h1 className="text-4xl font-bold font-caudex">Reviseo</h1>
 						</Link>
-						<p className="text-sm text-muted-foreground font-inter max-w-xs leading-relaxed">
+						<p className="max-w-xs text-sm leading-relaxed text-muted-foreground font-inter">
 							Visual feedback for web freelancers. Simplify client website
 							revisions with easy annotated screenshots.
 						</p>
@@ -104,7 +104,7 @@ export function Footer() {
 										}}
 										viewport={{ once: true }}
 										whileHover={{ scale: 1.1 }}
-										className="w-10 h-10 rounded-full bg-muted/50 hover:bg-muted flex items-center justify-center text-muted-foreground hover:text-foreground transition-colors"
+										className="flex items-center justify-center w-10 h-10 transition-colors rounded-full bg-muted/50 hover:bg-muted text-muted-foreground hover:text-foreground"
 										aria-label={social.name}
 									>
 										<Icon className="w-5 h-5" />
@@ -121,7 +121,7 @@ export function Footer() {
 						transition={{ duration: 0.5, delay: 0.1 }}
 						viewport={{ once: true }}
 					>
-						<h3 className="text-sm font-semibold text-foreground mb-4 font-caudex">
+						<h3 className="mb-4 text-sm font-semibold text-foreground font-caudex">
 							Product
 						</h3>
 						<ul className="space-y-3">
@@ -129,7 +129,7 @@ export function Footer() {
 								<li key={link.name}>
 									<Link
 										href={link.href}
-										className="text-sm text-muted-foreground hover:text-foreground transition-colors font-inter"
+										className="text-sm transition-colors text-muted-foreground hover:text-foreground font-inter"
 									>
 										{link.name}
 									</Link>
@@ -145,7 +145,7 @@ export function Footer() {
 						transition={{ duration: 0.5, delay: 0.2 }}
 						viewport={{ once: true }}
 					>
-						<h3 className="text-sm font-semibold text-foreground mb-4 font-caudex">
+						<h3 className="mb-4 text-sm font-semibold text-foreground font-caudex">
 							Resources
 						</h3>
 						<ul className="space-y-3">
@@ -153,7 +153,7 @@ export function Footer() {
 								<li key={link.name}>
 									<Link
 										href={link.href}
-										className="text-sm text-muted-foreground hover:text-foreground transition-colors font-inter"
+										className="text-sm transition-colors text-muted-foreground hover:text-foreground font-inter"
 									>
 										{link.name}
 									</Link>
@@ -169,7 +169,7 @@ export function Footer() {
 						transition={{ duration: 0.5, delay: 0.3 }}
 						viewport={{ once: true }}
 					>
-						<h3 className="text-sm font-semibold text-foreground mb-4 font-caudex">
+						<h3 className="mb-4 text-sm font-semibold text-foreground font-caudex">
 							Company
 						</h3>
 						<ul className="space-y-3">
@@ -177,7 +177,7 @@ export function Footer() {
 								<li key={link.name}>
 									<Link
 										href={link.href}
-										className="text-sm text-muted-foreground hover:text-foreground transition-colors font-inter"
+										className="text-sm transition-colors text-muted-foreground hover:text-foreground font-inter"
 									>
 										{link.name}
 									</Link>
@@ -193,7 +193,7 @@ export function Footer() {
 						transition={{ duration: 0.5, delay: 0.4 }}
 						viewport={{ once: true }}
 					>
-						<h3 className="text-sm font-semibold text-foreground mb-4 font-caudex">
+						<h3 className="mb-4 text-sm font-semibold text-foreground font-caudex">
 							Legal
 						</h3>
 						<ul className="space-y-3">
@@ -201,7 +201,7 @@ export function Footer() {
 								<li key={link.name}>
 									<Link
 										href={link.href}
-										className="text-sm text-muted-foreground hover:text-foreground transition-colors font-inter"
+										className="text-sm transition-colors text-muted-foreground hover:text-foreground font-inter"
 									>
 										{link.name}
 									</Link>
@@ -219,7 +219,7 @@ export function Footer() {
 					viewport={{ once: true }}
 					className="pt-8 border-t border-border/50"
 				>
-					<div className="flex flex-col sm:flex-row justify-center items-center gap-4">
+					<div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
 						<p className="text-sm text-muted-foreground font-inter">
 							© {new Date().getFullYear()} Reviseo. All rights reserved.
 						</p>

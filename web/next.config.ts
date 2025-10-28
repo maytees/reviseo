@@ -7,6 +7,7 @@ const nextConfig: NextConfig = {
 			"images.squarespace-cdn.com",
 			"images.unsplash.com",
 			"inst-fs-pdx-prod.inscloudgate.net",
+			"placehold.co",
 		],
 	},
 	// this shopws with the widget, which is why its false

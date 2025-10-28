@@ -58,6 +58,7 @@ const Navbar = ({
 		{ title: "Features", url: "/#features" },
 		{ title: "Pricing", url: "/#pricing" },
 		{ title: "FAQ", url: "/#faq" },
+		{ title: "Blog", url: "/blog" },
 	],
 	auth = {
 		getStarted: { title: "Join Waitlist", url: "/waitlist" },
@@ -95,7 +96,7 @@ const Navbar = ({
 	return (
 		<section
 			className={cn(
-				"py-4 px-4 max-w-7xl fixed mt-16 rounded-3xl backdrop-blur-sm shadow-[inset_0_4px_8px_0_rgba(0,0,0,0.3)] md:px-16 lg:px-28 xl:px-32 w-full transition-all duration-300",
+				"py-4 px-4 max-w-7xl z-50 fixed mt-16 rounded-3xl backdrop-blur-sm shadow-[inset_0_4px_8px_0_rgba(0,0,0,0.3)] md:px-16 lg:px-28 xl:px-32 w-full transition-all duration-300",
 				scrolled ? "bg-background/30" : "bg-background/70",
 				visible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0",
 			)}

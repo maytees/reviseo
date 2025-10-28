@@ -1,5 +1,4 @@
 "use client";
-import { motion } from "framer-motion";
 import { BentoFeatures } from "@/components/landing/BentoFeatures";
 import { FAQ } from "@/components/landing/FAQ";
 import { FinalCTA } from "@/components/landing/FinalCTA";
@@ -12,6 +11,7 @@ import { Pricing } from "@/components/landing/Pricing";
 import Problems from "@/components/landing/Problems";
 import UsedWith from "@/components/landing/UsedBy";
 import { ShootingStars } from "@/components/ui/shadcn-io/shooting-stars";
+import { motion } from "framer-motion";
 
 export default function Home() {
 	return (
