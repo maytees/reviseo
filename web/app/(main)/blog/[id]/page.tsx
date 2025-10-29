@@ -5,6 +5,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { SiLinkedin } from "react-icons/si";
 import { ArticleTOC } from "@/components/blog/ArticleTOC";
+import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
 import { Navbar } from "@/components/landing/Navbar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -27,7 +28,7 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 			<div className="z-50 flex items-center justify-center w-full px-2 pt-6 sm:px-4 md:px-6 top-4">
 				<Navbar />
 			</div>
-			<section className="xl:px-28 lg:pr-10 lg:pl-5 mt-42">
+			<section className="xl:px-18 lg:pr-10 lg:pl-5 mt-42">
 				<div className="relative flex flex-row items-start justify-around lg:space-x-10 ">
 					<div className="sticky flex-col hidden w-3/12 xl:w-2/12 lg:flex top-42">
 						<div className="flex flex-col w-full h-full ">
@@ -180,6 +181,7 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 					<ArticleTOC disableIndex />
 				</div>
 			</section>
+			<FinalCTA />
 			<Footer />
 		</div>
 	);

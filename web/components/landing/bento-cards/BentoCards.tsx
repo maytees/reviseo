@@ -146,7 +146,7 @@ export function ExcalidrawBentoCard() {
 					</div>
 
 					{/* CTA */}
-					<Link href="/blog/excalidraw-annotations">
+					<Link href="/blog/why-excalidraw">
 						<motion.button
 							whileHover={{ x: 4 }}
 							className="inline-flex items-center gap-2 text-xs font-medium transition-colors group/btn text-primary hover:text-primary/80 sm:text-sm"
@@ -228,7 +228,7 @@ export function QuickInstallCard() {
 							</div>
 						</div> */}
 					</div>
-					<Link href="/blog/quick-installation">
+					{/* <Link href="/blog/quick-installation">
 						<motion.button
 							whileHover={{ x: 4 }}
 							className="inline-flex items-center gap-2 mt-2 text-xs font-medium transition-colors group/btn text-primary hover:text-primary/80 sm:text-sm"
@@ -236,7 +236,7 @@ export function QuickInstallCard() {
 							Learn more
 							<ArrowRight className="w-3 h-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
 						</motion.button>
-					</Link>
+					</Link> */}
 				</div>
 			</Card>
 		</motion.div>
@@ -375,7 +375,7 @@ export function OrbitingCirclesCard() {
 						</div>
 					</div>
 
-					<Link href="/blog/universal-compatibility">
+					{/* <Link href="/blog/universal-compatibility">
 						<motion.button
 							whileHover={{ x: 4 }}
 							className="inline-flex items-center gap-2 mt-4 text-xs font-medium transition-colors group/btn text-primary hover:text-primary/80 sm:text-sm"
@@ -383,7 +383,7 @@ export function OrbitingCirclesCard() {
 							Learn more
 							<ArrowRight className="w-3 h-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
 						</motion.button>
-					</Link>
+					</Link> */}
 				</div>
 			</Card>
 		</motion.div>
@@ -437,7 +437,7 @@ export function CollaborationCard() {
 							<Inbox className="size-24 text-primary" />
 						</motion.div>
 					</div>
-					<Link href="/blog/client-collaboration">
+					{/* <Link href="/blog/client-collaboration">
 						<motion.button
 							whileHover={{ x: 4 }}
 							className="inline-flex items-center gap-2 text-xs font-medium transition-colors group/btn text-primary hover:text-primary/80 sm:text-sm"
@@ -445,7 +445,7 @@ export function CollaborationCard() {
 							Learn more
 							<ArrowRight className="w-3 h-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
 						</motion.button>
-					</Link>
+					</Link> */}
 				</div>
 			</Card>
 		</motion.div>
@@ -587,7 +587,7 @@ export function InviteOnlyVisualCard() {
 						</motion.div>
 					</div>
 
-					<Link href="/blog/invite-only-access">
+					{/* <Link href="/blog/invite-only-access">
 						<motion.button
 							whileHover={{ x: 4 }}
 							className="inline-flex items-center gap-2 mt-3 text-xs font-medium transition-colors group/btn text-primary hover:text-primary/80 sm:text-sm sm:mt-4"
@@ -595,7 +595,7 @@ export function InviteOnlyVisualCard() {
 							Learn more
 							<ArrowRight className="w-3 h-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
 						</motion.button>
-					</Link>
+					</Link> */}
 				</div>
 			</Card>
 		</motion.div>
@@ -765,7 +765,7 @@ export function TrackChangesCard() {
 						</div>
 					</motion.div>
 
-					<Link href="/blog/track-feedback-progress">
+					{/* <Link href="/blog/track-feedback-progress">
 						<motion.button
 							whileHover={{ x: 4 }}
 							className="inline-flex items-center gap-2 mt-2 text-xs font-medium transition-colors group/btn text-primary hover:text-primary/80 sm:text-sm"
@@ -773,7 +773,7 @@ export function TrackChangesCard() {
 							Learn more
 							<ArrowRight className="w-3 h-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
 						</motion.button>
-					</Link>
+					</Link> */}
 				</div>
 			</Card>
 		</motion.div>
