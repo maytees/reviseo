@@ -17,12 +17,6 @@ const caudex = Caudex({
 	display: "swap",
 });
 
-// const alegreya = Alegreya({
-// 	subsets: ['latin'],
-// 	variable: '--font-inter',
-// 	display: 'swap',
-// })
-
 export const metadata: Metadata = {
 	title: "Reviseo — Freelancing Simplified",
 	description:
