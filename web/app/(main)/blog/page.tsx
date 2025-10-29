@@ -1,4 +1,5 @@
 import moment from "moment";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { FinalCTA } from "@/components/landing/FinalCTA";
@@ -8,6 +9,10 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { getAllArticles } from "@/lib/blog";
 import { categoryMap } from "@/lib/types";
+
+export const metadata: Metadata = {
+	title: "Blog",
+};
 
 const BlogPage = async () => {
 	const articles = await getAllArticles();

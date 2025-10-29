@@ -1,5 +1,10 @@
+import type { Metadata } from "next";
 import { Footer } from "@/components/landing/Footer";
 import { Navbar } from "@/components/landing/Navbar";
+
+export const metadata: Metadata = {
+	title: "Terms of Service",
+};
 
 export default function TermsPage() {
 	return (
@@ -98,9 +103,7 @@ export default function TermsPage() {
 						<ul className="space-y-2 list-disc list-inside">
 							<li>Violate any laws or regulations</li>
 							<li>Spam, harass, or harm others</li>
-							<li>
-								Attempt to disrupt, hack, or reverse-engineer the service
-							</li>
+							<li>Attempt to disrupt, hack, or reverse-engineer the service</li>
 							<li>Misuse the widget or analytics data</li>
 						</ul>
 					</section>

@@ -18,9 +18,12 @@ const caudex = Caudex({
 });
 
 export const metadata: Metadata = {
-	title: "Reviseo — Freelancing Simplified",
+	title: {
+		default: "Reviseo",
+		template: "%s - Reviseo",
+	},
 	description:
-		"Platform for freelance web developers to make client revisieons seamless.",
+		"Platform for freelance web developers to make visual client feedback seamless.",
 	icons: {
 		icon: "/logo.svg",
 		shortcut: "/logo.svg",
