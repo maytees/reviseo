@@ -1,5 +1,6 @@
 "use client";
 import { BentoFeatures } from "@/components/landing/BentoFeatures";
+import { Contact } from "@/components/landing/Contact";
 import { FAQ } from "@/components/landing/FAQ";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
@@ -123,6 +124,7 @@ export default function Home() {
 			<HowItWorks />
 			<Pricing />
 			<FAQ />
+			<Contact />
 			<FinalCTA />
 			<Footer />
 		</div>

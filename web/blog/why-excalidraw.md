@@ -24,7 +24,9 @@ The handrawn, sketchy aesthetic, makes Excalidraw not just another drawing white
 
 In this post, I'll break down exactly why Excalidraw became the heart of Reviseo's feedback widget - and why ti might be the perfect choice for your projects as well.
 
--- put excalidraw example
+And why we had to let [Tldraw](https://tldraw.dev) integration go at the end.
+
+![tldraw vs Excalidraw side by side](/blog/why-excalidraw/exvstl.png)
 
 ## The Human Touch - Hand Drawn Aesthetic
 Here's the uncomfortable truth about most annotation tools: they look like software. Cold, precise, geometric. Red rectangles with pixel perfect corners. Bolded text with eye straining borders. They scream "I am a design tool, and you need training to use me."
@@ -34,8 +36,6 @@ Your clients aren't designers. They're business owners, marketers, creatives - p
 Excalidraw's tooling, design, and all the above just ***make sense***.
 
 When clients see that sketchy style, something clicks. To them it doesn't feel like "using software." It feels like having a conversation. Your feedback tool should fade into the background and let your clients focus on communicating with you easier. Excalidraw does exactly that. It's a software for communicating, and in the world of client feedback, thats everything for both your client and yourself.
-
--- put pics of excalidraw vs
 
 ## Battle Tested & Trusted
 Excalidraw isn't some weekend project that might disappear. It's a full fledged, actively maintained open source tool used by **hundreds of thousands of people**. We're talking developers, designers, product managers, educators - people who've made Excalidraw a part of their daily workflow because of it's many useful factors like described above.
@@ -76,15 +76,15 @@ Do I even have to explain myself? I'll be blunt, I was not trying to write my ow
 ### Tldraw - Tempting Competitor
 Now this one hurt.
 
-Tldraw is just as equally amazing as Excalidraw, as a matter of fact I found it and implemented the  Reviseo widget with it at first.  The developer experience in terms of the SDK is much better compared to Excalidraw, because tldraw was meant to be used as a whiteboard library. While Excalidraw also did this, the DX was no where near as great as tldraw.
+[Tldraw](https://tldraw.dev) is just as equally amazing as Excalidraw, as a matter of fact I found it and implemented the  Reviseo widget with it at first.  The developer experience in terms of the SDK is much better compared to Excalidraw, because [tldraw](https://tldraw.dev) was meant to be used as a whiteboard library. While Excalidraw also did this, the DX was no where near as great as [tldraw](https://tldraw.dev).
 
 After I had built the prototype, I loved it, I was very happy after spending too much time on other Canvas libraries.
 
 Then I read the license 😭.
 
-Tldraw isn't just open source - it's ***source-available with commercial restrictions***. For produciton use, you need to buy a license - **$6,000** a year!
+[tldraw](https://tldraw.dev) isn't just open source - it's ***source-available with commercial restrictions***. For produciton use, you need to buy a license - **$6,000** a year!
 
-Tldraw is a good choice if you're building an enterprise tool or a funded startup. But for a bootstrapped product like Reviseo? It's a scary thing to look at.
+[tldraw](https://tldraw.dev) is a good choice if you're building an enterprise tool or a funded startup. But for a bootstrapped product like Reviseo? It's a scary thing to look at.
 
 ## Conclusion Why Excalidraw Won
 It hit the sweet spot:

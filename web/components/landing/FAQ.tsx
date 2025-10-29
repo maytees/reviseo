@@ -133,25 +133,6 @@ export function FAQ() {
 					</div>
 				</div>
 			</motion.div>
-
-			{/* Still have questions? */}
-			<motion.div
-				initial={{ opacity: 0, y: 20 }}
-				whileInView={{ opacity: 1, y: 0 }}
-				transition={{ duration: 0.6, delay: 0.4 }}
-				viewport={{ once: true }}
-				className="mt-12 text-center"
-			>
-				<p className="text-base sm:text-lg text-muted-foreground font-inter">
-					Still have questions?{" "}
-					<a
-						href="/contact"
-						className="font-medium text-primary hover:underline"
-					>
-						Get in touch →
-					</a>
-				</p>
-			</motion.div>
 		</section>
 	);
 }

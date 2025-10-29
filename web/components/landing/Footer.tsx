@@ -4,45 +4,37 @@ import { motion } from "framer-motion";
 import { Mail } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { FaInstagram, FaLinkedin, FaTwitter } from "react-icons/fa";
+import { FaLinkedin } from "react-icons/fa";
 
 const footerLinks = {
 	product: [
 		{ name: "Features", href: "/#features" },
 		{ name: "Pricing", href: "/#pricing" },
 		{ name: "FAQ", href: "/#faq" },
-		{ name: "Integrations", href: "/integrations" },
 		{ name: "Changelog", href: "/changelog" },
 	],
 	resources: [
-		{ name: "Documentation", href: "/docs" },
-		{ name: "Guides", href: "/guides" },
+		// { name: "Documentation", href: "/docs" },
+		{ name: "Guides", href: "/blog" },
 		{ name: "Blog", href: "/blog" },
 	],
 	company: [
 		{ name: "About", href: "/about" },
-		{ name: "Contact", href: "/contact" },
+		{ name: "Contact", href: "/#contact" },
 	],
 	legal: [
 		{ name: "Privacy Policy", href: "/privacy" },
 		{ name: "Terms of Service", href: "/terms" },
-		{ name: "Cookie Policy", href: "/cookies" },
 	],
 };
 
 const socialLinks = [
-	{ name: "Twitter", icon: FaTwitter, href: "https://twitter.com/reviseo" },
-	{
-		name: "Instagram",
-		icon: FaInstagram,
-		href: "https://instagram.com/reviseo",
-	},
 	{
 		name: "LinkedIn",
 		icon: FaLinkedin,
 		href: "https://linkedin.com/company/reviseoapp",
 	},
-	{ name: "Email", icon: Mail, href: "mailto:hello@reviseo.dev" },
+	{ name: "Email", icon: Mail, href: "/#contact" },
 ];
 
 export function Footer() {
@@ -88,12 +80,13 @@ export function Footer() {
 						<div className="flex items-center gap-4 mt-6">
 							{socialLinks.map((social, index) => {
 								const Icon = social.icon;
+								const isEmail = social.name === "Email";
 								return (
 									<motion.a
 										key={social.name}
 										href={social.href}
-										target="_blank"
-										rel="noopener noreferrer"
+										target={isEmail ? undefined : "_blank"}
+										rel={isEmail ? undefined : "noopener noreferrer"}
 										initial={{ opacity: 0, scale: 0 }}
 										whileInView={{ opacity: 1, scale: 1 }}
 										transition={{
