@@ -24,7 +24,7 @@ The handrawn, sketchy aesthetic, makes Excalidraw not just another drawing white
 
 In this post, I'll break down exactly why Excalidraw became the heart of Reviseo's feedback widget - and why ti might be the perfect choice for your projects as well.
 
-And why we had to let [Tldraw](https://tldraw.dev) integration go at the end.
+And why we had to let [tldraw](https://tldraw.dev) integration go at the end.
 
 ![tldraw vs Excalidraw side by side](/blog/why-excalidraw/exvstl.png)
 
@@ -80,11 +80,9 @@ Now this one hurt.
 
 After I had built the prototype, I loved it, I was very happy after spending too much time on other Canvas libraries.
 
-Then I read the license 😭.
+Then I read the license.
 
-[tldraw](https://tldraw.dev) isn't just open source - it's ***source-available with commercial restrictions***. For produciton use, you need to buy a license - **$6,000** a year!
-
-[tldraw](https://tldraw.dev) is a good choice if you're building an enterprise tool or a funded startup. But for a bootstrapped product like Reviseo? It's a scary thing to look at.
+[tldraw](https://tldraw.dev) isn't just open source - it's ***source-available with commercial restrictions***. For production use, you need to buy a license - **$6,000** a year! This would be a good choice if we were building a large enterprise tool. But for a product like Reviseo where our ICP is freelance web developers, we'd have to put that charge on our customers; we promise we won't do that.
 
 ## Conclusion Why Excalidraw Won
 It hit the sweet spot:
