@@ -1,6 +1,7 @@
+import moment from "moment";
+import type { MetadataRoute } from "next";
 import { getAllArticles } from "@/lib/blog";
 import { env } from "@/lib/env";
-import type { MetadataRoute } from "next";
 
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const articles = await getAllArticles();
@@ -8,7 +9,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 	const blogEntries: MetadataRoute.Sitemap = articles.map(
 		({ id, lastModified }) => ({
 			url: `${env.BETTER_AUTH_URL}/blog/${id}`,
-			lastModified,
+			lastModified: moment(lastModified).format("YYYY-MM-DD"),
 		}),
 	);
 

@@ -23,7 +23,8 @@ export type ApiResponse<T = void> =
 export type BlogItem = {
 	id: string;
 	title: string;
-	date: string;
+	date: Date;
+	lastModified: Date;
 	category: string;
 	author: string;
 	authorImage?: string;
@@ -33,7 +34,6 @@ export type BlogItem = {
 	cover?: string;
 	slug?: string;
 	authorRole?: string;
-	lastModified: Date;
 };
 
 export const categoryMap = {

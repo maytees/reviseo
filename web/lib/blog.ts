@@ -123,6 +123,6 @@ export const getArticleData = async (
 		authorRole: matterResult.data.authorRole,
 		seeMore: matterResult.data.seeMore,
 		lastModified: matterResult.data.lastModified,
-		date: parseDate(matterResult.data.date).format("MMMM Do, YYYY"),
+		date: matterResult.data.date,
 	};
 };
