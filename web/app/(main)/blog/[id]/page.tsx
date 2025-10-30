@@ -1,5 +1,6 @@
 import { ArrowLeft } from "lucide-react";
 import moment from "moment";
+import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
@@ -14,6 +15,32 @@ import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getArticleData } from "@/lib/blog";
 import { categoryMap } from "@/lib/types";
+
+export async function generateMetadata({
+	params,
+}: {
+	params: { id: string };
+}): Promise<Metadata> {
+	const { id } = await params;
+	const articleData = await getArticleData(id);
+
+	if (!articleData) {
+		return notFound();
+	}
+
+	return {
+		title: articleData.title,
+		description: articleData.description,
+		openGraph: {
+			images: [
+				{
+					// TODO: Unsafe
+					url: articleData.cover as string,
+				},
+			],
+		},
+	};
+}
 
 const ArticlePage = async ({ params }: { params: { id: string } }) => {
 	const { id } = await params;

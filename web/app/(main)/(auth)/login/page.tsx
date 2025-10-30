@@ -1,8 +1,13 @@
+import type { Metadata } from "next";
 import { headers } from "next/headers";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { isClient, isDeveloper } from "@/lib/utils";
 import { LoginForm } from "./_components/LoginForm";
+
+export const metadata: Metadata = {
+	title: "Login",
+};
 
 export default async function LoginPage() {
 	const session = await auth.api.getSession({

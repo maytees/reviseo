@@ -28,6 +28,9 @@ export const metadata: Metadata = {
 		icon: "/logo.svg",
 		shortcut: "/logo.svg",
 	},
+	twitter: {
+		card: "summary_large_image",
+	},
 };
 
 export default function RootLayout({
