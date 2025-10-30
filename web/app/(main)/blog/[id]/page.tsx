@@ -109,7 +109,15 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 									Published
 								</p>
 								<span className="text-xs font-medium text-muted-foreground">
-									{moment().format("MMM Do YY")}
+									{moment(articleData.date).format("MMM Do YY")}
+								</span>
+							</div>
+							<div className="flex flex-row items-center justify-between mt-5">
+								<p className="text-sm font-bold tracking-widest text-left uppercase text-muted-foreground">
+									Last Modified
+								</p>
+								<span className="text-xs font-medium text-muted-foreground">
+									{moment(articleData.lastModified).format("MMM Do YY")}
 								</span>
 							</div>
 							<div className="flex flex-row items-center justify-between mt-2">

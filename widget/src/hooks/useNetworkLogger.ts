@@ -20,7 +20,12 @@ export function useNetworkLogger() {
 		// ---- PATCH FETCH ----
 		window.fetch = async (...args: Parameters<typeof fetch>) => {
 			const [input, init] = args;
-			const url = typeof input === "string" ? input : input instanceof URL ? input.href : input.url;
+			const url =
+				typeof input === "string"
+					? input
+					: input instanceof URL
+						? input.href
+						: input.url;
 			const method = (init?.method || "GET").toUpperCase();
 			const start = performance.now();
 
@@ -59,6 +64,7 @@ export function useNetworkLogger() {
 			this: XHRWithTracking,
 			method: string,
 			url: string | URL,
+			// biome-ignore lint/suspicious/noExplicitAny: goon
 			...rest: any[]
 		) {
 			this._url = typeof url === "string" ? url : url.href;
@@ -68,6 +74,7 @@ export function useNetworkLogger() {
 
 		XMLHttpRequest.prototype.send = function (
 			this: XHRWithTracking,
+			// biome-ignore lint/suspicious/noExplicitAny: goon
 			...args: any[]
 		) {
 			const start = performance.now();

@@ -38,6 +38,7 @@ const getSortedArticles = (): BlogItem[] => {
 			authorLinkedIn: matterResult.data.authorLinkedIn,
 			seeMore: matterResult.data.seeMore,
 			authorRole: matterResult.data.authorRole,
+			lastModified: matterResult.data.lastModified,
 		} satisfies BlogItem;
 	});
 
@@ -121,6 +122,7 @@ export const getArticleData = async (
 		authorLinkedIn: matterResult.data.authorLinkedIn,
 		authorRole: matterResult.data.authorRole,
 		seeMore: matterResult.data.seeMore,
+		lastModified: matterResult.data.lastModified,
 		date: parseDate(matterResult.data.date).format("MMMM Do, YYYY"),
 	};
 };

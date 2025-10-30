@@ -1,6 +1,7 @@
 ---
 title: "Why Excalidraw??"
 date: "29-10-2025"
+lastModified: "29-10-2025"
 category: "product"
 author: "Maytham Ajam"
 authorImage: "/blog/maytham.jpg"

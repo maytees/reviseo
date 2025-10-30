@@ -33,6 +33,7 @@ export type BlogItem = {
 	cover?: string;
 	slug?: string;
 	authorRole?: string;
+	lastModified: Date;
 };
 
 export const categoryMap = {
