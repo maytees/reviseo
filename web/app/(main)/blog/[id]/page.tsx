@@ -13,8 +13,17 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
-import { getArticleData } from "@/lib/blog";
+import { getAllArticles, getArticleData } from "@/lib/blog";
 import { categoryMap } from "@/lib/types";
+
+export async function generateStaticParams() {
+	const articles = await getAllArticles();
+
+	// Puts id's of all articles into an array (prerender all of these)
+	return articles.map(({ id }) => ({
+		id,
+	}));
+}
 
 export async function generateMetadata({
 	params,
