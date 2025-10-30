@@ -1,18 +1,11 @@
 import fs from "fs";
 import matter from "gray-matter";
-import moment from "moment";
 import path from "path";
 import { remark } from "remark";
 import html from "remark-html";
 import type { BlogItem } from "./types";
 
 const blogDirectory = path.join(process.cwd(), "blog");
-
-const parseDate = (input: string): moment.Moment => {
-	// support multiple common formats
-	const formats = ["DD-MM-YYYY", "YYYY-MM-DD", moment.ISO_8601, "DD-MM-YY"];
-	return moment(input, formats as any, true);
-};
 
 const getSortedArticles = (): BlogItem[] => {
 	const fileNames = fs.readdirSync(blogDirectory);
@@ -43,8 +36,8 @@ const getSortedArticles = (): BlogItem[] => {
 	});
 
 	return allArticlesData.sort((a, b) => {
-		const dateOne = parseDate(a.date);
-		const dateTwo = parseDate(b.date);
+		const dateOne = a.date;
+		const dateTwo = b.date;
 
 		if (dateOne.isBefore(dateTwo)) {
 			return -1;
