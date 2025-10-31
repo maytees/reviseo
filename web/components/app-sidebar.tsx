@@ -1,23 +1,18 @@
 "use client";
 
 import {
-	IconCreditCard,
-	IconFileText,
-	IconLifebuoy,
-	IconMessageCircle,
-	IconNotification,
-	IconUserCircle,
-} from "@tabler/icons-react";
-import {
-	FileCheck,
+	BookText,
+	CreditCard,
+	Gift,
 	Globe,
+	HeartHandshake,
 	Home,
-	LineChart,
 	LogOutIcon,
+	Mail,
 	Moon,
 	Settings,
 	Sun,
-	Users,
+	User,
 	Zap,
 } from "lucide-react";
 import Image from "next/image";
@@ -56,43 +51,21 @@ const data = {
 			icon: Globe,
 		},
 		{
-			title: "Clients",
-			url: "/clients",
-			icon: Users,
-		},
-		{
 			title: "Settings",
 			url: "/settings",
 			icon: Settings,
-		},
-	],
-	feedback: [
-		{
-			title: "All Feedback",
-			url: "/feedback",
-			icon: IconMessageCircle,
-		},
-		{
-			title: "In Review",
-			url: "/feedback/review",
-			icon: FileCheck,
-		},
-		{
-			title: "Analytics",
-			url: "/analytics",
-			icon: LineChart,
 		},
 	],
 	resources: [
 		{
 			title: "Documentation",
 			url: "/docs",
-			icon: IconFileText,
+			icon: BookText,
 		},
 		{
 			title: "Support",
 			url: "/support",
-			icon: IconLifebuoy,
+			icon: HeartHandshake,
 		},
 		{
 			title: "Changelog",
@@ -119,12 +92,12 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 							<Link href="/">
 								<Image
 									src="/logo.svg"
-									width={20}
-									height={20}
+									width={32}
+									height={32}
 									alt="Reviseo Logo"
 									className="!size-5"
 								/>
-								<span className="text-base font-semibold font-caudex">
+								<span className="text-2xl font-semibold font-caudex">
 									Reviseo
 								</span>
 							</Link>
@@ -138,7 +111,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 				<NavMain items={data.navMain} />
 
 				{/* Feedback Management */}
-				<SidebarGroup>
+				{/* <SidebarGroup>
 					<SidebarGroupLabel>Feedback</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
@@ -154,7 +127,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 							))}
 						</SidebarMenu>
 					</SidebarGroupContent>
-				</SidebarGroup>
+				</SidebarGroup> */}
 
 				{/* Resources */}
 				<SidebarGroup>
@@ -163,7 +136,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 						<SidebarMenu>
 							{data.resources.map((item) => (
 								<SidebarMenuItem key={item.title}>
-									<SidebarMenuButton asChild>
+									<SidebarMenuButton tooltip={item.title} asChild>
 										<Link href={item.url}>
 											<item.icon />
 											<span>{item.title}</span>
@@ -181,27 +154,35 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 					<SidebarGroupContent>
 						<SidebarMenu>
 							<SidebarMenuItem>
-								<SidebarMenuButton asChild>
+								<SidebarMenuButton tooltip={"Refer"} asChild>
 									<Link href="/account">
-										<IconUserCircle />
+										<Gift />
+										<span>Refer</span>
+									</Link>
+								</SidebarMenuButton>
+							</SidebarMenuItem>
+							<SidebarMenuItem>
+								<SidebarMenuButton tooltip={"Account"} asChild>
+									<Link href="/account">
+										<User />
 										<span>Account</span>
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
 
 							<SidebarMenuItem>
-								<SidebarMenuButton asChild>
+								<SidebarMenuButton tooltip={"Billing"} asChild>
 									<Link href="/billing">
-										<IconCreditCard />
+										<CreditCard />
 										<span>Billing</span>
 									</Link>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
 
 							<SidebarMenuItem>
-								<SidebarMenuButton asChild>
+								<SidebarMenuButton tooltip={"Notifications"} asChild>
 									<Link href="/notifications">
-										<IconNotification />
+										<Mail />
 										<span>Notifications</span>
 									</Link>
 								</SidebarMenuButton>
@@ -209,6 +190,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
 							<SidebarMenuItem>
 								<SidebarMenuButton
+									tooltip={"Toggle Theme"}
 									onClick={() => setTheme(theme === "dark" ? "light" : "dark")}
 								>
 									<Sun className="dark:hidden" />{" "}
@@ -228,14 +210,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 						<SidebarMenuItem>
 							<SidebarMenuButton size="lg" className="cursor-default">
 								<Skeleton className="w-8 h-8 rounded-lg" />
-								<div className="flex-1 text-sm leading-tight text-left grid gap-1">
+								<div className="grid flex-1 gap-1 text-sm leading-tight text-left">
 									<Skeleton className="w-20 h-4" />
 									<Skeleton className="w-16 h-3" />
 								</div>
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 					) : (
-						<SidebarMenuItem className="flex flex-row gap-2 py-1 px-1">
+						<SidebarMenuItem className="flex flex-row gap-2 px-1 py-1">
 							<Avatar className="rounded-lg">
 								<AvatarImage
 									src={
@@ -250,7 +232,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 										: session?.user.email.charAt(0).toUpperCase()}
 								</AvatarFallback>
 							</Avatar>
-							<div className="flex-1 text-sm leading-tight text-left grid">
+							<div className="grid flex-1 text-sm leading-tight text-left">
 								<span className="font-medium truncate">
 									{session?.user.name && session.user.name.length > 0
 										? session.user.name

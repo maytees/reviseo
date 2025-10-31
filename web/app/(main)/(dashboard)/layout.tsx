@@ -18,11 +18,12 @@ export default async function DashboardLayout({
 		<SidebarProvider
 			style={
 				{
-					"--sidebar-width": "19rem",
+					"--sidebar-width": "20rem",
+					"--spacing": "0.32rem",
 				} as React.CSSProperties
 			}
 		>
-			<AppSidebar variant="floating" collapsible="icon" />
+			<AppSidebar variant="inset" collapsible="icon" />
 			<SidebarInset>
 				<SiteHeader />
 				<div className="flex flex-col flex-1">
