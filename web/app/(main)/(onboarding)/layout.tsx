@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { Footer } from "@/components/landing/Footer";
 import { Navbar } from "@/components/landing/Navbar";
 
 export default function OnboardingLayout({
@@ -7,7 +8,7 @@ export default function OnboardingLayout({
 	children: ReactNode;
 }) {
 	return (
-		<div className="relative min-h-screen w-full overflow-hidden">
+		<div className="relative w-full min-h-screen overflow-hidden">
 			{/* Background Gradient */}
 			<div
 				className="absolute top-[40vh] opacity-30 left-1/2 -translate-x-1/2 w-full h-[1000px] pointer-events-none -z-50 blur-3xl "
@@ -18,11 +19,12 @@ export default function OnboardingLayout({
 			/>
 
 			{/* Navbar */}
-			<div className="w-full pt-6 justify-center flex items-center px-2 sm:px-4 md:px-6 sticky top-4 z-50">
+			<div className="sticky z-50 flex items-center justify-center w-full px-2 pt-6 sm:px-4 md:px-6 top-4">
 				<Navbar />
 			</div>
 
 			<div className="relative z-10">{children}</div>
+			<Footer />
 		</div>
 	);
 }

@@ -3,7 +3,7 @@
 import { AnimatePresence } from "framer-motion";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
-import type { UserOnboardingDataType } from "@/app/(main)/data/user/get-user-onboarding-data";
+import type { UserOnboardingDataType } from "@/app/data/user/get-user-onboarding-data";
 import { tryCatch } from "@/lib/try-catch";
 import type { ClientFormData, WebsiteFormData } from "@/lib/validations";
 import { completeOnboarding } from "../actions";
@@ -176,10 +176,10 @@ export function OnboardingFlow(props: { userData: UserOnboardingDataType }) {
 	};
 
 	return (
-		<div className="min-h-[calc(100vh-6rem)] flex flex-col items-center justify-center px-4 sm:px-6 py-8">
-			<div className="w-full flex flex-col items-center max-w-4xl">
+		<div className="min-h-[calc(100vh-6rem)] mt-10 flex flex-col items-center justify-center px-4 sm:px-6 py-8">
+			<div className="flex flex-col items-center w-full max-w-4xl">
 				{!showSuccess && (
-					<div className="mb-8 w-full">
+					<div className="w-full mb-8">
 						<OnboardingStepper steps={STEPS} currentStep={currentStep} />
 					</div>
 				)}

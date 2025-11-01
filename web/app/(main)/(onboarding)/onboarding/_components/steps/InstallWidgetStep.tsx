@@ -21,8 +21,7 @@ export function InstallWidgetStep({
 }: InstallWidgetStepProps) {
 	const [copied, setCopied] = useState(false);
 
-	const codeSnippet = `<link rel="stylesheet" href="https://reviseo.app/cdn/reviseo.css">
-<script
+	const codeSnippet = `<script
   src="https://reviseo.app/cdn/reviseo.js"
   data-project-id="${projectId}"
 ></script>`;
@@ -44,10 +43,10 @@ export function InstallWidgetStep({
 			animate={{ opacity: 1, y: 0 }}
 			exit={{ opacity: 0, y: -20 }}
 			transition={{ duration: 0.3, ease: "easeOut" }}
-			className="space-y-6 py-4"
+			className="py-4 space-y-6"
 		>
 			<div className="space-y-1 text-center">
-				<h2 className="text-2xl sm:text-3xl font-bold font-caudex">
+				<h2 className="text-2xl font-bold sm:text-3xl font-caudex">
 					Install the widget
 				</h2>
 				<p className="text-base text-muted-foreground font-inter">
@@ -57,7 +56,7 @@ export function InstallWidgetStep({
 
 			<div className="max-w-2xl mx-auto space-y-4">
 				<div className="relative">
-					<div className="bg-background rounded-lg p-4 font-mono text-sm sm:text-base overflow-x-auto border border-border">
+					<div className="p-4 overflow-x-auto font-mono text-sm border rounded-lg bg-background sm:text-base border-border">
 						<pre className="text-foreground">
 							<code>
 								<span className="text-purple-400">{`<link`}</span>{" "}
@@ -92,7 +91,7 @@ export function InstallWidgetStep({
 						variant="outline"
 						size="sm"
 						onClick={handleCopy}
-						className="absolute top-2 right-2 bg-card border-border hover:bg-muted font-inter text-sm"
+						className="absolute text-sm top-2 right-2 bg-card border-border hover:bg-muted font-inter"
 					>
 						{copied ? (
 							<>
@@ -107,7 +106,7 @@ export function InstallWidgetStep({
 						)}
 					</Button>
 				</div>
-				<div className="bg-accent/30 border border-border rounded-lg p-3">
+				<div className="p-3 border rounded-lg bg-accent/30 border-border">
 					<p className="text-sm text-muted-foreground font-inter">
 						<span className="font-medium text-foreground font-inter">Tip:</span>{" "}
 						To learn how to import for your platform,{" "}
@@ -124,7 +123,7 @@ export function InstallWidgetStep({
 				<VerifyInstallation projectId={projectId} />
 			</div>
 
-			<div className="flex justify-between pt-2 max-w-2xl mx-auto">
+			<div className="flex justify-between max-w-2xl pt-2 mx-auto">
 				<Button variant="outline" onClick={onBack} className="font-inter">
 					<ChevronLeft /> Edit Website
 				</Button>
@@ -132,7 +131,7 @@ export function InstallWidgetStep({
 					<Button
 						variant="ghost"
 						onClick={onNext}
-						className="font-inter text-base"
+						className="text-base font-inter"
 					>
 						Skip
 					</Button>

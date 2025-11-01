@@ -2,7 +2,7 @@
 
 import { addDays } from "date-fns";
 import { v4 } from "uuid";
-import { requireUser } from "@/app/(main)/data/require-user";
+import { requireUser } from "@/app/data/require-user";
 import { prisma } from "@/lib/db";
 import ClientInviteEmail from "@/lib/email/client-invite-email";
 import { env } from "@/lib/env";
@@ -104,6 +104,19 @@ export async function createWebsiteOnboarding({
 				url: websiteUrl,
 				developerId: user.id,
 			},
+		});
+
+		// Trigger screenshot generation asynchronously (fire and forget)
+		fetch(`${env.BETTER_AUTH_URL}/api/screenshot`, {
+			method: "POST",
+			headers: { "Content-Type": "application/json" },
+			body: JSON.stringify({
+				url: websiteUrl,
+				websiteId: newWebsite.id,
+			}),
+		}).catch((error) => {
+			// Log error but don't block the response
+			console.error("Failed to trigger screenshot:", error);
 		});
 
 		return {

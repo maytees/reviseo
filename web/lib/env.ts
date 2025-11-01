@@ -22,6 +22,7 @@ export const env = createEnv({
 	},
 
 	client: {
+		NEXT_PUBLIC_S3_BUCKET_NAME_SITE_SCREENSHOTS: z.string().min(1),
 		NEXT_PUBLIC_S3_BUCKET_NAME_UPLOADS: z.string().min(1),
 		// NEXT_PUBLIC_SITE_URL: z.string().min(1),
 	},
@@ -31,5 +32,7 @@ export const env = createEnv({
 		// NEXT_PUBLIC_SITE_URL: process.env.NEXT_PUBLIC_SITE_URL,
 		NEXT_PUBLIC_S3_BUCKET_NAME_UPLOADS:
 			process.env.NEXT_PUBLIC_S3_BUCKET_NAME_UPLOADS,
+		NEXT_PUBLIC_S3_BUCKET_NAME_SITE_SCREENSHOTS:
+			process.env.NEXT_PUBLIC_S3_BUCKET_NAME_SITE_SCREENSHOTS,
 	},
 });

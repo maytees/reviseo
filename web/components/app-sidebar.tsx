@@ -47,12 +47,12 @@ const data = {
 		},
 		{
 			title: "Websites",
-			url: "/websites",
+			url: "/dashboard/websites",
 			icon: Globe,
 		},
 		{
 			title: "Settings",
-			url: "/settings",
+			url: "/dashboard/settings",
 			icon: Settings,
 		},
 	],
@@ -64,12 +64,12 @@ const data = {
 		},
 		{
 			title: "Support",
-			url: "/support",
+			url: "/dashboard/support",
 			icon: HeartHandshake,
 		},
 		{
 			title: "Changelog",
-			url: "/changelog",
+			url: "/dashboard",
 			icon: Zap,
 		},
 	],
@@ -209,7 +209,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 					{isPending ? (
 						<SidebarMenuItem>
 							<SidebarMenuButton size="lg" className="cursor-default">
-								<Skeleton className="w-8 h-8 rounded-lg" />
+								<Skeleton className="rounded-lg size-8" />
 								<div className="grid flex-1 gap-1 text-sm leading-tight text-left">
 									<Skeleton className="w-20 h-4" />
 									<Skeleton className="w-16 h-3" />

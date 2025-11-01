@@ -22,6 +22,11 @@ enum FeedbackStatus {
   RESOLVED
 }
 
+enum FeedbackType {
+  BUG
+  IMPROVEMENT
+}
+
 enum InviteStatus {
   PENDING
   ACCEPTED
@@ -36,6 +41,8 @@ model Website {
 
   widgetInstalled Boolean   @default(false)
   verifiedAt      DateTime?
+
+  screenshotUrl String?
 
   developerId String
   developer   User   @relation("DeveloperWebsites", fields: [developerId], references: [id])
@@ -63,8 +70,11 @@ model Feedback {
   authorId String?
   author   User?   @relation(fields: [authorId], references: [id])
 
-  status  FeedbackStatus @default(NEW)
-  pageUrl String
+  status      FeedbackStatus @default(NEW)
+  type        FeedbackType   @default(IMPROVEMENT)
+  title       String
+  description String?
+  pageUrl     String
 
   screenshotSvgUrl String
   annotatedSvg     String

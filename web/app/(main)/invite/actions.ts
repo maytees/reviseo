@@ -2,7 +2,7 @@
 
 import { prisma } from "@/lib/db";
 import type { ApiResponse } from "@/lib/types";
-import { requireUser } from "../data/require-user";
+import { requireUser } from "../../data/require-user";
 
 export async function finalizeClientToken(token: string): Promise<ApiResponse> {
 	// This SHOULD give the client

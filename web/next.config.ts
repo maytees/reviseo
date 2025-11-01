@@ -8,6 +8,8 @@ const nextConfig: NextConfig = {
 			"images.unsplash.com",
 			"inst-fs-pdx-prod.inscloudgate.net",
 			"placehold.co",
+			"avatar.vercel.sh",
+			"reviseo-site-screenshots.t3.storage.dev",
 		],
 	},
 	// this shopws with the widget, which is why its false

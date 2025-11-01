@@ -2,7 +2,7 @@ import { redirect } from "next/navigation";
 import { AppSidebar } from "@/components/app-sidebar";
 import { SiteHeader } from "@/components/site-header";
 import { SidebarInset, SidebarProvider } from "@/components/ui/sidebar";
-import { requireUser } from "../data/require-user";
+import { requireUser } from "../../data/require-user";
 
 export default async function DashboardLayout({
 	children,
@@ -19,7 +19,7 @@ export default async function DashboardLayout({
 			style={
 				{
 					"--sidebar-width": "20rem",
-					"--spacing": "0.32rem",
+					"--spacing": "0.31rem",
 				} as React.CSSProperties
 			}
 		>
