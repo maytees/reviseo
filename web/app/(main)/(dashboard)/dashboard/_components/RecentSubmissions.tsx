@@ -125,6 +125,7 @@ const RecentSubmissions = async ({
 															feedback.type as keyof typeof TYPE_BADGE_MAP
 														] as BadgeVariantsType
 													}
+													className="hover:cursor-default"
 													appearance={"outline"}
 													size={"sm"}
 												>
@@ -150,6 +151,7 @@ const RecentSubmissions = async ({
 															feedback.priority as keyof typeof PRIORITY_BADGE_MAP
 														] as BadgeVariantsType
 													}
+													className="hover:cursor-default"
 													appearance={"outline"}
 													size={"sm"}
 												>
