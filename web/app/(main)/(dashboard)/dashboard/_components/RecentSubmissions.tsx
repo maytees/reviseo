@@ -101,18 +101,30 @@ const RecentSubmissions = async ({
 												</Badge>
 											</div>
 											<div className="flex flex-row items-center gap-2">
-												<div className="flex flex-row items-center gap-1">
-													<Globe className="text-green-400 size-2.5" />
-													<span className="text-sm truncate text-muted-foreground lg:text-xs">
-														{feedback.website.name}
-													</span>
-												</div>
-												<div className="flex flex-row items-center gap-1">
-													<PersonStanding className="text-blue-400 size-2.5" />
-													<span className="text-sm truncate text-muted-foreground lg:text-xs">
-														{feedback.author?.name}
-													</span>
-												</div>
+												<Tooltip>
+													<TooltipTrigger>
+														<div className="flex flex-row items-center gap-1">
+															<Globe className="text-green-400 size-2.5" />
+															<span className="text-sm truncate text-muted-foreground lg:text-xs">
+																{feedback.website.name}
+															</span>
+														</div>
+													</TooltipTrigger>
+													<TooltipContent>{feedback.pageUrl}</TooltipContent>
+												</Tooltip>
+												<Tooltip>
+													<TooltipTrigger>
+														<div className="flex flex-row items-center gap-1">
+															<PersonStanding className="text-blue-400 size-2.5" />
+															<span className="text-sm truncate text-muted-foreground lg:text-xs">
+																{feedback.author?.name}
+															</span>
+														</div>
+													</TooltipTrigger>
+													<TooltipContent>
+														{feedback.author?.email}
+													</TooltipContent>
+												</Tooltip>
 											</div>
 										</div>
 									</div>

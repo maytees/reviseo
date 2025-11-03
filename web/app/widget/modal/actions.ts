@@ -8,7 +8,7 @@ import { PrismaClientKnownRequestError } from "@/prisma/generated/client/runtime
 
 // Parent website URL, e.g clientsite.com
 export async function submitFeedbackForm(
-	websiteUrl: string,
+	pageUrl: string,
 	authorId: string,
 	values: FeedbackFormData,
 	projectId: string,
@@ -65,7 +65,7 @@ export async function submitFeedbackForm(
 		}
 
 		if (!existingWebsite) {
-			console.error(projectId, websiteUrl, user.id);
+			console.error(projectId, pageUrl, user.id);
 
 			return {
 				status: "error",
@@ -80,7 +80,7 @@ export async function submitFeedbackForm(
 				description,
 				priority,
 				screenshotKey,
-				pageUrl: "test",
+				pageUrl,
 				viewport,
 				browser: browserInfo?.browser,
 				os: browserInfo?.os,
