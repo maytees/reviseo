@@ -14,7 +14,6 @@ const ScreenshotPreview = ({
 		<PhotoProvider>
 			<PhotoView src={`${app_url}/api/s3/annotations/${screenshotKey}`}>
 				<Image
-					onClick={(e) => e.stopPropagation()}
 					src={`${app_url}/api/s3/annotations/${screenshotKey}`}
 					unoptimized
 					alt={`Feedback Image`}

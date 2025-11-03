@@ -82,104 +82,104 @@ const RecentSubmissions = async ({
 							.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime())
 							.splice(0, 5)
 							.map((feedback) => (
-								<Link
+								<div
 									key={feedback.id}
-									href={`/dashboard/websites/${feedback.websiteId}?open=${feedback.id}`}
+									className="flex flex-col w-full p-2 border rounded-sm lg:flex-row lg:items-center lg:justify-between bg-background/30 shadow-2xs border-background/40"
 								>
-									<div
-										key={feedback.id}
-										className="flex flex-col w-full p-2 transition-transform duration-300 ease-in-out border rounded-sm hover:scale-[1.03] lg:flex-row lg:items-center lg:justify-between bg-background/30 shadow-2xs border-background/40"
-									>
-										<div className="flex flex-col w-full space-y-2 lg:flex-row lg:space-y-0 lg:space-x-2 lg:w-auto">
-											<ScreenshotPreview
-												app_url={env.BETTER_AUTH_URL}
-												screenshotKey={feedback.screenshotKey}
-											/>
-											<div className="flex flex-col items-start justify-around gap-1">
+									<div className="flex flex-col w-full space-y-2 lg:flex-row lg:space-y-0 lg:space-x-2 lg:w-auto">
+										<ScreenshotPreview
+											app_url={env.BETTER_AUTH_URL}
+											screenshotKey={feedback.screenshotKey}
+										/>
+										<div className="flex flex-col items-start justify-around gap-1">
+											<div className="flex flex-row items-center gap-1">
+												<p className="text-lg font-semibold lg:text-base">
+													{feedback.title}
+												</p>
+												<Badge variant={"outline"} size={"sm"}>
+													{moment(feedback.createdAt).fromNow()}
+												</Badge>
+											</div>
+											<div className="flex flex-row items-center gap-2">
 												<div className="flex flex-row items-center gap-1">
-													<p className="text-lg font-semibold lg:text-base">
-														{feedback.title}
-													</p>
-													<Badge variant={"outline"} size={"sm"}>
-														{moment(feedback.createdAt).fromNow()}
-													</Badge>
+													<Globe className="text-green-400 size-2.5" />
+													<span className="text-sm truncate text-muted-foreground lg:text-xs">
+														{feedback.website.name}
+													</span>
 												</div>
-												<div className="flex flex-row items-center gap-2">
-													<div className="flex flex-row items-center gap-1">
-														<Globe className="text-green-400 size-2.5" />
-														<span className="text-sm truncate text-muted-foreground lg:text-xs">
-															{feedback.website.name}
-														</span>
-													</div>
-													<div className="flex flex-row items-center gap-1">
-														<PersonStanding className="text-blue-400 size-2.5" />
-														<span className="text-sm truncate text-muted-foreground lg:text-xs">
-															{feedback.author?.name}
-														</span>
-													</div>
+												<div className="flex flex-row items-center gap-1">
+													<PersonStanding className="text-blue-400 size-2.5" />
+													<span className="text-sm truncate text-muted-foreground lg:text-xs">
+														{feedback.author?.name}
+													</span>
 												</div>
 											</div>
 										</div>
-										<div className="flex flex-row flex-wrap items-center w-full gap-2 mt-2 lg:flex-nowrap lg:justify-end lg:w-auto lg:mt-0">
-											<Tooltip>
-												<TooltipTrigger>
-													<Badge
-														variant={
-															TYPE_BADGE_MAP[
-																feedback.type as keyof typeof TYPE_BADGE_MAP
-															] as BadgeVariantsType
-														}
-														appearance={"outline"}
-														size={"sm"}
-													>
-														{(() => {
-															const TypeIcon =
-																TYPE_CONFIG[
-																	feedback.type as keyof typeof TYPE_CONFIG
-																].icon;
-															return <TypeIcon />;
-														})()}
-													</Badge>
-												</TooltipTrigger>
-												<TooltipContent>
-													{feedback.type.charAt(0) +
-														feedback.type.substring(1).toLowerCase()}
-												</TooltipContent>
-											</Tooltip>
-											<Tooltip>
-												<TooltipTrigger>
-													<Badge
-														variant={
-															PRIORITY_BADGE_MAP[
-																feedback.priority as keyof typeof PRIORITY_BADGE_MAP
-															] as BadgeVariantsType
-														}
-														appearance={"outline"}
-														size={"sm"}
-													>
-														{(() => {
-															const PriorityIcon =
-																PRIORITY_CONFIG[
-																	feedback.priority as keyof typeof PRIORITY_CONFIG
-																].icon;
-															return <PriorityIcon />;
-														})()}
-														{/* {feedback.priority.toLowerCase().charAt(0).toUpperCase() +
-																	feedback.priority.substring(1).toLowerCase()} */}
-													</Badge>
-												</TooltipTrigger>
-												<TooltipContent>
-													{feedback.priority
-														.toLowerCase()
-														.charAt(0)
-														.toUpperCase() +
-														feedback.priority.substring(1).toLowerCase()}{" "}
-													Priority
-												</TooltipContent>
-											</Tooltip>
-										</div>
 									</div>
-								</Link>
+									<div className="flex flex-row flex-wrap items-center w-full gap-2 mt-2 lg:flex-nowrap lg:justify-end lg:w-auto lg:mt-0">
+										<Tooltip>
+											<TooltipTrigger>
+												<Badge
+													variant={
+														TYPE_BADGE_MAP[
+															feedback.type as keyof typeof TYPE_BADGE_MAP
+														] as BadgeVariantsType
+													}
+													appearance={"outline"}
+													size={"sm"}
+												>
+													{(() => {
+														const TypeIcon =
+															TYPE_CONFIG[
+																feedback.type as keyof typeof TYPE_CONFIG
+															].icon;
+														return <TypeIcon />;
+													})()}
+												</Badge>
+											</TooltipTrigger>
+											<TooltipContent>
+												{feedback.type.charAt(0) +
+													feedback.type.substring(1).toLowerCase()}
+											</TooltipContent>
+										</Tooltip>
+										<Tooltip>
+											<TooltipTrigger>
+												<Badge
+													variant={
+														PRIORITY_BADGE_MAP[
+															feedback.priority as keyof typeof PRIORITY_BADGE_MAP
+														] as BadgeVariantsType
+													}
+													appearance={"outline"}
+													size={"sm"}
+												>
+													{(() => {
+														const PriorityIcon =
+															PRIORITY_CONFIG[
+																feedback.priority as keyof typeof PRIORITY_CONFIG
+															].icon;
+														return <PriorityIcon />;
+													})()}
+													{/* {feedback.priority.toLowerCase().charAt(0).toUpperCase() +
+																	feedback.priority.substring(1).toLowerCase()} */}
+												</Badge>
+											</TooltipTrigger>
+											<TooltipContent>
+												{feedback.priority
+													.toLowerCase()
+													.charAt(0)
+													.toUpperCase() +
+													feedback.priority.substring(1).toLowerCase()}{" "}
+												Priority
+											</TooltipContent>
+										</Tooltip>
+										<Button asChild size={"sm"} variant={"outline"}>
+											<Link href={`/dashboard/websites/${feedback.id}`}>
+												Open
+											</Link>
+										</Button>
+									</div>
+								</div>
 							))}
 					</div>
 				) : (
