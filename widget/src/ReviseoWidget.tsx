@@ -1,5 +1,6 @@
 import { snapdom } from "@zumer/snapdom";
 import { useEffect, useRef } from "preact/hooks";
+import useBrowserAndOS from "./hooks/useBrowserInfo";
 
 /** Remove all HTML comments (prevents invalid XML like "--") */
 function removeAllComments(root) {
@@ -192,10 +193,11 @@ function cropImageFromDataURL(dataURL, cropX, cropY, cropWidth, cropHeight) {
 const WIDGET_ORIGIN =
 	import.meta.env.VITE_WIDGET_ORIGIN || "http://localhost:3000";
 
-export default function ReviseoWidget() {
+export default function ReviseoWidget({ projectId }: { projectId: string }) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const triggerIframeRef = useRef<HTMLIFrameElement>(null);
 	const healthTimeoutRef = useRef<number>();
+	const browserInfo = useBrowserAndOS();
 
 	useEffect(() => {
 		// Health check timeout
@@ -207,6 +209,8 @@ export default function ReviseoWidget() {
 		const handleMessage = async (event: MessageEvent) => {
 			if (event.origin !== WIDGET_ORIGIN) return;
 			if (!event.data?.type) return;
+
+			console.log(projectId, " is projid");
 
 			switch (event.data.type) {
 				case "HEALTH_CHECK":
@@ -260,6 +264,8 @@ export default function ReviseoWidget() {
 								url: window.location.href,
 								viewportHeight: window.innerHeight,
 								viewportWidth: window.innerWidth,
+								browserInfo,
+								projectId,
 							},
 							WIDGET_ORIGIN,
 						);

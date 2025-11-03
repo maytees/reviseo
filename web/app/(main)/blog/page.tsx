@@ -6,7 +6,7 @@ import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
 import { Navbar } from "@/components/landing/Navbar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeVariantsType } from "@/components/ui/badge";
 import { getAllArticles } from "@/lib/blog";
 import { categoryMap } from "@/lib/types";
 
@@ -53,16 +53,7 @@ const BlogPage = async () => {
 										variant={
 											categoryMap[
 												article.category as keyof typeof categoryMap
-											] as
-												| "info"
-												| "success"
-												| "warning"
-												| "primary"
-												| "secondary"
-												| "outline"
-												| "destructive"
-												| null
-												| undefined
+											] as BadgeVariantsType
 										}
 										appearance={"outline"}
 									>

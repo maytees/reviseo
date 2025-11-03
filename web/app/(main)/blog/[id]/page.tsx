@@ -10,7 +10,7 @@ import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
 import { Navbar } from "@/components/landing/Navbar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
+import { Badge, type BadgeVariantsType } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getAllArticles, getArticleData } from "@/lib/blog";
@@ -28,7 +28,7 @@ export async function generateStaticParams() {
 export async function generateMetadata({
 	params,
 }: {
-	params: { id: string };
+	params: Promise<{ id: string }>;
 }): Promise<Metadata> {
 	const { id } = await params;
 	const articleData = await getArticleData(id);
@@ -128,16 +128,7 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 									variant={
 										categoryMap[
 											articleData.category as keyof typeof categoryMap
-										] as
-											| "info"
-											| "success"
-											| "warning"
-											| "primary"
-											| "secondary"
-											| "outline"
-											| "destructive"
-											| null
-											| undefined
+										] as BadgeVariantsType
 									}
 									appearance={"outline"}
 									className="w-fit"

@@ -12,9 +12,16 @@ import type {
 	AppState,
 	BinaryFiles,
 	DataURL,
+	ExcalidrawImperativeAPI,
 } from "@excalidraw/excalidraw/types";
 import { useTheme } from "next-themes";
-import { useEffect, useState } from "react";
+import {
+	type Dispatch,
+	type RefObject,
+	type SetStateAction,
+	useEffect,
+	useState,
+} from "react";
 import {
 	Empty,
 	EmptyDescription,
@@ -34,19 +41,57 @@ const Excalidraw = dynamic(
 const ExCanvas = ({
 	imageUrl,
 	pending,
+	// excalidrawApi,
+	setExcalidrawApi,
+	initialData,
+	setInitialData,
+	sceneData,
+	// setFiles,
+	// setAppState,
+	// setElements,
 }: {
 	imageUrl?: string;
 	pending: boolean;
+	// excalidrawApi: ExcalidrawImperativeAPI | null;
+	setExcalidrawApi: Dispatch<SetStateAction<ExcalidrawImperativeAPI | null>>;
+	initialData:
+		| {
+				elements?: ExcalidrawElement[] | undefined;
+				appState?: Partial<AppState>;
+				files?: BinaryFiles;
+				scrollToContent?: boolean;
+		  }
+		| undefined;
+	setInitialData: Dispatch<
+		SetStateAction<
+			| {
+					elements?: ExcalidrawElement[];
+					appState?: Partial<AppState>;
+					files?: BinaryFiles;
+					scrollToContent?: boolean;
+			  }
+			| undefined
+		>
+	>;
+	sceneData: RefObject<{
+		elements: ExcalidrawElement[];
+		files: BinaryFiles;
+		appState: Partial<AppState>;
+	} | null>;
+	// setElements: Dispatch<SetStateAction<ExcalidrawElement[] | undefined>>;
+	// setFiles: Dispatch<SetStateAction<BinaryFiles | undefined>>;
+	// setAppState: Dispatch<SetStateAction<Partial<AppState> | undefined>>;
 }) => {
-	const [initialData, setInitialData] = useState<{
-		elements?: ExcalidrawElement[];
-		appState?: Partial<AppState>;
-		files?: BinaryFiles;
-		scrollToContent?: boolean;
-	}>();
+	// const [initialData, setInitialData] = useState<{
+	// 	elements?: ExcalidrawElement[];
+	// 	appState?: Partial<AppState>;
+	// 	files?: BinaryFiles;
+	// 	scrollToContent?: boolean;
+	// }>();
 	const [imageLoading, setImageLoading] = useState(false);
 	const { theme } = useTheme();
 
+	// biome-ignore lint/correctness/useExhaustiveDependencies: only update for image
 	useEffect(() => {
 		if (!imageUrl) {
 			setInitialData(undefined);
@@ -135,7 +180,28 @@ const ExCanvas = ({
 				</Empty>
 			) : (
 				<div style={{ width: "100%", height: "100%" }}>
+					{/* <button
+						className="custom-button"
+						type="button"
+						onClick={async () => {
+						}}
+					>
+						Export to Canvas
+					</button> */}
 					<Excalidraw
+						// onChange={(elements, appstate, files) => {
+						// 	setAppState(appstate);
+						// 	setFiles(files);
+						// 	setElements([...elements]);
+						// }}
+						onChange={(elements, appState, files) => {
+							sceneData.current = {
+								elements: [...elements],
+								appState,
+								files,
+							};
+						}}
+						excalidrawAPI={(api) => setExcalidrawApi(api)}
 						initialData={initialData}
 						theme={theme === "dark" ? "dark" : "light"}
 						UIOptions={{

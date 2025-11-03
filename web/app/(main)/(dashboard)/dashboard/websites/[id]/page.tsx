@@ -1,6 +1,7 @@
 import { notFound } from "next/navigation";
 import { requireUser } from "@/app/data/require-user";
 import { prisma } from "@/lib/db";
+import DashboardFooter from "../../_components/DashboardFooter";
 
 const WebsitePage = async ({ params }: { params: Promise<{ id: string }> }) => {
 	const user = await requireUser();
@@ -25,6 +26,7 @@ const WebsitePage = async ({ params }: { params: Promise<{ id: string }> }) => {
 					Manage <em>{website.name}</em>'s feedback, widget, client, and more.
 				</p>
 			</div>
+			<DashboardFooter />
 		</div>
 	);
 };

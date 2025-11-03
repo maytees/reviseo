@@ -107,7 +107,7 @@ export async function createWebsiteOnboarding({
 		});
 
 		// Trigger screenshot generation asynchronously (fire and forget)
-		fetch(`${env.BETTER_AUTH_URL}/api/screenshot`, {
+		fetch(`${env.BETTER_AUTH_URL}/api/s3/screenshot`, {
 			method: "POST",
 			headers: { "Content-Type": "application/json" },
 			body: JSON.stringify({

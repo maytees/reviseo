@@ -35,7 +35,7 @@ import { Spotlight } from "@/components/ui/spotlight-new";
 import { useConfetti } from "@/lib/hooks/use-confetti";
 import { tryCatch } from "@/lib/try-catch";
 import { type WaitlistFormData, waitlistSchema } from "@/lib/validations";
-import { sendWaitlistInvite } from "./action";
+import { sendWaitlistInvite } from "./actions";
 
 const WAITLIST_STORAGE_KEY = "reviseo_waitlist_joined";
 const WAITLIST_EMAILS_KEY = "reviseo_waitlist_emails";

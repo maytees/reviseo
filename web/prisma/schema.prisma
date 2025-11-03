@@ -27,6 +27,12 @@ enum FeedbackType {
   IMPROVEMENT
 }
 
+enum FeedbackPriority {
+  LOW
+  MEDIUM
+  HIGH
+}
+
 enum InviteStatus {
   PENDING
   ACCEPTED
@@ -70,17 +76,21 @@ model Feedback {
   authorId String?
   author   User?   @relation(fields: [authorId], references: [id])
 
-  status      FeedbackStatus @default(NEW)
-  type        FeedbackType   @default(IMPROVEMENT)
+  status      FeedbackStatus   @default(NEW)
+  type        FeedbackType     @default(IMPROVEMENT)
+  priority    FeedbackPriority @default(LOW)
   title       String
   description String?
   pageUrl     String
 
-  screenshotSvgUrl String
-  annotatedSvg     String
+  screenshotKey String
 
-  userAgent    String?
-  viewportJson Json?
+  browser        String?
+  browserVersion String?
+  isMobile       Boolean?
+  os             String?
+  viewport       String?
+  timestamp      DateTime? @default(now())
 
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt

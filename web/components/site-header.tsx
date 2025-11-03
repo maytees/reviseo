@@ -1,6 +1,4 @@
 "use client";
-import { usePathname } from "next/navigation";
-import React from "react";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -11,48 +9,79 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
+import { usePathname } from "next/navigation";
+import React from "react";
 
 export function SiteHeader() {
 	const pathname = usePathname();
 
 	const getBreadcrumbs = (path: string) => {
 		const segments = path.split("/").filter(Boolean);
-		const breadcrumbs = [];
+		const breadcrumbs = [] as { label: string; href: string; isLast: boolean }[];
 
-		// Dashboard
+		// Base: Dashboard
 		if (segments[0] === "dashboard") {
 			breadcrumbs.push({
 				label: "Dashboard",
 				href: "/dashboard",
-				isLast: segments[1] === undefined,
+				isLast: segments.length === 1,
 			});
-		}
 
-		// Websites
-		if (segments[0] === "websites") {
-			breadcrumbs.push({
-				label: "Websites",
-				href: "/websites",
-				isLast: segments[1] === undefined,
-			});
-		}
+			const section = segments[1];
+			if (section === "websites") {
+				breadcrumbs.push({
+					label: "Websites",
+					href: "/dashboard/websites",
+					isLast: segments.length === 2,
+				});
+				// Optional third-level (website id)
+				if (segments[2]) {
+					breadcrumbs.push({
+						label: "Website",
+						href: `/dashboard/websites/${segments[2]}`,
+						isLast: true,
+					});
+				}
+			}
 
-		// Clients
-		if (segments[0] === "clients") {
-			breadcrumbs.push({
-				label: "Clients",
-				href: "/clients",
-				isLast: segments[1] === undefined,
-			});
-		}
+			if (section === "clients") {
+				breadcrumbs.push({
+					label: "Clients",
+					href: "/dashboard/clients",
+					isLast: segments.length === 2,
+				});
+			}
 
-		// Settings
-		if (segments[0] === "settings") {
-			breadcrumbs.push({
-				label: "Settings",
-				href: "/settings",
-				isLast: segments[1] === undefined,
-			});
+			if (section === "settings") {
+				breadcrumbs.push({
+					label: "Settings",
+					href: "/dashboard/settings",
+					isLast: segments.length === 2,
+				});
+			}
+		} else {
+			// Fallbacks for any non-dashboard paths
+			if (segments[0] === "websites") {
+				breadcrumbs.push({
+					label: "Websites",
+					href: "/dashboard/websites",
+					isLast: segments.length === 1,
+				});
+			}
+			if (segments[0] === "clients") {
+				breadcrumbs.push({
+					label: "Clients",
+					href: "/dashboard/clients",
+					isLast: segments.length === 1,
+				});
+			}
+			if (segments[0] === "settings") {
+				breadcrumbs.push({
+					label: "Settings",
+					href: "/dashboard/settings",
+					isLast: segments.length === 1,
+				});
+			}
 		}
 
 		return breadcrumbs;
@@ -61,7 +90,7 @@ export function SiteHeader() {
 	const breadcrumbs = getBreadcrumbs(pathname);
 
 	return (
-		<header className="flex items-center h-16 px-4 shrink-0 gap-2">
+		<header className="flex items-center h-16 gap-2 px-4 shrink-0">
 			<SidebarTrigger className="-ml-1" />
 			<Separator
 				orientation="vertical"

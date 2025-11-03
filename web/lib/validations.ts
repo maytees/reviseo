@@ -30,10 +30,10 @@ export const feedbackFormSchema = z.object({
 	description: z
 		.string()
 		.max(6000, "Description cannot exceed 6,000 characters!"),
-	priority: z.enum(["low", "medium", "high"], {
+	priority: z.enum(["LOW", "MEDIUM", "HIGH"], {
 		message: "Priority is required!",
 	}),
-	type: z.enum(["bug", "improvement"], {
+	type: z.enum(["BUG", "IMPROVEMENT"], {
 		message: "Type is required!",
 	}),
 });

@@ -2,21 +2,40 @@
 <html lang="en">
 
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>VoltRush Energy - Fuel Your Fire</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
-  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
   <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Bebas+Neue&display=swap"
-    rel="stylesheet">
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-  <link rel="stylesheet" href="styles.css">
+    rel="stylesheet" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
+  <link rel="stylesheet" href="styles.css" />
 
-  <script src="./dist/widget.iife.js"></script>
+  <script>
+    window.ReviseoConfig = {
+      projectId: "d14c0b53-0551-4ef7-98e2-1fd222763760",
+    };
+
+    (function (window, document) {
+      if (window.__Reviseo) return;
+      window.__Reviseo = {};
+
+      const script = document.createElement("script");
+      script.src = "./dist/widget.iife.js";
+
+      const firstScript = document.getElementsByTagName("script")[0];
+      firstScript.parentNode.insertBefore(script, firstScript);
+    })(window, document);
+  </script>
+
+  <!-- Minified Version -->
+  <!-- <script>
+    window.ReviseoConfig = { projectId: "abc" }, function (e, t) { if (e.__Reviseo) return; e.__Reviseo = {}; let i = t.createElement("script"); i.async = 1, i.src = "./dist/widget.iife.js"; let s = t.getElementsByTagName("script")[0]; s.parentNode.insertBefore(i, s) }(window, document);
+  </script> -->
 </head>
 
 <body>
-
   <!-- Navbar -->
   <nav class="navbar" id="navbar">
     <div class="container nav-container">
@@ -45,12 +64,14 @@
     <div class="container hero-container">
       <div class="hero-content">
         <h1 class="hero-title">Fuel Your Fire.</h1>
-        <p class="hero-subtitle">Unleash unstoppable energy with zero sugar, all-natural ingredients, and explosive
-          flavor.</p>
+        <p class="hero-subtitle">
+          Unleash unstoppable energy with zero sugar, all-natural ingredients,
+          and explosive flavor.
+        </p>
         <button class="cta-btn hero-cta">Try VoltRush Now</button>
       </div>
       <div class="hero-image">
-        <img src="https://placehold.co/400x600/1a1a2e/00ff88?text=VoltRush+Can" alt="VoltRush Energy Drink">
+        <img src="https://placehold.co/400x600/1a1a2e/00ff88?text=VoltRush+Can" alt="VoltRush Energy Drink" />
       </div>
     </div>
   </section>
@@ -58,12 +79,14 @@
   <!-- Social Proof Bar -->
   <section class="social-proof">
     <div class="container">
-      <p class="proof-text">Trusted by athletes and professionals worldwide</p>
+      <p class="proof-text">
+        Trusted by athletes and professionals worldwide
+      </p>
       <div class="proof-logos">
-        <img src="https://placehold.co/120x40/333/fff?text=ProTeam" alt="ProTeam">
-        <img src="https://placehold.co/120x40/333/fff?text=FitElite" alt="FitElite">
-        <img src="https://placehold.co/120x40/333/fff?text=GamersX" alt="GamersX">
-        <img src="https://placehold.co/120x40/333/fff?text=Athletes+" alt="Athletes+">
+        <img src="https://placehold.co/120x40/333/fff?text=ProTeam" alt="ProTeam" />
+        <img src="https://placehold.co/120x40/333/fff?text=FitElite" alt="FitElite" />
+        <img src="https://placehold.co/120x40/333/fff?text=GamersX" alt="GamersX" />
+        <img src="https://placehold.co/120x40/333/fff?text=Athletes+" alt="Athletes+" />
       </div>
     </div>
   </section>
@@ -76,22 +99,34 @@
         <div class="benefit-card">
           <i class="fas fa-leaf benefit-icon"></i>
           <h3>Natural Ingredients</h3>
-          <p>Powered by green tea extract, guarana, and B-vitamins. No artificial colors or preservatives.</p>
+          <p>
+            Powered by green tea extract, guarana, and B-vitamins. No
+            artificial colors or preservatives.
+          </p>
         </div>
         <div class="benefit-card">
           <i class="fas fa-ban benefit-icon"></i>
           <h3>Zero Sugar</h3>
-          <p>All the energy, none of the crash. Sweetened naturally with stevia for guilt-free performance.</p>
+          <p>
+            All the energy, none of the crash. Sweetened naturally with stevia
+            for guilt-free performance.
+          </p>
         </div>
         <div class="benefit-card">
           <i class="fas fa-bolt benefit-icon"></i>
           <h3>Fast-Acting Formula</h3>
-          <p>Feel the rush in minutes. Our proprietary blend delivers instant, sustained energy when you need it.</p>
+          <p>
+            Feel the rush in minutes. Our proprietary blend delivers instant,
+            sustained energy when you need it.
+          </p>
         </div>
         <div class="benefit-card">
           <i class="fas fa-dumbbell benefit-icon"></i>
           <h3>Performance Boost</h3>
-          <p>Enhanced focus, endurance, and mental clarity. Perfect for workouts, work, or late-night gaming.</p>
+          <p>
+            Enhanced focus, endurance, and mental clarity. Perfect for
+            workouts, work, or late-night gaming.
+          </p>
         </div>
       </div>
     </div>
@@ -102,38 +137,53 @@
     <div class="container">
       <h2 class="section-title">Explosive Flavors</h2>
       <div class="flavors-carousel">
-        <button class="carousel-btn prev" id="prevBtn"><i class="fas fa-chevron-left"></i></button>
+        <button class="carousel-btn prev" id="prevBtn">
+          <i class="fas fa-chevron-left"></i>
+        </button>
         <div class="flavors-container" id="flavorsContainer">
           <div class="flavor-card">
-            <img src="https://placehold.co/300x400/ff6b35/fff?text=Dragon+Citrus" alt="Dragon Citrus">
+            <img src="https://placehold.co/300x400/ff6b35/fff?text=Dragon+Citrus" alt="Dragon Citrus" />
             <div class="flavor-info">
               <h3>Dragon Citrus</h3>
-              <p>Exotic dragonfruit meets zesty citrus for a tropical energy explosion.</p>
+              <p>
+                Exotic dragonfruit meets zesty citrus for a tropical energy
+                explosion.
+              </p>
             </div>
           </div>
           <div class="flavor-card">
-            <img src="https://placehold.co/300x400/4ecdc4/fff?text=Electric+Berry" alt="Electric Berry">
+            <img src="https://placehold.co/300x400/4ecdc4/fff?text=Electric+Berry" alt="Electric Berry" />
             <div class="flavor-info">
               <h3>Electric Berry</h3>
-              <p>A wild blend of blueberry, raspberry, and acai that electrifies your senses.</p>
+              <p>
+                A wild blend of blueberry, raspberry, and acai that
+                electrifies your senses.
+              </p>
             </div>
           </div>
           <div class="flavor-card">
-            <img src="https://placehold.co/300x400/ffe66d/333?text=Thunder+Mango" alt="Thunder Mango">
+            <img src="https://placehold.co/300x400/ffe66d/333?text=Thunder+Mango" alt="Thunder Mango" />
             <div class="flavor-info">
               <h3>Thunder Mango</h3>
-              <p>Sweet mango with a kick of passion fruit. Taste the thunder.</p>
+              <p>
+                Sweet mango with a kick of passion fruit. Taste the thunder.
+              </p>
             </div>
           </div>
           <div class="flavor-card">
-            <img src="https://placehold.co/300x400/a8e6cf/333?text=Arctic+Mint" alt="Arctic Mint">
+            <img src="https://placehold.co/300x400/a8e6cf/333?text=Arctic+Mint" alt="Arctic Mint" />
             <div class="flavor-info">
               <h3>Arctic Mint</h3>
-              <p>Cool, refreshing mint with a hint of lime. Chill vibes, hot performance.</p>
+              <p>
+                Cool, refreshing mint with a hint of lime. Chill vibes, hot
+                performance.
+              </p>
             </div>
           </div>
         </div>
-        <button class="carousel-btn next" id="nextBtn"><i class="fas fa-chevron-right"></i></button>
+        <button class="carousel-btn next" id="nextBtn">
+          <i class="fas fa-chevron-right"></i>
+        </button>
       </div>
     </div>
   </section>
@@ -154,14 +204,20 @@
           <div class="step-number">2</div>
           <i class="fas fa-fire step-icon"></i>
           <h3>Ignite</h3>
-          <p>Our fast-acting formula activates within minutes, flooding your system with clean energy.</p>
+          <p>
+            Our fast-acting formula activates within minutes, flooding your
+            system with clean energy.
+          </p>
         </div>
         <div class="step-arrow"><i class="fas fa-arrow-right"></i></div>
         <div class="step">
           <div class="step-number">3</div>
           <i class="fas fa-trophy step-icon"></i>
           <h3>Perform</h3>
-          <p>Experience hours of sustained focus, endurance, and peak performance.</p>
+          <p>
+            Experience hours of sustained focus, endurance, and peak
+            performance.
+          </p>
         </div>
       </div>
     </div>
@@ -180,10 +236,12 @@
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
           </div>
-          <p class="testimonial-text">"VoltRush is my go-to before every workout. The energy is real and there's no
-            crash afterward. Dragon Citrus is my favorite!"</p>
+          <p class="testimonial-text">
+            "VoltRush is my go-to before every workout. The energy is real and
+            there's no crash afterward. Dragon Citrus is my favorite!"
+          </p>
           <div class="testimonial-author">
-            <img src="https://placehold.co/60x60/555/fff?text=JM" alt="Jessica M">
+            <img src="https://placehold.co/60x60/555/fff?text=JM" alt="Jessica M" />
             <div>
               <h4>Jessica M.</h4>
               <p>Fitness Trainer</p>
@@ -198,10 +256,12 @@
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
           </div>
-          <p class="testimonial-text">"As a software developer, I need sustained focus. VoltRush keeps me sharp for
-            hours without the jitters. Game changer."</p>
+          <p class="testimonial-text">
+            "As a software developer, I need sustained focus. VoltRush keeps
+            me sharp for hours without the jitters. Game changer."
+          </p>
           <div class="testimonial-author">
-            <img src="https://placehold.co/60x60/555/fff?text=RC" alt="Ryan C">
+            <img src="https://placehold.co/60x60/555/fff?text=RC" alt="Ryan C" />
             <div>
               <h4>Ryan C.</h4>
               <p>Software Engineer</p>
@@ -216,10 +276,12 @@
             <i class="fas fa-star"></i>
             <i class="fas fa-star"></i>
           </div>
-          <p class="testimonial-text">"I've tried every energy drink on the market. VoltRush is the only one that's both
-            delicious and actually works. Electric Berry FTW!"</p>
+          <p class="testimonial-text">
+            "I've tried every energy drink on the market. VoltRush is the only
+            one that's both delicious and actually works. Electric Berry FTW!"
+          </p>
           <div class="testimonial-author">
-            <img src="https://placehold.co/60x60/555/fff?text=AL" alt="Alex L">
+            <img src="https://placehold.co/60x60/555/fff?text=AL" alt="Alex L" />
             <div>
               <h4>Alex L.</h4>
               <p>Pro Gamer</p>
@@ -236,16 +298,18 @@
       <h2 class="section-title">See VoltRush in Action</h2>
       <div class="video-wrapper">
         <div class="video-cover" id="videoCover">
-          <img src="https://placehold.co/1200x675/000/fff?text=Play+Video" alt="Video Cover">
+          <img src="https://placehold.co/1200x675/000/fff?text=Play+Video" alt="Video Cover" />
           <button class="play-btn" id="playBtn">
             <i class="fas fa-play"></i>
           </button>
         </div>
         <iframe id="videoFrame" width="100%" height="100%" src="" frameborder="0"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen style="display: none;"></iframe>
+          allowfullscreen style="display: none"></iframe>
       </div>
-      <p class="video-caption">Watch how VoltRush is fueling champions around the world.</p>
+      <p class="video-caption">
+        Watch how VoltRush is fueling champions around the world.
+      </p>
     </div>
   </section>
 
@@ -265,7 +329,9 @@
             <li><i class="fas fa-check"></i> 12 Cans</li>
             <li><i class="fas fa-check"></i> Mix & Match Flavors</li>
             <li><i class="fas fa-check"></i> Free Shipping</li>
-            <li class="disabled"><i class="fas fa-times"></i> Exclusive Merch</li>
+            <li class="disabled">
+              <i class="fas fa-times"></i> Exclusive Merch
+            </li>
           </ul>
           <button class="cta-btn">Order Now</button>
         </div>
@@ -358,15 +424,15 @@
         <p>Try VoltRush risk-free. Just cover shipping!</p>
         <form id="sampleForm">
           <div class="form-group">
-            <input type="text" id="name" placeholder="Full Name" required>
+            <input type="text" id="name" placeholder="Full Name" required />
             <span class="error-msg" id="nameError"></span>
           </div>
           <div class="form-group">
-            <input type="email" id="email" placeholder="Email Address" required>
+            <input type="email" id="email" placeholder="Email Address" required />
             <span class="error-msg" id="emailError"></span>
           </div>
           <div class="form-group">
-            <input type="text" id="zip" placeholder="Zip Code" required pattern="[0-9]{5}">
+            <input type="text" id="zip" placeholder="Zip Code" required pattern="[0-9]{5}" />
             <span class="error-msg" id="zipError"></span>
           </div>
           <button type="submit" class="cta-btn">Claim My Free Sample</button>
@@ -412,8 +478,11 @@
             <i class="fas fa-chevron-down"></i>
           </button>
           <div class="faq-answer">
-            <p>VoltRush contains green tea extract, guarana, B-vitamins (B3, B6, B12), natural caffeine, stevia, and
-              natural flavors. No artificial colors, sweeteners, or preservatives.</p>
+            <p>
+              VoltRush contains green tea extract, guarana, B-vitamins (B3,
+              B6, B12), natural caffeine, stevia, and natural flavors. No
+              artificial colors, sweeteners, or preservatives.
+            </p>
           </div>
         </div>
         <div class="faq-item">
@@ -422,8 +491,12 @@
             <i class="fas fa-chevron-down"></i>
           </button>
           <div class="faq-answer">
-            <p>Yes! VoltRush is made with natural ingredients and is safe for daily consumption. However, we recommend
-              limiting intake to 1-2 cans per day and consulting your doctor if you have any health concerns.</p>
+            <p>
+              Yes! VoltRush is made with natural ingredients and is safe for
+              daily consumption. However, we recommend limiting intake to 1-2
+              cans per day and consulting your doctor if you have any health
+              concerns.
+            </p>
           </div>
         </div>
         <div class="faq-item">
@@ -432,8 +505,11 @@
             <i class="fas fa-chevron-down"></i>
           </button>
           <div class="faq-answer">
-            <p>Each 12oz can contains 160mg of natural caffeine, comparable to a strong cup of coffee. It's enough to
-              energize you without overstimulation.</p>
+            <p>
+              Each 12oz can contains 160mg of natural caffeine, comparable to
+              a strong cup of coffee. It's enough to energize you without
+              overstimulation.
+            </p>
           </div>
         </div>
         <div class="faq-item">
@@ -442,8 +518,11 @@
             <i class="fas fa-chevron-down"></i>
           </button>
           <div class="faq-answer">
-            <p>No! Our zero-sugar formula with natural ingredients provides sustained energy without the crash
-              associated with sugary energy drinks.</p>
+            <p>
+              No! Our zero-sugar formula with natural ingredients provides
+              sustained energy without the crash associated with sugary energy
+              drinks.
+            </p>
           </div>
         </div>
         <div class="faq-item">
@@ -452,8 +531,10 @@
             <i class="fas fa-chevron-down"></i>
           </button>
           <div class="faq-answer">
-            <p>VoltRush is proudly manufactured in the USA in FDA-approved facilities with strict quality control
-              standards.</p>
+            <p>
+              VoltRush is proudly manufactured in the USA in FDA-approved
+              facilities with strict quality control standards.
+            </p>
           </div>
         </div>
         <div class="faq-item">
@@ -462,8 +543,10 @@
             <i class="fas fa-chevron-down"></i>
           </button>
           <div class="faq-answer">
-            <p>We offer a 30-day money-back guarantee. If you're not satisfied, contact our support team for a full
-              refund, no questions asked.</p>
+            <p>
+              We offer a 30-day money-back guarantee. If you're not satisfied,
+              contact our support team for a full refund, no questions asked.
+            </p>
           </div>
         </div>
       </div>
@@ -487,7 +570,9 @@
           <i class="fas fa-bolt"></i>
           <span>VoltRush</span>
         </div>
-        <p class="footer-about">Fuel your fire with clean, natural energy. No sugar, no crash, just pure performance.
+        <p class="footer-about">
+          Fuel your fire with clean, natural energy. No sugar, no crash, just
+          pure performance.
         </p>
         <div class="social-icons">
           <a href="#"><i class="fab fa-facebook"></i></a>
@@ -521,15 +606,18 @@
         <h3>Newsletter</h3>
         <p>Get exclusive offers and updates!</p>
         <form class="newsletter-form">
-          <input type="email" placeholder="Your email">
+          <input type="email" placeholder="Your email" />
           <button type="submit"><i class="fas fa-paper-plane"></i></button>
         </form>
       </div>
     </div>
     <div class="footer-bottom">
       <div class="container">
-        <p>&copy; 2025 VoltRush Energy. All rights reserved. These statements have not been evaluated by the FDA. This
-          product is not intended to diagnose, treat, cure, or prevent any disease.</p>
+        <p>
+          &copy; 2025 VoltRush Energy. All rights reserved. These statements
+          have not been evaluated by the FDA. This product is not intended to
+          diagnose, treat, cure, or prevent any disease.
+        </p>
       </div>
     </div>
   </footer>
@@ -543,8 +631,10 @@
     <div class="modal-content">
       <button class="modal-close" id="modalClose">&times;</button>
       <h2>Special Launch Offer!</h2>
-      <p>Get <strong>20% OFF</strong> your first order + a FREE shaker bottle!</p>
-      <img src="https://placehold.co/300x200/ff6b35/fff?text=Limited+Offer" alt="Special Offer">
+      <p>
+        Get <strong>20% OFF</strong> your first order + a FREE shaker bottle!
+      </p>
+      <img src="https://placehold.co/300x200/ff6b35/fff?text=Limited+Offer" alt="Special Offer" />
       <p class="modal-small">Use code: <strong>VOLT20</strong> at checkout</p>
       <button class="cta-btn modal-cta">Claim This Offer</button>
     </div>

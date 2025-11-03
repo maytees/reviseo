@@ -1,19 +1,29 @@
 "use client";
+
+import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
+import type {
+	AppState,
+	BinaryFiles,
+	ExcalidrawImperativeAPI,
+} from "@excalidraw/excalidraw/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	ArrowLeftIcon,
-	BugIcon,
 	ChevronRightIcon,
-	CircleAlertIcon,
-	CircleIcon,
 	ClockIcon,
 	GlobeIcon,
 	Grid2X2,
-	SparklesIcon,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
-import { Fragment, useEffect, useId, useState } from "react";
+import {
+	Fragment,
+	useEffect,
+	useId,
+	useRef,
+	useState,
+	useTransition,
+} from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
@@ -41,40 +51,47 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
+import { tryCatch } from "@/lib/try-catch";
+import { type BrowserInfo, PRIORITY_CONFIG, TYPE_CONFIG } from "@/lib/types";
 import { type FeedbackFormData, feedbackFormSchema } from "@/lib/validations";
 import ExCanvas from "../_components/ExCanvas";
-
-const PRIORITY_CONFIG = {
-	low: { label: "Low", icon: CircleIcon, color: "text-green-600" },
-	medium: { label: "Medium", icon: CircleIcon, color: "text-yellow-600" },
-	high: { label: "High", icon: CircleAlertIcon, color: "text-red-600" },
-} as const;
-
-const TYPE_CONFIG = {
-	bug: { label: "Bug", icon: BugIcon, color: "text-red-600" },
-	improvement: {
-		label: "Improvement",
-		icon: SparklesIcon,
-		color: "text-blue-600",
-	},
-} as const;
+import { submitFeedbackForm } from "./actions";
 
 const ReviseoModal = () => {
 	const { data: session } = authClient.useSession();
 	const [open, setOpen] = useState(true);
 	const [step, setStep] = useState<"canvas" | "form">("canvas");
 	const [loading, setLoading] = useState<boolean>(false);
+	const [isPending, startTransition] = useTransition();
+	const [excalidrawApi, setExcalidrawApi] =
+		useState<ExcalidrawImperativeAPI | null>(null);
+	const [initialData, setInitialData] = useState<{
+		elements?: ExcalidrawElement[];
+		appState?: Partial<AppState>;
+		files?: BinaryFiles;
+		scrollToContent?: boolean;
+	}>();
+
+	// const [elements, setElements] = useState<ExcalidrawElement[]>();
+	// const [files, setFiles] = useState<BinaryFiles>();
+	// const [appState, setAppState] = useState<Partial<AppState>>();
+
+	const sceneData = useRef<{
+		elements: ExcalidrawElement[];
+		files: BinaryFiles;
+		appState: Partial<AppState>;
+	}>(null);
 
 	const [screenshotMetadata, setScreenshotMetadata] = useState<{
 		timestamp: Date;
 		url: string | null;
 		image?: string;
 		viewport?: string;
+		browserInfo?: BrowserInfo;
+		projectId?: string;
 	}>({
 		timestamp: new Date(),
 		url: null,
-		image: undefined,
-		viewport: undefined,
 	});
 
 	const formId = useId();
@@ -126,9 +143,116 @@ const ReviseoModal = () => {
 	});
 
 	function onSubmit(data: FeedbackFormData) {
-		window.parent.postMessage({ type: "CLOSE_FORM" }, "*");
+		startTransition(async () => {
+			const { exportToSvg } = await import("@excalidraw/excalidraw");
+			if (!excalidrawApi) {
+				console.log(excalidrawApi, " is api");
+				return;
+			}
 
-		console.log(data);
+			const dat = sceneData.current;
+
+			if (!dat) {
+				console.log("No Dat");
+				return;
+			}
+
+			const { elements, files, appState } = dat;
+
+			if (!elements || !initialData) {
+				return;
+			}
+
+			console.log(JSON.stringify(excalidrawApi.getAppState()), "is app state");
+			console.log(excalidrawApi.getFiles(), "is files");
+			console.log(elements);
+
+			const svg = await exportToSvg({
+				elements,
+				appState: { ...appState },
+				files,
+				exportPadding: 0,
+			});
+
+			const svgString = svg.outerHTML;
+
+			const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
+
+			const presignedResponse = await fetch("/api/s3/annotations", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					fileName: "annotation.jpeg",
+					contentType: "image/svg+xml",
+					size: svgBlob.size,
+				}),
+			});
+
+			if (!presignedResponse.ok) {
+				throw new Error("Failed to get presigned URL");
+			}
+
+			const { preSignedUrl, key } = await presignedResponse.json();
+
+			const uploadResponse = await fetch(preSignedUrl, {
+				method: "PUT",
+				body: svgBlob, // ← Your blob goes here!
+				headers: {
+					"Content-Type": "image/svg+xml",
+				},
+			});
+
+			if (!uploadResponse.ok) {
+				throw new Error("Upload to S3 failed");
+			}
+
+			if (!screenshotMetadata.url || !screenshotMetadata.projectId) {
+				return;
+			}
+
+			if (!session?.user.id) {
+				return;
+			}
+
+			const { data: result, error } = await tryCatch(
+				submitFeedbackForm(
+					screenshotMetadata.url,
+					session?.user.id,
+					data,
+					screenshotMetadata.projectId,
+					key,
+					screenshotMetadata.viewport,
+					screenshotMetadata.timestamp,
+					screenshotMetadata.browserInfo,
+				),
+			);
+
+			if (error) {
+				console.error(error);
+				window.parent.postMessage(
+					{
+						type: "An unexpected error occurred. Please try again.",
+					},
+					"*",
+				);
+				return;
+			}
+
+			if (result.status === "success") {
+				window.parent.postMessage({ type: "CLOSE_FORM" }, "*");
+				form.reset();
+			} else if (result.status === "error") {
+				console.error(result.message);
+				window.parent.postMessage(
+					{
+						type: result.message,
+					},
+					"*",
+				);
+			}
+
+			console.log(data);
+		});
 	}
 
 	useEffect(() => {
@@ -153,6 +277,8 @@ const ReviseoModal = () => {
 						...prev,
 						url: event.data.url || "",
 						viewport: `${event.data.viewportWidth}x${event.data.viewportHeight}`,
+						browserInfo: event.data.browserInfo as BrowserInfo,
+						projectId: event.data.projectId,
 					}));
 					break;
 				case "PAGE_SCREENSHOT_RESPONSE":
@@ -179,9 +305,8 @@ const ReviseoModal = () => {
 					>
 						<DialogTitle>Submit Feedback</DialogTitle>
 						<DialogDescription>
-							{step === "canvas"
-								? "Draw on the screenshot in the canvas below to show the developer(s) what you'd like changed."
-								: "Provide details about your feedback to help the developer(s) understand your request."}
+							Draw on the screenshot to show the developer(s) what you'd like
+							changed, then provide details about your feedback.
 						</DialogDescription>
 						{/* Mobile Stepper - Only visible on small screens */}
 						<div className="flex items-center gap-2 mt-3 md:hidden">
@@ -200,41 +325,131 @@ const ReviseoModal = () => {
 								{step === "canvas" ? "Annotate" : "Details"}
 							</span>
 						</div>
-						<div className="flex flex-col h-full gap-3 mt-3">
-							{/* Desktop Layout - Side by side */}
-							<div className="flex-row flex-1 hidden min-h-0 gap-3 md:flex">
-								<div className="w-full h-full border border-border rounded-2xl">
-									<ExCanvas
-										imageUrl={screenshotMetadata.image}
-										pending={loading}
-									/>
-								</div>
-								<Card className="flex flex-col max-w-xs min-w-sm">
-									<CardContent className="flex flex-col flex-1 min-h-0">
-										<form
-											className="flex flex-col h-full max-w-sm"
-											onSubmit={form.handleSubmit(onSubmit)}
-											id={formId}
-										>
-											<FieldGroup className="flex flex-col flex-1 min-h-0 gap-4">
+
+						{/* Main Content Layout */}
+						<div className="flex flex-col h-full gap-3 mt-3 md:flex-row">
+							{/* Canvas - Always visible on desktop, conditional on mobile */}
+							<div
+								className={`flex-1 min-h-0 border border-border rounded-2xl ${step === "form" ? "hidden md:flex" : "flex"}`}
+							>
+								<ExCanvas
+									initialData={initialData}
+									setInitialData={setInitialData}
+									// excalidrawApi={excalidrawApi}
+									setExcalidrawApi={setExcalidrawApi}
+									imageUrl={screenshotMetadata.image}
+									pending={loading || isPending}
+									sceneData={sceneData}
+									// setElements={setElements}
+									// setAppState={setAppState}
+									// setFiles={setFiles}
+								/>
+							</div>
+
+							{/* Form - Side panel on desktop, full screen on mobile */}
+							<Card
+								className={`flex flex-col md:max-w-xs md:min-w-sm ${step === "canvas" ? "hidden md:flex" : "flex flex-1 overflow-y-scroll"} min-h-0`}
+							>
+								<CardContent className="flex flex-col flex-1 min-h-0 overflow-y-scroll md:overflow-visible">
+									<form
+										className="flex flex-col h-full"
+										onSubmit={form.handleSubmit(onSubmit)}
+										id={formId}
+									>
+										<FieldGroup className="flex flex-col flex-1 min-h-0 gap-4">
+											<Controller
+												name="title"
+												control={form.control}
+												render={({ field, fieldState }) => (
+													<Field data-invalid={fieldState.invalid}>
+														<div className="flex items-center justify-between">
+															<FieldLabel htmlFor={titleId}>Title</FieldLabel>
+															<span className="text-xs text-muted-foreground">
+																{titleValue?.length || 0}/800
+															</span>
+														</div>
+														<Input
+															{...field}
+															id={titleId}
+															disabled={loading || isPending}
+															aria-invalid={fieldState.invalid}
+															placeholder="e.g., Make the header bigger"
+															autoComplete="off"
+														/>
+														{fieldState.invalid && (
+															<FieldError errors={[fieldState.error]} />
+														)}
+													</Field>
+												)}
+											/>
+											<Controller
+												name="description"
+												control={form.control}
+												render={({ field, fieldState }) => (
+													<Field
+														className="flex flex-col flex-1 min-h-0"
+														data-invalid={fieldState.invalid}
+													>
+														<div className="flex items-center justify-between">
+															<FieldLabel htmlFor={descriptionId}>
+																Details (optional)
+															</FieldLabel>
+															<span className="text-xs text-muted-foreground">
+																{descriptionValue?.length || 0}/6000
+															</span>
+														</div>
+														<Textarea
+															disabled={loading || isPending}
+															{...field}
+															id={descriptionId}
+															aria-invalid={fieldState.invalid}
+															placeholder="Add any extra context or notes..."
+															autoComplete="off"
+															className="flex-1 resize-none"
+														/>
+														{<FieldError errors={[fieldState.error]} />}
+													</Field>
+												)}
+											/>
+											<div className="grid grid-cols-1 gap-3 md:grid-cols-2">
 												<Controller
-													name="title"
+													name="priority"
 													control={form.control}
 													render={({ field, fieldState }) => (
 														<Field data-invalid={fieldState.invalid}>
-															<div className="flex items-center justify-between">
-																<FieldLabel htmlFor={titleId}>Title</FieldLabel>
-																<span className="text-xs text-muted-foreground">
-																	{titleValue?.length || 0}/800
-																</span>
-															</div>
-															<Input
-																{...field}
-																id={titleId}
-																aria-invalid={fieldState.invalid}
-																placeholder="e.g., Make the header bigger"
-																autoComplete="off"
-															/>
+															<FieldLabel htmlFor={priorityId}>
+																Priority
+															</FieldLabel>
+															<Select
+																disabled={isPending || loading}
+																value={field.value}
+																onValueChange={field.onChange}
+															>
+																<SelectTrigger
+																	id={priorityId}
+																	aria-invalid={fieldState.invalid}
+																	className="w-full"
+																>
+																	<SelectValue placeholder="Select priority" />
+																</SelectTrigger>
+																<SelectContent>
+																	{Object.entries(PRIORITY_CONFIG).map(
+																		([key, config]) => {
+																			const Icon = config.icon;
+																			return (
+																				<SelectItem key={key} value={key}>
+																					<div className="flex items-center gap-2">
+																						<Icon
+																							className={`size-4 ${config.color}`}
+																						/>
+																						<span>{config.label}</span>
+																					</div>
+																				</SelectItem>
+																			);
+																		},
+																	)}
+																</SelectContent>
+															</Select>
 															{fieldState.invalid && (
 																<FieldError errors={[fieldState.error]} />
 															)}
@@ -242,344 +457,101 @@ const ReviseoModal = () => {
 													)}
 												/>
 												<Controller
-													name="description"
+													name="type"
 													control={form.control}
 													render={({ field, fieldState }) => (
-														<Field
-															className="flex flex-col flex-1 min-h-0"
-															data-invalid={fieldState.invalid}
-														>
-															<div className="flex items-center justify-between">
-																<FieldLabel htmlFor={descriptionId}>
-																	Details (optional)
-																</FieldLabel>
-																<span className="text-xs text-muted-foreground">
-																	{descriptionValue?.length || 0}/6000
-																</span>
-															</div>
-															<Textarea
-																{...field}
-																id={descriptionId}
-																aria-invalid={fieldState.invalid}
-																placeholder="Add any extra context or notes..."
-																autoComplete="off"
-																className="flex-1 resize-none"
-															/>
-															{<FieldError errors={[fieldState.error]} />}
+														<Field data-invalid={fieldState.invalid}>
+															<FieldLabel htmlFor={typeId}>Type</FieldLabel>
+															<Select
+																disabled={isPending || loading}
+																value={field.value}
+																onValueChange={field.onChange}
+															>
+																<SelectTrigger
+																	id={typeId}
+																	aria-invalid={fieldState.invalid}
+																	className="w-full"
+																>
+																	<SelectValue placeholder="Select type" />
+																</SelectTrigger>
+																<SelectContent>
+																	{Object.entries(TYPE_CONFIG).map(
+																		([key, config]) => {
+																			const Icon = config.icon;
+																			return (
+																				<SelectItem key={key} value={key}>
+																					<div className="flex items-center gap-2">
+																						<Icon
+																							className={`size-4 ${config.color}`}
+																						/>
+																						<span>{config.label}</span>
+																					</div>
+																				</SelectItem>
+																			);
+																		},
+																	)}
+																</SelectContent>
+															</Select>
+															{fieldState.invalid && (
+																<FieldError errors={[fieldState.error]} />
+															)}
 														</Field>
 													)}
 												/>
-												<div className="grid grid-cols-2 gap-3">
-													<Controller
-														name="priority"
-														control={form.control}
-														render={({ field, fieldState }) => (
-															<Field data-invalid={fieldState.invalid}>
-																<FieldLabel htmlFor={priorityId}>
-																	Priority
-																</FieldLabel>
-																<Select
-																	value={field.value}
-																	onValueChange={field.onChange}
-																>
-																	<SelectTrigger
-																		id={priorityId}
-																		aria-invalid={fieldState.invalid}
-																		className="w-full"
-																	>
-																		<SelectValue placeholder="Select priority" />
-																	</SelectTrigger>
-																	<SelectContent>
-																		{Object.entries(PRIORITY_CONFIG).map(
-																			([key, config]) => {
-																				const Icon = config.icon;
-																				return (
-																					<SelectItem key={key} value={key}>
-																						<div className="flex items-center gap-2">
-																							<Icon
-																								className={`size-4 ${config.color}`}
-																							/>
-																							<span>{config.label}</span>
-																						</div>
-																					</SelectItem>
-																				);
-																			},
-																		)}
-																	</SelectContent>
-																</Select>
-																{fieldState.invalid && (
-																	<FieldError errors={[fieldState.error]} />
-																)}
-															</Field>
-														)}
-													/>
-													<Controller
-														name="type"
-														control={form.control}
-														render={({ field, fieldState }) => (
-															<Field data-invalid={fieldState.invalid}>
-																<FieldLabel htmlFor={typeId}>Type</FieldLabel>
-																<Select
-																	value={field.value}
-																	onValueChange={field.onChange}
-																>
-																	<SelectTrigger
-																		id={typeId}
-																		aria-invalid={fieldState.invalid}
-																		className="w-full"
-																	>
-																		<SelectValue placeholder="Select type" />
-																	</SelectTrigger>
-																	<SelectContent>
-																		{Object.entries(TYPE_CONFIG).map(
-																			([key, config]) => {
-																				const Icon = config.icon;
-																				return (
-																					<SelectItem key={key} value={key}>
-																						<div className="flex items-center gap-2">
-																							<Icon
-																								className={`size-4 ${config.color}`}
-																							/>
-																							<span>{config.label}</span>
-																						</div>
-																					</SelectItem>
-																				);
-																			},
-																		)}
-																	</SelectContent>
-																</Select>
-																{fieldState.invalid && (
-																	<FieldError errors={[fieldState.error]} />
-																)}
-															</Field>
-														)}
-													/>
-												</div>
-											</FieldGroup>
-											<div className="flex flex-col gap-2 mt-4">
-												<DialogClose asChild>
-													<Button
-														type="button"
-														variant="outline"
-														onClick={() => setOpen(false)}
-													>
-														Close
-													</Button>
-												</DialogClose>
-												<Button type="submit" form={formId}>
-													Submit feedback
-												</Button>
 											</div>
-										</form>
-									</CardContent>
-								</Card>
-							</div>
-							{/* Mobile Layout - Stepper */}
-							<div className="flex flex-col flex-1 min-h-0 gap-3 md:hidden">
-								{step === "canvas" && (
-									<>
-										<div className="flex-1 min-h-0 border border-border rounded-2xl">
-											<ExCanvas
-												imageUrl={screenshotMetadata.image}
-												pending={loading}
-											/>
-										</div>
-										<Button
-											onClick={() => setStep("form")}
-											className="w-full"
-											size="lg"
-										>
-											Continue to Details
-											<ChevronRightIcon className="ml-2 size-4" />
-										</Button>
-									</>
-								)}
-								{step === "form" && (
-									<Card className="flex flex-col flex-1 min-h-0 overflow-y-scroll">
-										<CardContent className="flex flex-col flex-1 w-full min-h-0 overflow-y-scroll">
-											<form
-												className="flex flex-col w-full h-full overflow-y-scroll"
-												onSubmit={form.handleSubmit(onSubmit)}
-												id={formId}
+										</FieldGroup>
+										<div className="flex flex-col gap-2 mt-4">
+											{/* Mobile: Back button when on form step */}
+											{step === "form" && (
+												<Button
+													disabled={loading || isPending}
+													type="button"
+													variant="outline"
+													onClick={() => setStep("canvas")}
+													className="w-full md:hidden"
+												>
+													<ArrowLeftIcon className="mr-2 size-4" />
+													Back to Canvas
+												</Button>
+											)}
+											{/* Desktop: Close button, Mobile: conditional */}
+											<DialogClose asChild>
+												<Button
+													disabled={loading || isPending}
+													type="button"
+													variant="outline"
+													className={step === "canvas" ? "hidden" : ""}
+													onClick={() => setOpen(false)}
+												>
+													Close
+												</Button>
+											</DialogClose>
+											<Button
+												disabled={loading || isPending}
+												type="submit"
+												form={formId}
 											>
-												<FieldGroup className="flex flex-col flex-1 min-h-0 gap-4">
-													<Controller
-														name="title"
-														control={form.control}
-														render={({ field, fieldState }) => (
-															<Field data-invalid={fieldState.invalid}>
-																<div className="flex items-center justify-between">
-																	<FieldLabel htmlFor={titleId}>
-																		Title
-																	</FieldLabel>
-																	<span className="text-xs text-muted-foreground">
-																		{titleValue?.length || 0}/800
-																	</span>
-																</div>
-																<Input
-																	{...field}
-																	id={titleId}
-																	aria-invalid={fieldState.invalid}
-																	placeholder="e.g., Make the header bigger"
-																	autoComplete="off"
-																/>
-																{fieldState.invalid && (
-																	<FieldError errors={[fieldState.error]} />
-																)}
-															</Field>
-														)}
-													/>
-													<Controller
-														name="description"
-														control={form.control}
-														render={({ field, fieldState }) => (
-															<Field
-																className="flex flex-col flex-1 min-h-0"
-																data-invalid={fieldState.invalid}
-															>
-																<div className="flex items-center justify-between">
-																	<FieldLabel htmlFor={descriptionId}>
-																		Details (optional)
-																	</FieldLabel>
-																	<span className="text-xs text-muted-foreground">
-																		{descriptionValue?.length || 0}/6000
-																	</span>
-																</div>
-																<Textarea
-																	{...field}
-																	id={descriptionId}
-																	aria-invalid={fieldState.invalid}
-																	placeholder="Add any extra context or notes..."
-																	autoComplete="off"
-																	className="flex-1 resize-none"
-																/>
-																{<FieldError errors={[fieldState.error]} />}
-															</Field>
-														)}
-													/>
-													<div className="grid grid-cols-1 gap-3 mt-auto">
-														<Controller
-															name="priority"
-															control={form.control}
-															render={({ field, fieldState }) => (
-																<Field data-invalid={fieldState.invalid}>
-																	<FieldLabel
-																		className="max-w-fit"
-																		htmlFor={priorityId}
-																	>
-																		Priority
-																	</FieldLabel>
-																	<Select
-																		value={field.value}
-																		onValueChange={field.onChange}
-																	>
-																		<SelectTrigger
-																			id={priorityId}
-																			aria-invalid={fieldState.invalid}
-																			className="w-full"
-																		>
-																			<SelectValue placeholder="Select priority" />
-																		</SelectTrigger>
-																		<SelectContent>
-																			{Object.entries(PRIORITY_CONFIG).map(
-																				([key, config]) => {
-																					const Icon = config.icon;
-																					return (
-																						<SelectItem key={key} value={key}>
-																							<div className="flex items-center gap-2">
-																								<Icon
-																									className={`size-4 ${config.color}`}
-																								/>
-																								<span>{config.label}</span>
-																							</div>
-																						</SelectItem>
-																					);
-																				},
-																			)}
-																		</SelectContent>
-																	</Select>
-																	{fieldState.invalid && (
-																		<FieldError errors={[fieldState.error]} />
-																	)}
-																</Field>
-															)}
-														/>
-														<Controller
-															name="type"
-															control={form.control}
-															render={({ field, fieldState }) => (
-																<Field data-invalid={fieldState.invalid}>
-																	<FieldLabel
-																		className="max-w-fit"
-																		htmlFor={typeId}
-																	>
-																		Type
-																	</FieldLabel>
-																	<Select
-																		value={field.value}
-																		onValueChange={field.onChange}
-																	>
-																		<SelectTrigger
-																			id={typeId}
-																			aria-invalid={fieldState.invalid}
-																			className="w-full"
-																		>
-																			<SelectValue placeholder="Select type" />
-																		</SelectTrigger>
-																		<SelectContent>
-																			{Object.entries(TYPE_CONFIG).map(
-																				([key, config]) => {
-																					const Icon = config.icon;
-																					return (
-																						<SelectItem key={key} value={key}>
-																							<div className="flex items-center gap-2">
-																								<Icon
-																									className={`size-4 ${config.color}`}
-																								/>
-																								<span>{config.label}</span>
-																							</div>
-																						</SelectItem>
-																					);
-																				},
-																			)}
-																		</SelectContent>
-																	</Select>
-																	{fieldState.invalid && (
-																		<FieldError errors={[fieldState.error]} />
-																	)}
-																</Field>
-															)}
-														/>
-													</div>
-												</FieldGroup>
-												<div className="flex flex-col gap-2 mt-4">
-													<Button
-														type="button"
-														variant="outline"
-														onClick={() => setStep("canvas")}
-													>
-														<ArrowLeftIcon className="mr-2 size-4" />
-														Back to Canvas
-													</Button>
-													<DialogClose asChild>
-														<Button
-															type="button"
-															variant="outline"
-															onClick={() => setOpen(false)}
-														>
-															Close
-														</Button>
-													</DialogClose>
-													<Button type="submit" form={formId}>
-														Submit feedback
-													</Button>
-												</div>
-											</form>
-										</CardContent>
-									</Card>
-								)}
-							</div>
+												Submit feedback
+											</Button>
+										</div>
+									</form>
+								</CardContent>
+							</Card>
 						</div>
+
+						{/* Mobile: Continue button when on canvas step */}
+						{step === "canvas" && (
+							<Button
+								disabled={loading || isPending}
+								onClick={() => setStep("form")}
+								className="w-full mt-3 md:hidden"
+								size="lg"
+							>
+								Continue to Details
+								<ChevronRightIcon className="ml-2 size-4" />
+							</Button>
+						)}
+
 						<DialogFooter className="flex-col gap-3 pt-4 sm:flex-row sm:justify-between sm:items-center border-border">
 							{/* Screenshot Metadata */}
 							<div className="flex flex-col gap-2 sm:flex-row sm:gap-4">

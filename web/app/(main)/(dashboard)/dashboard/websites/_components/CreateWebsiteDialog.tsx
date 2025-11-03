@@ -2,6 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
+import type React from "react";
 import { useEffect, useId, useState, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
@@ -25,9 +26,10 @@ import {
 import { Input } from "@/components/ui/input";
 import { useConfetti } from "@/lib/hooks/use-confetti";
 import { tryCatch } from "@/lib/try-catch";
+import { cn } from "@/lib/utils";
 import { type WebsiteFormData, websiteSchema } from "@/lib/validations";
 
-const CreateWebsiteDialog = () => {
+const CreateWebsiteDialog = ({ className }: React.ComponentProps<"button">) => {
 	const [isPending, startTransition] = useTransition();
 	const [isMounted, setIsMounted] = useState(false);
 	const router = useRouter();
@@ -81,7 +83,7 @@ const CreateWebsiteDialog = () => {
 		<Dialog>
 			<form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
 				<DialogTrigger asChild>
-					<Button size={"sm"}>
+					<Button className={cn(className)} size={"sm"}>
 						<PlusCircle /> Add Website
 					</Button>
 				</DialogTrigger>

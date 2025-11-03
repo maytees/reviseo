@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { Caudex, Inter } from "next/font/google";
 import { ThemeProvider } from "@/components/theme-provider";
 import { Toaster } from "@/components/ui/sonner";
+import "react-photo-view/dist/react-photo-view.css";
 import "./globals.css";
 
 const inter = Inter({

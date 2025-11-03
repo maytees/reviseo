@@ -1,3 +1,5 @@
+import DashboardFooter from "../_components/DashboardFooter";
+
 export default function SettingsPage() {
 	return (
 		<div className="flex flex-col gap-4">
@@ -9,6 +11,7 @@ export default function SettingsPage() {
 					Configure your account settings and preferences.
 				</p>
 			</div>
+			<DashboardFooter />
 		</div>
 	);
 }

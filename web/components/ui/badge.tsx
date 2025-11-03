@@ -19,6 +19,17 @@ export interface BadgeButtonProps
 
 export type BadgeDotProps = React.HTMLAttributes<HTMLSpanElement>;
 
+export type BadgeVariantsType =
+	| "primary"
+	| "secondary"
+	| "success"
+	| "warning"
+	| "info"
+	| "outline"
+	| "destructive"
+	| null
+	| undefined;
+
 const badgeVariants = cva(
 	"inline-flex items-center whitespace-nowrap justify-center border border-transparent font-medium focus:outline-hidden focus:ring-2 focus:ring-ring focus:ring-offset-2 [&_svg]:-ms-px [&_svg]:shrink-0",
 	{

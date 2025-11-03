@@ -1,3 +1,5 @@
+import DashboardFooter from "../_components/DashboardFooter";
+
 export default function ClientsPage() {
 	return (
 		<div className="flex flex-col gap-4">
@@ -9,6 +11,7 @@ export default function ClientsPage() {
 					Manage your clients and send invite links.
 				</p>
 			</div>
+			<DashboardFooter />
 		</div>
 	);
 }
