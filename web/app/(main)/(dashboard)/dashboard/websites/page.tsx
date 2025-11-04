@@ -1,3 +1,15 @@
+import {
+	BookOpen,
+	CalendarPlus,
+	Circle,
+	Globe,
+	LinkIcon,
+	MessageCircle,
+	PersonStanding,
+} from "lucide-react";
+import moment from "moment";
+import Link from "next/link";
+import { notFound } from "next/navigation";
 import { getUserData } from "@/app/data/user/get-user-data";
 import { Button } from "@/components/ui/button";
 import {
@@ -19,18 +31,6 @@ import {
 } from "@/components/ui/item";
 import { getDomain } from "@/lib/getDomain";
 import { cn } from "@/lib/utils";
-import {
-	BookOpen,
-	CalendarPlus,
-	Circle,
-	Globe,
-	LinkIcon,
-	MessageCircle,
-	PersonStanding,
-} from "lucide-react";
-import moment from "moment";
-import Link from "next/link";
-import { notFound } from "next/navigation";
 import DashboardFooter from "../_components/DashboardFooter";
 import CreateWebsiteDialog from "./_components/CreateWebsiteDialog";
 import SiteLinkMedia from "./_components/SiteLinkMedia";
@@ -115,7 +115,7 @@ export default async function WebsitesPage() {
 									<ItemTitle className="text-2xl font-bold font-caudex">
 										{site.name}
 									</ItemTitle>
-									<div className="grid grid-cols-3 mt-1 gap-x-4 gap-y-2">
+									<div className="grid grid-cols-3 mt-1 space-x-4 xl:max-w-96 gap-y-2">
 										<div className="flex flex-row items-center gap-1">
 											<Globe className="flex-shrink-0 text-green-400 size-3" />
 											<span className="text-sm font-normal truncate text-muted-foreground">
@@ -158,8 +158,8 @@ export default async function WebsitesPage() {
 								<ItemActions className="w-full mt-2 lg:w-auto md:mt-0">
 									<Button
 										asChild
-										variant={"primary"}
-										size={"md"}
+										variant={"dashed"}
+										size={"sm"}
 										className="w-full lg:w-auto"
 									>
 										<Link href={`/dashboard/websites/${site.id}`}>

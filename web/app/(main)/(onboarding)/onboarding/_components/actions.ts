@@ -160,6 +160,9 @@ export async function updateWebsiteOnboarding({
 	const user = await requireUser();
 	const url = getDomain(websiteUrl);
 
+	// TODO: instead of getting params like that use zod validation for
+	// server side form validation
+
 	try {
 		// Verify the website belongs to the user
 		const existingWebsite = await prisma.website.findFirst({

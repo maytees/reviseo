@@ -190,7 +190,7 @@ const RecentSubmissions = async ({
 										</Tooltip>
 										{/* <SwitchStatusSelect status={feedback.status} /> */}
 										<Button asChild size={"sm"} variant={"outline"}>
-											<Link href={`/dashboard/websites/${feedback.id}`}>
+											<Link href={`/dashboard/websites/${feedback.websiteId}`}>
 												Open
 											</Link>
 										</Button>

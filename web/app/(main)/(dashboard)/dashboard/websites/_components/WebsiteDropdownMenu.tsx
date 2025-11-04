@@ -65,7 +65,7 @@ const WebsiteDropdownMenu = ({
 		<>
 			<DropdownMenu>
 				<DropdownMenuTrigger asChild>
-					<Button mode={"icon"} variant="outline" size="md">
+					<Button mode={"icon"} variant="outline" size="sm">
 						<EllipsisVertical />
 					</Button>
 				</DropdownMenuTrigger>
