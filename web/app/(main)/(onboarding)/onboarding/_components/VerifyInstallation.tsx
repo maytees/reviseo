@@ -8,6 +8,7 @@ import {
 	Loader2,
 	XCircle,
 } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
 import { Button, type buttonVariants } from "@/components/ui/button";
@@ -18,6 +19,7 @@ type VerifyInstallationProps = {
 	className?: string;
 	hideIcon?: boolean;
 	reset?: boolean;
+	refresh?: boolean;
 } & VariantProps<typeof buttonVariants>;
 
 type VerificationState = "idle" | "loading" | "success" | "error";
@@ -28,8 +30,10 @@ const VerifyInstallation = ({
 	hideIcon,
 	size = "lg",
 	reset = true,
+	refresh = false,
 }: VerifyInstallationProps) => {
 	const [state, setState] = useState<VerificationState>("idle");
+	const router = useRouter();
 
 	useEffect(() => {
 		if (state === "error" && reset) {
@@ -52,6 +56,7 @@ const VerifyInstallation = ({
 
 			if (response.ok && data.installed) {
 				setState("success");
+				router.refresh();
 				toast.success("Widget installed successfully!");
 			} else {
 				setState("error");

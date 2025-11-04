@@ -1,10 +1,12 @@
 import { ExternalLink } from "lucide-react";
+import moment from "moment";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import VerifyInstallation from "@/app/(main)/(onboarding)/onboarding/_components/VerifyInstallation";
 import { requireUser } from "@/app/data/require-user";
 import { getWebsiteByIdAndDevId } from "@/app/data/website/get-website-by-id-and-dev-id";
+import { Badge } from "@/components/ui/badge";
 import {
 	HoverCard,
 	HoverCardContent,
@@ -20,13 +22,6 @@ import FeedbackTable from "./_components/feedback/FeedbackTable";
 const WebsitePage = async ({ params }: { params: Promise<{ id: string }> }) => {
 	const user = await requireUser();
 	const { id } = await params;
-
-	// const website = await prisma.website.findUnique({
-	// 	where: {
-	// 		id,
-	// 		developerId: user.id,
-	// 	},
-	// });
 
 	const website = await getWebsiteByIdAndDevId(id);
 
@@ -44,6 +39,13 @@ const WebsitePage = async ({ params }: { params: Promise<{ id: string }> }) => {
 						</div>
 					</div>
 					<div className="flex flex-row items-center gap-2">
+						<Badge
+							variant={"outline"}
+							size={"sm"}
+							className="text-xs text-muted-foreground"
+						>
+							{moment(website.verifiedAt).fromNow()}
+						</Badge>
 						<VerifyInstallation
 							hideIcon
 							size={"sm"}
