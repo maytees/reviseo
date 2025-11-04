@@ -25,6 +25,19 @@ export async function getWebsiteByIdAndDevId(id: string) {
 			clientId: true,
 			createdAt: true,
 			updatedAt: true,
+			client: {
+				select: {
+					id: true,
+					name: true,
+					email: true,
+					emailVerified: true,
+					image: true,
+					createdAt: true,
+					updatedAt: true,
+					hasCompletedOnboarding: true,
+					role: true,
+				},
+			},
 			feedback: {
 				select: {
 					id: true,
