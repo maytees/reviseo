@@ -16,7 +16,6 @@ import {
 	CardTitle,
 } from "@/components/ui/old-card";
 import ClientAttention from "./_components/ClientAttention";
-import DashboardFooter from "./_components/DashboardFooter";
 import RecentSubmissions from "./_components/RecentSubmissions";
 import CreateWebsiteDialog from "./websites/_components/CreateWebsiteDialog";
 
@@ -89,45 +88,7 @@ export default async function DashboardPage() {
 							</CardContent>
 						</Card>
 					</div>
-					{/* Quick Actions: mobile/tablet (<xl) */}
-					<Card className="xl:hidden">
-						<CardHeader>
-							<CardTitle>Quick Actions</CardTitle>
-							<CardDescription>Common tasks and shortcuts</CardDescription>
-						</CardHeader>
-						<CardContent className="flex flex-col gap-1.5">
-							<CreateWebsiteDialog className="justify-start w-full" />
-							<Button
-								asChild
-								size={"sm"}
-								className="justify-start"
-								variant={"outline"}
-							>
-								<Link href={`/dashboard/websites`}>
-									<UserRoundPlus />
-									Invite Client
-								</Link>
-							</Button>
-							<Button
-								asChild
-								size={"sm"}
-								className="justify-start"
-								variant={"outline"}
-							>
-								<Link href={`/dashboard/websites`}>
-									<MessageCircle />
-									View All Feedback
-								</Link>
-							</Button>
-						</CardContent>
-					</Card>
-
 					<RecentSubmissions feedbacks={userData.feedback} />
-
-					{/* Catch Up: mobile/tablet (<xl) below recent feedback */}
-					<div className="xl:hidden">
-						<ClientAttention userData={userData} />
-					</div>
 				</div>
 				<div className="flex-col hidden w-2/6 h-full gap-5 xl:flex">
 					<Card>
@@ -164,9 +125,6 @@ export default async function DashboardPage() {
 					<ClientAttention userData={userData} />
 				</div>
 			</div>
-
-			{/* Footer for dashboard views */}
-			<DashboardFooter />
 		</div>
 	);
 }

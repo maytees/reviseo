@@ -66,7 +66,8 @@ const RecentSubmissions = async ({
 			<CardHeader className="max-lg:px-4">
 				<CardTitle>Recent Feedback</CardTitle>
 				<CardDescription>
-					Latest feedback submissions across all websites.
+					Latest feedback submissions across all websites. Open a feedback card
+					to modify it.
 				</CardDescription>
 				<CardAction>
 					<Button size={"sm"} asChild variant={"outline"}>
@@ -187,6 +188,7 @@ const RecentSubmissions = async ({
 												Priority
 											</TooltipContent>
 										</Tooltip>
+										{/* <SwitchStatusSelect status={feedback.status} /> */}
 										<Button asChild size={"sm"} variant={"outline"}>
 											<Link href={`/dashboard/websites/${feedback.id}`}>
 												Open
