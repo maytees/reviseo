@@ -84,7 +84,7 @@ const EditWebsiteDetailsDialog = ({ website }: { website: Website }) => {
 		<Dialog open={open} onOpenChange={setOpen}>
 			<form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
 				<DialogTrigger asChild>
-					<Button variant={"outline"} mode={"icon"} size={"sm"} className="">
+					<Button variant={"ghost"} mode={"icon"} size={"sm"} className="">
 						<Edit2 className="size-3" />
 					</Button>
 				</DialogTrigger>

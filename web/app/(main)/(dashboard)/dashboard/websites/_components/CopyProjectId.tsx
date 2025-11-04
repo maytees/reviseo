@@ -33,7 +33,7 @@ const CopyProjectId = ({ projectId }: { projectId: string }) => {
 	return (
 		<Button
 			onClick={handleCopy(projectId)}
-			variant={"outline"}
+			variant={"ghost"}
 			size={"sm"}
 			mode={"icon"}
 		>
