@@ -19,6 +19,8 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCopyToClipboard } from "@/lib/hooks/useCopyToClipboard";
+import type { Website } from "@/prisma/generated/client";
+import EditWebsiteDetailsDialog from "../[id]/_components/EditWebsiteDetailsDialog";
 import DeleteWebsiteDialog from "./DeleteWebsiteDialog";
 
 const snippet = (projectId: string) => {
@@ -29,13 +31,11 @@ const snippet = (projectId: string) => {
 };
 
 const WebsiteDropdownMenu = ({
-	websiteId,
-	projectId,
-	websiteName,
+	website,
+	open = false,
 }: {
-	websiteId: string;
-	projectId: string;
-	websiteName: string;
+	open?: boolean;
+	website: Website;
 }) => {
 	const [isMounted, setIsMounted] = useState(false);
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
@@ -63,30 +63,32 @@ const WebsiteDropdownMenu = ({
 
 	return (
 		<>
-			<DropdownMenu>
+			<DropdownMenu modal={false}>
 				<DropdownMenuTrigger asChild>
 					<Button mode={"icon"} variant="outline" size="sm">
 						<EllipsisVertical />
 					</Button>
 				</DropdownMenuTrigger>
 				<DropdownMenuContent align="end">
-					<DropdownMenuItem asChild>
-						<Link href={`/dashboard/websites/${websiteId}`}>
-							<LinkIcon />
-							Open
-						</Link>
-					</DropdownMenuItem>
-					<DropdownMenuItem asChild>
-						<Link href={`/dashboard/websites/${websiteId}`}>
+					{open && (
+						<DropdownMenuItem asChild>
+							<Link href={`/dashboard/websites/${website.id}`}>
+								<LinkIcon />
+								Open
+							</Link>
+						</DropdownMenuItem>
+					)}
+					<EditWebsiteDetailsDialog website={website}>
+						<DropdownMenuItem onSelect={(e) => e.preventDefault()}>
 							<Pencil />
 							Edit
-						</Link>
-					</DropdownMenuItem>
-					<DropdownMenuItem onClick={handleCopy(snippet(projectId))}>
+						</DropdownMenuItem>
+					</EditWebsiteDetailsDialog>
+					<DropdownMenuItem onClick={handleCopy(snippet(website.projectId))}>
 						<Code />
 						Copy Snippet
 					</DropdownMenuItem>
-					<DropdownMenuItem onClick={handleCopy(projectId)}>
+					<DropdownMenuItem onClick={handleCopy(website.projectId)}>
 						<Copy />
 						Project Id
 					</DropdownMenuItem>
@@ -101,8 +103,8 @@ const WebsiteDropdownMenu = ({
 				</DropdownMenuContent>
 			</DropdownMenu>
 			<DeleteWebsiteDialog
-				websiteId={websiteId}
-				websiteName={websiteName}
+				websiteId={website.id}
+				websiteName={website.name}
 				open={deleteDialogOpen}
 				onOpenChange={setDeleteDialogOpen}
 			/>

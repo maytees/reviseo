@@ -2,7 +2,13 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useEffect, useId, useState, useTransition } from "react";
+import {
+	type ReactNode,
+	useEffect,
+	useId,
+	useState,
+	useTransition,
+} from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { updateWebsiteOnboarding } from "@/app/(main)/(onboarding)/onboarding/_components/actions";
@@ -27,7 +33,13 @@ import { tryCatch } from "@/lib/try-catch";
 import { type WebsiteFormData, websiteSchema } from "@/lib/validations";
 import type { Website } from "@/prisma/generated/client";
 
-const EditWebsiteDetailsDialog = ({ website }: { website: Website }) => {
+const EditWebsiteDetailsDialog = ({
+	website,
+	children,
+}: {
+	website: Website;
+	children?: ReactNode;
+}) => {
 	const [isPending, startTransition] = useTransition();
 	const [isMounted, setIsMounted] = useState(false);
 	const [open, setOpen] = useState(false);
@@ -84,9 +96,13 @@ const EditWebsiteDetailsDialog = ({ website }: { website: Website }) => {
 		<Dialog open={open} onOpenChange={setOpen}>
 			<form id={formId} onSubmit={form.handleSubmit(onSubmit)}>
 				<DialogTrigger asChild>
-					<Button variant={"ghost"} mode={"icon"} size={"sm"} className="">
-						<Edit2 className="size-3" />
-					</Button>
+					{children ? (
+						children
+					) : (
+						<Button variant={"ghost"} mode={"icon"} size={"sm"} className="">
+							<Edit2 className="size-3" />
+						</Button>
+					)}
 				</DialogTrigger>
 				<DialogContent>
 					<DialogHeader>

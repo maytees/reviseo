@@ -5,6 +5,7 @@ import { requireUser } from "@/app/data/require-user";
 import { prisma } from "@/lib/db";
 import DashboardFooter from "../../_components/DashboardFooter";
 import CopyProjectId from "../_components/CopyProjectId";
+import WebsiteDropdownMenu from "../_components/WebsiteDropdownMenu";
 import EditWebsiteDetailsDialog from "./_components/EditWebsiteDetailsDialog";
 
 const WebsitePage = async ({ params }: { params: Promise<{ id: string }> }) => {
@@ -22,12 +23,15 @@ const WebsitePage = async ({ params }: { params: Promise<{ id: string }> }) => {
 
 	return (
 		<div className="flex flex-col gap-0.5 h-full">
-			<div className="flex items-center gap-4">
-				<h1 className="text-3xl font-bold font-caudex">{website.name}</h1>
-				<div className="flex flex-row items-center ">
-					<EditWebsiteDetailsDialog website={website} />
-					<CopyProjectId projectId={website.projectId} />
+			<div className="flex flex-row items-center justify-between">
+				<div className="flex items-center gap-4">
+					<h1 className="text-3xl font-bold font-caudex">{website.name}</h1>
+					<div className="flex flex-row items-center ">
+						<EditWebsiteDetailsDialog website={website} />
+						<CopyProjectId projectId={website.projectId} />
+					</div>
 				</div>
+				<WebsiteDropdownMenu website={website} />
 			</div>
 			<div className="flex-1">
 				<Link
