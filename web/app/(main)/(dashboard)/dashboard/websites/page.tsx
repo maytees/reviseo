@@ -1,7 +1,8 @@
 import {
 	BookOpen,
 	CalendarPlus,
-	Circle,
+	CircleCheck,
+	CircleX,
 	Globe,
 	LinkIcon,
 	MessageCircle,
@@ -30,7 +31,6 @@ import {
 	ItemTitle,
 } from "@/components/ui/item";
 import { getDomain } from "@/lib/getDomain";
-import { cn } from "@/lib/utils";
 import DashboardFooter from "../_components/DashboardFooter";
 import CreateWebsiteDialog from "./_components/CreateWebsiteDialog";
 import SiteLinkMedia from "./_components/SiteLinkMedia";
@@ -135,16 +135,15 @@ export default async function WebsitesPage() {
 											</span>
 										</div>
 										<div className="flex flex-row items-center gap-1">
-											<Circle
-												className={cn("size-3 flex-shrink-0", {
-													"text-indigo-400": site.widgetInstalled,
-													"text-red-400": !site.widgetInstalled,
-												})}
-											/>
+											{site.widgetInstalled ? (
+												<CircleCheck className="text-indigo-400 shrink-0 size-3" />
+											) : (
+												<CircleX className="shrink-0 size-3 text-destructive" />
+											)}
 											<span className="text-xs font-normal text-muted-foreground">
 												{site.widgetInstalled
 													? "Widget Installed"
-													: "Widget Pending"}
+													: "Widget not Installed"}
 											</span>
 										</div>
 										<div className="flex flex-row items-center gap-1">

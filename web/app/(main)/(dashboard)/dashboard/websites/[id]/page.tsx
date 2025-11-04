@@ -9,6 +9,7 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from "@/components/ui/hover-card";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { prisma } from "@/lib/db";
 import DashboardFooter from "../../_components/DashboardFooter";
 import CopyProjectId from "../_components/CopyProjectId";
@@ -71,6 +72,26 @@ const WebsitePage = async ({ params }: { params: Promise<{ id: string }> }) => {
 						className="z-40 object-cover w-full h-auto rounded"
 					/>
 				</HoverCardContent>
+				<Tabs className="mt-4">
+					<TabsList className="grid h-8 grid-cols-4">
+						<TabsTrigger value={"feedback"}>Feedback</TabsTrigger>
+						<TabsTrigger value={"client"}>Client</TabsTrigger>
+						<TabsTrigger value={"widget"}>Widget</TabsTrigger>
+						<TabsTrigger value={"settings"}>Settings</TabsTrigger>
+					</TabsList>
+					<TabsContent value="feedback">
+						<p>Feedback</p>
+					</TabsContent>
+					<TabsContent value="client">
+						<p>Client</p>
+					</TabsContent>
+					<TabsContent value="widget">
+						<p>Widget</p>
+					</TabsContent>
+					<TabsContent value="settings">
+						<p>settings</p>
+					</TabsContent>
+				</Tabs>
 				<div className="mt-auto">
 					<DashboardFooter />
 				</div>
