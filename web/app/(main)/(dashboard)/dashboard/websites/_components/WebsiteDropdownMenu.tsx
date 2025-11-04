@@ -10,6 +10,7 @@ import {
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
+import type { WebsiteDataTypeNonNullable } from "@/app/data/website/get-website-by-id-and-dev-id";
 import { Button } from "@/components/ui/button";
 import {
 	DropdownMenu,
@@ -20,7 +21,6 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { useCopyToClipboard } from "@/lib/hooks/useCopyToClipboard";
 import { generateWidgetScriptMinified } from "@/lib/utils";
-import type { Website } from "@/prisma/generated/client";
 import EditWebsiteDetailsDialog from "../[id]/_components/EditWebsiteDetailsDialog";
 import DeleteWebsiteDialog from "./DeleteWebsiteDialog";
 
@@ -29,7 +29,7 @@ const WebsiteDropdownMenu = ({
 	open = false,
 }: {
 	open?: boolean;
-	website: Website;
+	website: WebsiteDataTypeNonNullable;
 }) => {
 	const [isMounted, setIsMounted] = useState(false);
 	const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);

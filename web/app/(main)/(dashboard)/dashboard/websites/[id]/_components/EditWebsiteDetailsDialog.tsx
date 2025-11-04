@@ -12,6 +12,7 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { updateWebsiteOnboarding } from "@/app/(main)/(onboarding)/onboarding/_components/actions";
+import type { WebsiteDataTypeNonNull } from "@/app/data/website/get-website-by-id-and-dev-id";
 import { Button } from "@/components/ui/button";
 import DialogContent, {
 	Dialog,
@@ -31,13 +32,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { tryCatch } from "@/lib/try-catch";
 import { type WebsiteFormData, websiteSchema } from "@/lib/validations";
-import type { Website } from "@/prisma/generated/client";
 
 const EditWebsiteDetailsDialog = ({
 	website,
 	children,
 }: {
-	website: Website;
+	website: WebsiteDataTypeNonNull;
 	children?: ReactNode;
 }) => {
 	const [isPending, startTransition] = useTransition();
