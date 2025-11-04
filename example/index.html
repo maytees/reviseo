@@ -12,27 +12,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" />
   <link rel="stylesheet" href="styles.css" />
 
-  <script>
-    window.ReviseoConfig = {
-      projectId: "d14c0b53-0551-4ef7-98e2-1fd222763760",
-    };
-
-    (function (window, document) {
-      if (window.__Reviseo) return;
-      window.__Reviseo = {};
-
-      const script = document.createElement("script");
-      script.src = "./dist/widget.iife.js";
-
-      const firstScript = document.getElementsByTagName("script")[0];
-      firstScript.parentNode.insertBefore(script, firstScript);
-    })(window, document);
-  </script>
-
-  <!-- Minified Version -->
-  <!-- <script>
-    window.ReviseoConfig = { projectId: "abc" }, function (e, t) { if (e.__Reviseo) return; e.__Reviseo = {}; let i = t.createElement("script"); i.async = 1, i.src = "./dist/widget.iife.js"; let s = t.getElementsByTagName("script")[0]; s.parentNode.insertBefore(i, s) }(window, document);
-  </script> -->
+  <script>window.ReviseoConfig = { projectId: "d14c0b53-0551-4ef7-98e2-1fd222763760" }, function (e, t) { if (e.__Reviseo) return; e.__Reviseo = {}; const i = t.createElement("script"); i.src = "./dist/widget.iife.js"; const n = t.getElementsByTagName("script")[0]; n.parentNode.insertBefore(i, n) }(window, document);</script>
 </head>
 
 <body>
@@ -641,9 +621,6 @@
   </div>
 
   <script src="script.js"></script>
-  <!-- <script>
-    --
-  </script> -->
 </body>
 
 </html>

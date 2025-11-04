@@ -167,10 +167,7 @@ export default async function WebsitesPage() {
 											Open
 										</Link>
 									</Button>
-									<WebsiteDropdownMenu
-										open
-										website={site}
-									/>
+									<WebsiteDropdownMenu open website={site} />
 								</ItemActions>
 							</Item>
 						))}

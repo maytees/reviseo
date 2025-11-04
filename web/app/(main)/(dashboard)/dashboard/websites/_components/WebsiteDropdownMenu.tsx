@@ -19,16 +19,10 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCopyToClipboard } from "@/lib/hooks/useCopyToClipboard";
+import { generateWidgetScriptMinified } from "@/lib/utils";
 import type { Website } from "@/prisma/generated/client";
 import EditWebsiteDetailsDialog from "../[id]/_components/EditWebsiteDetailsDialog";
 import DeleteWebsiteDialog from "./DeleteWebsiteDialog";
-
-const snippet = (projectId: string) => {
-	return `<script
-  src="https://reviseo.app/cdn/reviseo.js"
-  data-project-id="${projectId}"
-></script>`;
-};
 
 const WebsiteDropdownMenu = ({
 	website,
@@ -84,7 +78,11 @@ const WebsiteDropdownMenu = ({
 							Edit
 						</DropdownMenuItem>
 					</EditWebsiteDetailsDialog>
-					<DropdownMenuItem onClick={handleCopy(snippet(website.projectId))}>
+					<DropdownMenuItem
+						onClick={handleCopy(
+							generateWidgetScriptMinified(website.projectId),
+						)}
+					>
 						<Code />
 						Copy Snippet
 					</DropdownMenuItem>

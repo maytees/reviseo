@@ -35,15 +35,15 @@ const stepVariants: Variants = {
 
 export function HowItWorks() {
 	return (
-		<section className="mt-48 w-full flex flex-col items-center justify-center px-4 sm:px-6 md:px-8">
+		<section className="flex flex-col items-center justify-center w-full px-4 mt-48 sm:px-6 md:px-8">
 			{/* Section Header */}
-			<div className="flex flex-col items-center justify-center gap-4 max-w-3xl">
+			<div className="flex flex-col items-center justify-center max-w-3xl gap-4">
 				<motion.h2
 					initial={{ opacity: 0, scale: 1.1, y: 100 }}
 					whileInView={{ opacity: 1, scale: 1, y: 0 }}
 					transition={{ type: "spring", duration: 1.2, bounce: 0.1 }}
 					viewport={{ once: true }}
-					className="text-4xl sm:text-5xl md:text-6xl text-center font-bold font-caudex"
+					className="text-4xl font-bold text-center sm:text-5xl md:text-6xl font-caudex"
 				>
 					How It Works
 				</motion.h2>
@@ -57,7 +57,7 @@ export function HowItWorks() {
 						delay: 0.2,
 					}}
 					viewport={{ once: true }}
-					className="text-xl sm:text-2xl md:text-3xl text-muted-foreground text-center font-inter"
+					className="text-xl text-center sm:text-2xl md:text-3xl text-muted-foreground font-inter"
 				>
 					From setup to feedback in 3 simple steps
 				</motion.p>
@@ -66,7 +66,7 @@ export function HowItWorks() {
 					whileInView={{ scaleX: 1 }}
 					transition={{ duration: 0.8, delay: 0.4, ease: "easeOut" }}
 					viewport={{ once: true }}
-					className="w-16 h-1 bg-primary rounded-full mt-2"
+					className="w-16 h-1 mt-2 rounded-full bg-primary"
 				/>
 			</div>
 
@@ -76,12 +76,12 @@ export function HowItWorks() {
 				initial="hidden"
 				whileInView="visible"
 				viewport={{ once: true, amount: 0.1 }}
-				className="max-w-6xl mx-auto space-y-24 lg:space-y-32 mt-16 sm:mt-20 w-full"
+				className="w-full max-w-6xl mx-auto mt-16 space-y-24 lg:space-y-32 sm:mt-20"
 			>
 				{/* Step 1 - Code Snippet */}
 				<motion.div
 					variants={stepVariants}
-					className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center"
+					className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16"
 				>
 					<div className="space-y-2">
 						<div className="flex items-center gap-4">
@@ -95,15 +95,15 @@ export function HowItWorks() {
 									damping: 15,
 								}}
 								viewport={{ once: true }}
-								className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold shrink-0"
+								className="flex items-center justify-center w-12 h-12 text-xl font-bold rounded-full bg-primary text-primary-foreground shrink-0"
 							>
 								1
 							</motion.div>
-							<h3 className="text-3xl sm:text-4xl font-bold font-caudex">
+							<h3 className="text-3xl font-bold sm:text-4xl font-caudex">
 								Install the widget
 							</h3>
 						</div>
-						<p className="text-lg sm:text-xl text-muted-foreground leading-relaxed font-inter">
+						<p className="text-lg leading-relaxed sm:text-xl text-muted-foreground font-inter">
 							Copy one line of code and paste it into your client's website.
 							Works with any platform in under 60 seconds.
 						</p>
@@ -120,12 +120,12 @@ export function HowItWorks() {
 				{/* Step 2 - Email Invite */}
 				<motion.div
 					variants={stepVariants}
-					className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center"
+					className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16"
 				>
 					{/* Email Mockup Visual */}
 					<EmailInviteVisual />
 
-					<div className="space-y-2 order-1 lg:order-2">
+					<div className="order-1 space-y-2 lg:order-2">
 						<div className="flex items-center gap-4">
 							<motion.div
 								initial={{ scale: 0 }}
@@ -137,15 +137,15 @@ export function HowItWorks() {
 									damping: 15,
 								}}
 								viewport={{ once: true }}
-								className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold shrink-0"
+								className="flex items-center justify-center w-12 h-12 text-xl font-bold rounded-full bg-primary text-primary-foreground shrink-0"
 							>
 								2
 							</motion.div>
-							<h3 className="text-3xl sm:text-4xl font-bold font-caudex">
+							<h3 className="text-3xl font-bold sm:text-4xl font-caudex">
 								Invite your client
 							</h3>
 						</div>
-						<p className="text-lg sm:text-xl text-muted-foreground leading-relaxed font-inter">
+						<p className="text-lg leading-relaxed sm:text-xl text-muted-foreground font-inter">
 							Create a client profile and send them a secure invite link. They
 							sign up once and can access all their assigned websites.
 						</p>
@@ -159,7 +159,7 @@ export function HowItWorks() {
 				{/* Step 3 - Dashboard */}
 				<motion.div
 					variants={stepVariants}
-					className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center"
+					className="grid items-center gap-12 lg:grid-cols-2 lg:gap-16"
 				>
 					<div className="space-y-2">
 						<div className="flex items-center gap-4">
@@ -173,15 +173,15 @@ export function HowItWorks() {
 									damping: 15,
 								}}
 								viewport={{ once: true }}
-								className="w-12 h-12 rounded-full bg-primary text-primary-foreground flex items-center justify-center text-xl font-bold shrink-0"
+								className="flex items-center justify-center w-12 h-12 text-xl font-bold rounded-full bg-primary text-primary-foreground shrink-0"
 							>
 								3
 							</motion.div>
-							<h3 className="text-3xl sm:text-4xl font-bold font-caudex">
+							<h3 className="text-3xl font-bold sm:text-4xl font-caudex">
 								Get clear feedback
 							</h3>
 						</div>
-						<p className="text-lg sm:text-xl text-muted-foreground leading-relaxed font-inter">
+						<p className="text-lg leading-relaxed sm:text-xl text-muted-foreground font-inter">
 							Your client clicks the feedback button, draws what they want
 							changed, and submits. You see it instantly in your dashboard with
 							full context.
@@ -223,21 +223,21 @@ function CodeSnippetVisual() {
 				}}
 			/>
 
-			<div className=" bg-background rounded-lg overflow-hidden shadow-2xl border border-slate-800">
+			<div className="overflow-hidden border rounded-lg shadow-2xl  bg-background border-slate-800">
 				{/* Editor Header */}
-				<div className="px-4 py-2 flex items-center justify-between border-b border-border">
+				<div className="flex items-center justify-between px-4 py-2 border-b border-border">
 					<div className="flex items-center gap-2">
-						<div className="w-3 h-3 rounded-full bg-red-500" />
-						<div className="w-3 h-3 rounded-full bg-yellow-500" />
-						<div className="w-3 h-3 rounded-full bg-green-500" />
-						<span className="ml-4 text-base text-slate-400 font-mono">
+						<div className="w-3 h-3 bg-red-500 rounded-full" />
+						<div className="w-3 h-3 bg-yellow-500 rounded-full" />
+						<div className="w-3 h-3 bg-green-500 rounded-full" />
+						<span className="ml-4 font-mono text-base text-slate-400">
 							index.html
 						</span>
 					</div>
 					<motion.button
 						whileHover={{ scale: 1.05 }}
 						whileTap={{ scale: 0.95 }}
-						className="text-sm text-slate-400 hover:text-slate-200 flex items-center gap-1 transition-colors"
+						className="flex items-center gap-1 text-sm transition-colors text-slate-400 hover:text-slate-200"
 					>
 						<Copy className="w-3 h-3" />
 						Copy
@@ -253,7 +253,7 @@ function CodeSnippetVisual() {
 					<div className="ml-4">
 						<span className="text-blue-400">src</span>
 						<span className="text-slate-400">=</span>
-						<span className="text-green-400">"https://reviseo.js"</span>
+						<span className="text-green-400">"reviseo.js"</span>
 					</div>
 					<div>
 						<span className="text-purple-400">{`/>`}</span>
@@ -298,7 +298,7 @@ function EmailInviteVisual() {
 				<MacAppMockHeader>
 					<MacAppMockTitle>New Message</MacAppMockTitle>
 				</MacAppMockHeader>
-				<MacAppMockContent className="bg-background space-y-4">
+				<MacAppMockContent className="space-y-4 bg-background">
 					{/* Email Header */}
 					<div className="space-y-3">
 						<div className="flex items-center gap-3">
@@ -324,15 +324,15 @@ function EmailInviteVisual() {
 					{/* Email Body */}
 					<div className="space-y-4">
 						<p className="text-foreground font-inter">Hi John,</p>
-						<p className="text-muted-foreground leading-relaxed font-inter">
+						<p className="leading-relaxed text-muted-foreground font-inter">
 							You can now give feedback on your website using Reviseo. Click
 							below to get started:
 						</p>
 						<Button className="w-full sm:w-auto" size="sm">
 							Get Started <ArrowRight className="w-4 h-4 ml-2" />
 						</Button>
-						<div className="bg-muted rounded-md p-3 border border-border flex items-center justify-between gap-3">
-							<code className="text-sm text-muted-foreground break-all font-mono">
+						<div className="flex items-center justify-between gap-3 p-3 border rounded-md bg-muted border-border">
+							<code className="font-mono text-sm break-all text-muted-foreground">
 								https://reviseo.com/invite/abc123xyz
 							</code>
 							<motion.div
@@ -377,21 +377,21 @@ function DashboardVisual() {
 			/>
 			<div className="grid grid-cols-2 gap-4">
 				{/* Client View */}
-				<div className="col-span-2 bg-card rounded-lg overflow-hidden shadow-xl border border-border p-4">
-					<div className="text-sm font-medium text-muted-foreground mb-3 font-inter">
+				<div className="col-span-2 p-4 overflow-hidden border rounded-lg shadow-xl bg-card border-border">
+					<div className="mb-3 text-sm font-medium text-muted-foreground font-inter">
 						Client's View
 					</div>
-					<div className="rounded aspect-video relative overflow-hidden">
+					<div className="relative overflow-hidden rounded aspect-video">
 						{/* Annotation overlay */}
 						<Image
 							src="/howitworks.svg"
 							width="400"
 							height="225"
 							alt="Annotation Example"
-							className="w-full h-full object-cover"
+							className="object-cover w-full h-full"
 						/>
 					</div>
-					<p className="text-sm text-muted-foreground/80 mt-3 font-inter">
+					<p className="mt-3 text-sm text-muted-foreground/80 font-inter">
 						Clients annotate screenshots directly in an Excalidraw canvas,
 						adding a title, detailed description, and categorizing feedback as
 						bugs or features.
@@ -399,7 +399,7 @@ function DashboardVisual() {
 				</div>
 
 				{/* Dashboard Notification */}
-				<div className="col-span-2 bg-card rounded-lg overflow-hidden shadow-xl border border-border p-4">
+				<div className="col-span-2 p-4 overflow-hidden border rounded-lg shadow-xl bg-card border-border">
 					<div className="flex items-center justify-between mb-4">
 						<div className="text-sm font-medium text-muted-foreground font-inter">
 							Your Dashboard
@@ -409,17 +409,17 @@ function DashboardVisual() {
 							whileInView={{ scale: 0 }}
 							transition={{ delay: 1.8, type: "spring", stiffness: 300 }}
 							viewport={{ once: true }}
-							className="w-6 h-5 rounded-full bg-primary text-primary-foreground text-sm flex items-center justify-center font-bold"
+							className="flex items-center justify-center w-6 h-5 text-sm font-bold rounded-full bg-primary text-primary-foreground"
 						>
 							1
 						</motion.div>
 					</div>
-					<div className="bg-accent/10 rounded-lg p-4 border border-border">
+					<div className="p-4 border rounded-lg bg-accent/10 border-border">
 						<div className="flex items-start gap-4">
-							<div className="w-17 h-16 bg-muted rounded shrink-0 overflow-hidden">
+							<div className="h-16 overflow-hidden rounded w-17 bg-muted shrink-0">
 								<div className="w-full h-full bg-gradient-to-br from-accent/10 to-primary/20" />
 							</div>
-							<div className="flex-2 min-w-0">
+							<div className="min-w-0 flex-2">
 								<div className="flex items-center gap-3 mb-1">
 									<span className="text-base font-medium text-foreground font-inter">
 										John Smith
@@ -438,9 +438,9 @@ function DashboardVisual() {
 									Make this bigger - Homepage
 								</p>
 								<div className="flex items-center gap-1.5 mt-1">
-									<span className="relative flex h-2 w-2">
-										<span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-green-400 opacity-75"></span>
-										<span className="relative inline-flex rounded-full h-2 w-2 bg-green-500"></span>
+									<span className="relative flex w-2 h-2">
+										<span className="absolute inline-flex w-full h-full bg-green-400 rounded-full opacity-75 animate-ping"></span>
+										<span className="relative inline-flex w-2 h-2 bg-green-500 rounded-full"></span>
 									</span>
 									<p className="text-base text-muted-foreground/69 font-inter">
 										Just now

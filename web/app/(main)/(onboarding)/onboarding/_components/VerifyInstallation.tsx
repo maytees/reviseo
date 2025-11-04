@@ -1,5 +1,6 @@
 "use client";
 
+import type { VariantProps } from "class-variance-authority";
 import { motion } from "framer-motion";
 import {
 	CheckCircle2,
@@ -9,25 +10,35 @@ import {
 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Button } from "@/components/ui/button";
+import { Button, type buttonVariants } from "@/components/ui/button";
+import { cn } from "@/lib/utils";
 
-interface VerifyInstallationProps {
+type VerifyInstallationProps = {
 	projectId: string;
-}
+	className?: string;
+	hideIcon?: boolean;
+	reset?: boolean;
+} & VariantProps<typeof buttonVariants>;
 
 type VerificationState = "idle" | "loading" | "success" | "error";
 
-const VerifyInstallation = ({ projectId }: VerifyInstallationProps) => {
+const VerifyInstallation = ({
+	projectId,
+	className,
+	hideIcon,
+	size = "lg",
+	reset = true,
+}: VerifyInstallationProps) => {
 	const [state, setState] = useState<VerificationState>("idle");
 
 	useEffect(() => {
-		if (state === "error") {
+		if (state === "error" && reset) {
 			const timer = setTimeout(() => {
 				setState("idle");
 			}, 2500);
 			return () => clearTimeout(timer);
 		}
-	}, [state]);
+	}, [state, reset]);
 
 	const handleVerify = async () => {
 		setState("loading");
@@ -83,7 +94,7 @@ const VerifyInstallation = ({ projectId }: VerifyInstallationProps) => {
 			case "error":
 				return (
 					<>
-						Could not verify
+						Verification Error
 						<motion.div
 							initial={{ scale: 0 }}
 							animate={{ scale: 1 }}
@@ -97,51 +108,41 @@ const VerifyInstallation = ({ projectId }: VerifyInstallationProps) => {
 				return (
 					<>
 						Verify Widget
-						<ChevronRightCircle className="group-hover:translate-x-0.5 transition-all duration-300 ease-in-out" />
+						{!hideIcon && (
+							<ChevronRightCircle className="group-hover:translate-x-0.5 transition-all duration-300 ease-in-out" />
+						)}
 					</>
 				);
 		}
 	};
 
 	return (
-		<div className="bg-accent/20 border border-border rounded-lg p-4">
-			<div className="flex flex-col sm:flex-row items-center justify-between gap-3">
-				<div className="text-center sm:text-left">
-					<p className="font-medium text-foreground font-inter mb-1">
-						Ready to verify?
-					</p>
-					<p className="text-sm text-muted-foreground font-inter">
-						Make sure you've added the widget to your website
-					</p>
-				</div>
-				<motion.div
-					animate={
-						state === "success"
-							? {
-									scale: [1, 1.05, 1],
-								}
-							: state === "error"
-								? {
-										x: [0, -10, 10, -10, 10, 0],
-									}
-								: {}
-					}
-					transition={{
-						duration: state === "success" ? 0.5 : 0.4,
-					}}
-				>
-					<Button
-						size="lg"
-						variant={getButtonVariant()}
-						className="group font-inter w-full sm:w-auto"
-						onClick={handleVerify}
-						disabled={state === "loading"}
-					>
-						{getButtonContent()}
-					</Button>
-				</motion.div>
-			</div>
-		</div>
+		<motion.div
+			animate={
+				state === "success"
+					? {
+							scale: [1, 1.05, 1],
+						}
+					: state === "error"
+						? {
+								x: [0, -10, 10, -10, 10, 0],
+							}
+						: {}
+			}
+			transition={{
+				duration: state === "success" ? 0.5 : 0.4,
+			}}
+		>
+			<Button
+				size={size}
+				variant={getButtonVariant()}
+				className={cn("w-full group font-inter sm:w-auto", className)}
+				onClick={handleVerify}
+				disabled={state === "loading"}
+			>
+				{getButtonContent()}
+			</Button>
+		</motion.div>
 	);
 };
 

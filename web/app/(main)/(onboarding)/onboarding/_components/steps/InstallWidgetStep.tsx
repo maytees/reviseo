@@ -6,6 +6,10 @@ import Link from "next/link";
 import { useState } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
+import {
+	generateWidgetScriptFormatted,
+	generateWidgetScriptMinified,
+} from "@/lib/utils";
 import VerifyInstallation from "../VerifyInstallation";
 
 interface InstallWidgetStepProps {
@@ -21,14 +25,11 @@ export function InstallWidgetStep({
 }: InstallWidgetStepProps) {
 	const [copied, setCopied] = useState(false);
 
-	const codeSnippet = `<script
-  src="https://reviseo.app/cdn/reviseo.js"
-  data-project-id="${projectId}"
-></script>`;
-
 	const handleCopy = async () => {
 		try {
-			await navigator.clipboard.writeText(codeSnippet);
+			await navigator.clipboard.writeText(
+				generateWidgetScriptMinified(projectId),
+			);
 			setCopied(true);
 			toast.success("Copied to clipboard!");
 			setTimeout(() => setCopied(false), 2000);
@@ -59,7 +60,7 @@ export function InstallWidgetStep({
 					<div className="p-4 overflow-x-auto font-mono text-sm border rounded-lg bg-background sm:text-base border-border">
 						<pre className="text-foreground">
 							<code>
-								<span className="text-purple-400">{`<link`}</span>{" "}
+								{/* <span className="text-purple-400">{`<link`}</span>{" "}
 								<span className="text-blue-400">rel</span>
 								<span className="text-slate-400">=</span>
 								<span className="text-green-400">"stylesheet"</span>{" "}
@@ -82,7 +83,8 @@ export function InstallWidgetStep({
 								<span className="text-slate-400">=</span>
 								<span className="text-green-400">"{projectId}"</span>
 								{"\n"}
-								<span className="text-purple-400">{`></script>`}</span>
+								<span className="text-purple-400">{`></script>`}</span> */}
+								{generateWidgetScriptFormatted(projectId)}
 							</code>
 						</pre>
 					</div>
@@ -120,7 +122,20 @@ export function InstallWidgetStep({
 						.
 					</p>
 				</div>
-				<VerifyInstallation projectId={projectId} />
+
+				<div className="p-4 border rounded-lg bg-accent/20 border-border">
+					<div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
+						<div className="text-center sm:text-left">
+							<p className="mb-1 font-medium text-foreground font-inter">
+								Ready to verify?
+							</p>
+							<p className="text-sm text-muted-foreground font-inter">
+								Make sure you've added the widget to your website
+							</p>
+						</div>
+						<VerifyInstallation projectId={projectId} />
+					</div>
+				</div>
 			</div>
 
 			<div className="flex justify-between max-w-2xl pt-2 mx-auto">

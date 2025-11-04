@@ -25,6 +25,7 @@ export const env = createEnv({
 		NEXT_PUBLIC_S3_BUCKET_NAME_SITE_SCREENSHOTS: z.string().min(1),
 		NEXT_PUBLIC_S3_BUCKET_NAME_ANNOTATIONS: z.string().min(1),
 		NEXT_PUBLIC_S3_BUCKET_NAME_UPLOADS: z.string().min(1),
+		NEXT_PUBLIC_WIDGET_SCRIPT_URL: z.string().min(1),
 		// NEXT_PUBLIC_SITE_URL: z.string().min(1),
 	},
 
@@ -37,5 +38,6 @@ export const env = createEnv({
 			process.env.NEXT_PUBLIC_S3_BUCKET_NAME_ANNOTATIONS,
 		NEXT_PUBLIC_S3_BUCKET_NAME_SITE_SCREENSHOTS:
 			process.env.NEXT_PUBLIC_S3_BUCKET_NAME_SITE_SCREENSHOTS,
+		NEXT_PUBLIC_WIDGET_SCRIPT_URL: process.env.NEXT_PUBLIC_WIDGET_SCRIPT_URL,
 	},
 });

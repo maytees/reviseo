@@ -2,6 +2,7 @@ import { ExternalLink } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import VerifyInstallation from "@/app/(main)/(onboarding)/onboarding/_components/VerifyInstallation";
 import { requireUser } from "@/app/data/require-user";
 import {
 	HoverCard,
@@ -28,7 +29,7 @@ const WebsitePage = async ({ params }: { params: Promise<{ id: string }> }) => {
 	if (!website) return notFound();
 
 	return (
-		<HoverCard openDelay={200} closeDelay={50}>
+		<HoverCard openDelay={100} closeDelay={0}>
 			<div className="flex flex-col gap-0.5 h-full">
 				<div className="flex flex-row items-center justify-between">
 					<div className="flex items-center gap-4">
@@ -38,13 +39,22 @@ const WebsitePage = async ({ params }: { params: Promise<{ id: string }> }) => {
 							<CopyProjectId projectId={website.projectId} />
 						</div>
 					</div>
-					<WebsiteDropdownMenu website={website} />
+					<div className="flex flex-row items-center gap-2">
+						<VerifyInstallation
+							hideIcon
+							size={"sm"}
+							className=""
+							projectId={website.projectId}
+							reset={false}
+						/>
+						<WebsiteDropdownMenu website={website} />
+					</div>
 				</div>
-				<div className="flex-1">
+				<div className=" w-fit">
 					<HoverCardTrigger asChild>
 						<Link
 							href={website.url}
-							className="flex items-center text-sm peer-hover:underline hover:underline text-muted-foreground"
+							className="flex items-center text-sm w-fit peer-hover:underline hover:underline text-muted-foreground"
 							target="_blank"
 						>
 							{website.url}

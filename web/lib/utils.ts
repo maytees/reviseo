@@ -57,3 +57,49 @@ export async function isClient(userId: string): Promise<boolean> {
 
 	return user.role === "client";
 }
+
+// lib/utils/widget-script.ts (or utils/widget-script.ts)
+
+import { env } from "@/lib/env";
+
+/**
+ * Generates the Reviseo widget installation script
+ * @param projectId - The unique project identifier
+ * @returns The complete script tag as a string
+ */
+export function generateWidgetScript(projectId: string): string {
+	const scriptSrc =
+		env.NEXT_PUBLIC_WIDGET_SCRIPT_URL || "./dist/widget.iife.js";
+
+	return `<script>window.ReviseoConfig = { projectId: "${projectId}" }, function (e, t) { if (e.__Reviseo) return; e.__Reviseo = {}; const i = t.createElement("script"); i.src = "${scriptSrc}"; const n = t.getElementsByTagName("script")[0]; n.parentNode.insertBefore(i, n) }(window, document);</script>`;
+}
+
+/**
+ * Generates a minified version (removes unnecessary spaces)
+ */
+export function generateWidgetScriptMinified(projectId: string): string {
+	const scriptSrc =
+		env.NEXT_PUBLIC_WIDGET_SCRIPT_URL || "./dist/widget.iife.js";
+
+	return `<script>window.ReviseoConfig={projectId:"${projectId}"},function(e,t){if(e.__Reviseo)return;e.__Reviseo={};const i=t.createElement("script");i.src="${scriptSrc}";const n=t.getElementsByTagName("script")[0];n.parentNode.insertBefore(i,n)}(window,document);</script>`;
+}
+
+/**
+ * Generates a formatted version with proper indentation
+ */
+export function generateWidgetScriptFormatted(projectId: string): string {
+	const scriptSrc =
+		env.NEXT_PUBLIC_WIDGET_SCRIPT_URL || "./dist/widget.iife.js";
+
+	return `<script>
+  window.ReviseoConfig = { projectId: "${projectId}" }, 
+  function (e, t) { 
+    if (e.__Reviseo) return; 
+    e.__Reviseo = {}; 
+    const i = t.createElement("script"); 
+    i.src = "${scriptSrc}"; 
+    const n = t.getElementsByTagName("script")[0]; 
+    n.parentNode.insertBefore(i, n) 
+  }(window, document);
+</script>`;
+}
