@@ -67,7 +67,7 @@ const RecentSubmissions = async ({
 				<CardTitle>Recent Feedback</CardTitle>
 				<CardDescription>
 					Latest feedback submissions across all websites. Open a feedback card
-					to modify it.
+					to view more details or modify it.
 				</CardDescription>
 				<CardAction>
 					<Button size={"sm"} asChild variant={"outline"}>
