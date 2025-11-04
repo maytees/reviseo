@@ -4,28 +4,31 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import VerifyInstallation from "@/app/(main)/(onboarding)/onboarding/_components/VerifyInstallation";
 import { requireUser } from "@/app/data/require-user";
+import { getWebsiteByIdAndDevId } from "@/app/data/website/get-website-by-id-and-dev-id";
 import {
 	HoverCard,
 	HoverCardContent,
 	HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { prisma } from "@/lib/db";
 import DashboardFooter from "../../_components/DashboardFooter";
 import CopyProjectId from "../_components/CopyProjectId";
 import WebsiteDropdownMenu from "../_components/WebsiteDropdownMenu";
 import EditWebsiteDetailsDialog from "./_components/EditWebsiteDetailsDialog";
+import FeedbackTable from "./_components/feedback/FeedbackTable";
 
 const WebsitePage = async ({ params }: { params: Promise<{ id: string }> }) => {
 	const user = await requireUser();
 	const { id } = await params;
 
-	const website = await prisma.website.findUnique({
-		where: {
-			id,
-			developerId: user.id,
-		},
-	});
+	// const website = await prisma.website.findUnique({
+	// 	where: {
+	// 		id,
+	// 		developerId: user.id,
+	// 	},
+	// });
+
+	const website = await getWebsiteByIdAndDevId(id);
 
 	if (!website) return notFound();
 
@@ -80,7 +83,7 @@ const WebsitePage = async ({ params }: { params: Promise<{ id: string }> }) => {
 						<TabsTrigger value={"settings"}>Settings</TabsTrigger>
 					</TabsList>
 					<TabsContent value="feedback">
-						<p>Feedback</p>
+						<FeedbackTable website={website} />
 					</TabsContent>
 					<TabsContent value="client">
 						<p>Client</p>
