@@ -77,7 +77,7 @@ const WebsitePage = async ({ params }: { params: Promise<{ id: string }> }) => {
 						className="z-40 object-cover w-full h-auto rounded"
 					/>
 				</HoverCardContent>
-				<Tabs className="mt-4">
+				<Tabs defaultValue="feedback" className="mt-4">
 					<TabsList className="grid h-8 grid-cols-4">
 						<TabsTrigger value={"feedback"}>Feedback</TabsTrigger>
 						<TabsTrigger value={"client"}>Client</TabsTrigger>
