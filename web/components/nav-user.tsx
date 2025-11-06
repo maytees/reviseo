@@ -1,18 +1,11 @@
 "use client";
 
-import {
-	IconCreditCard,
-	IconDotsVertical,
-	IconLogout,
-	IconNotification,
-	IconUserCircle,
-} from "@tabler/icons-react";
+import { IconDotsVertical, IconLogout } from "@tabler/icons-react";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
 	DropdownMenu,
 	DropdownMenuContent,
-	DropdownMenuGroup,
 	DropdownMenuItem,
 	DropdownMenuLabel,
 	DropdownMenuSeparator,
@@ -38,7 +31,7 @@ export function NavUser() {
 				<SidebarMenuItem>
 					<SidebarMenuButton size="lg" className="cursor-default">
 						<Skeleton className="w-8 h-8 rounded-lg" />
-						<div className="flex-1 text-sm leading-tight text-left grid gap-1">
+						<div className="grid flex-1 gap-1 text-sm leading-tight text-left">
 							<Skeleton className="w-20 h-4" />
 							<Skeleton className="w-16 h-3" />
 						</div>
@@ -72,7 +65,7 @@ export function NavUser() {
 										: session?.user.email.charAt(0).toUpperCase()}
 								</AvatarFallback>
 							</Avatar>
-							<div className="flex-1 text-sm leading-tight text-left grid">
+							<div className="grid flex-1 text-sm leading-tight text-left">
 								<span className="font-medium truncate">
 									{session?.user.name && session.user.name.length > 0
 										? session.user.name
@@ -108,7 +101,7 @@ export function NavUser() {
 											: session?.user.email.charAt(0).toUpperCase()}
 									</AvatarFallback>
 								</Avatar>
-								<div className="flex-1 text-sm leading-tight text-left grid">
+								<div className="grid flex-1 text-sm leading-tight text-left">
 									<span className="font-medium truncate">
 										{session?.user.name && session.user.name.length > 0
 											? session.user.name
@@ -121,23 +114,9 @@ export function NavUser() {
 							</div>
 						</DropdownMenuLabel>
 						<DropdownMenuSeparator />
-						<DropdownMenuGroup>
-							<DropdownMenuItem>
-								<IconUserCircle />
-								Account
-							</DropdownMenuItem>
-							<DropdownMenuItem>
-								<IconCreditCard />
-								Billing
-							</DropdownMenuItem>
-							<DropdownMenuItem>
-								<IconNotification />
-								Notifications
-							</DropdownMenuItem>
-						</DropdownMenuGroup>
-						<DropdownMenuSeparator />
 						<DropdownMenuItem variant="destructive" onClick={handleSignOut}>
 							<IconLogout />
+							Log Out
 						</DropdownMenuItem>
 					</DropdownMenuContent>
 				</DropdownMenu>

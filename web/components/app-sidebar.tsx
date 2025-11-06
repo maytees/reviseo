@@ -7,7 +7,6 @@ import {
 	Globe,
 	HeartHandshake,
 	Home,
-	LogOutIcon,
 	Mail,
 	Moon,
 	Settings,
@@ -20,8 +19,6 @@ import Link from "next/link";
 import { useTheme } from "next-themes";
 import type * as React from "react";
 import { NavMain } from "@/components/nav-main";
-import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Button } from "@/components/ui/button";
 import {
 	Sidebar,
 	SidebarContent,
@@ -37,6 +34,7 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { authClient } from "@/lib/auth-client";
 import { useSignOut } from "@/lib/hooks/useSignOut";
+import { NavUser } from "./nav-user";
 
 const data = {
 	navMain: [
@@ -217,35 +215,36 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 							</SidebarMenuButton>
 						</SidebarMenuItem>
 					) : (
-						<SidebarMenuItem className="flex flex-row gap-2 px-1 py-1">
-							<Avatar className="rounded-lg">
-								<AvatarImage
-									src={
-										session?.user.image ??
-										`https://avatar.vercel.sh/${session?.user.email}`
-									}
-									alt={session?.user.name}
-								/>
-								<AvatarFallback className="rounded-lg">
-									{session?.user.name && session.user.name.length > 0
-										? session.user.name.charAt(0).toUpperCase()
-										: session?.user.email.charAt(0).toUpperCase()}
-								</AvatarFallback>
-							</Avatar>
-							<div className="grid flex-1 text-sm leading-tight text-left">
-								<span className="font-medium truncate">
-									{session?.user.name && session.user.name.length > 0
-										? session.user.name
-										: session?.user.email.split("@")[0]}
-								</span>
-								<span className="text-xs truncate text-muted-foreground">
-									{session?.user.email}
-								</span>
-							</div>
-							<Button variant={"outline"} onClick={handleSignOut} mode={"icon"}>
-								<LogOutIcon />
-							</Button>
-						</SidebarMenuItem>
+						<NavUser />
+						// <SidebarMenuItem className="flex flex-row gap-2 px-1 py-1">
+						// 	<Avatar className="rounded-lg">
+						// 		<AvatarImage
+						// 			src={
+						// 				session?.user.image ??
+						// 				`https://avatar.vercel.sh/${session?.user.email}`
+						// 			}
+						// 			alt={session?.user.name}
+						// 		/>
+						// 		<AvatarFallback className="rounded-lg">
+						// 			{session?.user.name && session.user.name.length > 0
+						// 				? session.user.name.charAt(0).toUpperCase()
+						// 				: session?.user.email.charAt(0).toUpperCase()}
+						// 		</AvatarFallback>
+						// 	</Avatar>
+						// 	<div className="grid flex-1 text-sm leading-tight text-left">
+						// 		<span className="font-medium truncate">
+						// 			{session?.user.name && session.user.name.length > 0
+						// 				? session.user.name
+						// 				: session?.user.email.split("@")[0]}
+						// 		</span>
+						// 		<span className="text-xs truncate text-muted-foreground">
+						// 			{session?.user.email}
+						// 		</span>
+						// 	</div>
+						// 	<Button variant={"outline"} onClick={handleSignOut} mode={"icon"}>
+						// 		<LogOutIcon />
+						// 	</Button>
+						// </SidebarMenuItem>
 					)}
 				</SidebarMenu>
 			</SidebarFooter>
