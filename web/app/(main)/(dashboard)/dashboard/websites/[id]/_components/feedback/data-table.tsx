@@ -134,7 +134,7 @@ export function DataTable<_, TValue>({
 						{table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row) => (
 								<TableRow
-									onClick={(e) => {
+									onClick={(_) => {
 										openFeedback(row.id);
 									}}
 									className="hover:cursor-pointer"
