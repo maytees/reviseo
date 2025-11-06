@@ -460,8 +460,6 @@ const FeedbackTable = ({
 								</div>
 							</div>
 						</div>
-
-						<div className="pb-96"></div>
 					</DialogContent>
 				) : (
 					<DialogContent className="overflow-y-scroll" variant={"feedback"}>
@@ -492,8 +490,6 @@ const FeedbackTable = ({
 								</div>
 							</div>
 						</div>
-
-						<div className="pb-96"></div>
 					</DialogContent>
 				)}
 			</Dialog>
