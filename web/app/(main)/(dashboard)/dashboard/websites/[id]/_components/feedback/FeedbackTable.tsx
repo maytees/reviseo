@@ -53,7 +53,6 @@ const FeedbackTable = ({
 	open: string | string[] | undefined;
 }) => {
 	const [modalOpen, setModalOpen] = useState(false);
-	const [canClose, setCanClose] = useState(true);
 	const [isImageZoomed, setIsImageZoomed] = useState(false);
 
 	// TODO: Not found modal
@@ -122,7 +121,7 @@ const FeedbackTable = ({
 				modal
 				open={modalOpen}
 				onOpenChange={(shouldOpen) => {
-					if (!shouldOpen && (!canClose || isImageZoomed)) {
+					if (!shouldOpen && isImageZoomed) {
 						return;
 					}
 
