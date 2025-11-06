@@ -25,41 +25,18 @@ import {
 } from "@/components/ui/tooltip";
 import { env } from "@/lib/env";
 import {
+	type FeedbackSelectAllPayload,
 	PRIORITY_BADGE_MAP,
 	PRIORITY_CONFIG,
 	TYPE_BADGE_MAP,
 	TYPE_CONFIG,
 } from "@/lib/types";
-import type { Prisma } from "@/prisma/generated/client";
 import ScreenshotPreview from "./ScreenshotPreview";
 
 const RecentSubmissions = async ({
 	feedbacks,
 }: {
-	feedbacks?: Prisma.FeedbackGetPayload<{
-		select: {
-			id: true;
-			websiteId: true;
-			authorId: true;
-			status: true;
-			pageUrl: true;
-			viewport: true;
-			priority: true;
-			timestamp: true;
-			author: true;
-			website: true;
-			browser: true;
-			screenshotKey: true;
-			browserVersion: true;
-			isMobile: true;
-			os: true;
-			createdAt: true;
-			updatedAt: true;
-			title: true;
-			description: true;
-			type: true;
-		};
-	}>[];
+	feedbacks?: FeedbackSelectAllPayload[];
 }) => {
 	return (
 		<Card>
@@ -133,27 +110,19 @@ const RecentSubmissions = async ({
 										<Tooltip>
 											<TooltipTrigger>
 												<Badge
-													variant={
-														TYPE_BADGE_MAP[
-															feedback.type as keyof typeof TYPE_BADGE_MAP
-														] as BadgeVariantsType
-													}
+													variant={TYPE_BADGE_MAP[feedback.type]}
 													className="hover:cursor-default"
 													appearance={"outline"}
 													size={"sm"}
 												>
 													{(() => {
-														const TypeIcon =
-															TYPE_CONFIG[
-																feedback.type as keyof typeof TYPE_CONFIG
-															].icon;
+														const TypeIcon = TYPE_CONFIG[feedback.type].icon;
 														return <TypeIcon />;
 													})()}
 												</Badge>
 											</TooltipTrigger>
 											<TooltipContent>
-												{feedback.type.charAt(0) +
-													feedback.type.substring(1).toLowerCase()}
+												{TYPE_CONFIG[feedback.type].label}
 											</TooltipContent>
 										</Tooltip>
 										<Tooltip>
@@ -161,7 +130,7 @@ const RecentSubmissions = async ({
 												<Badge
 													variant={
 														PRIORITY_BADGE_MAP[
-															feedback.priority as keyof typeof PRIORITY_BADGE_MAP
+															feedback.priority
 														] as BadgeVariantsType
 													}
 													className="hover:cursor-default"
@@ -170,9 +139,7 @@ const RecentSubmissions = async ({
 												>
 													{(() => {
 														const PriorityIcon =
-															PRIORITY_CONFIG[
-																feedback.priority as keyof typeof PRIORITY_CONFIG
-															].icon;
+															PRIORITY_CONFIG[feedback.priority].icon;
 														return <PriorityIcon />;
 													})()}
 													{/* {feedback.priority.toLowerCase().charAt(0).toUpperCase() +
@@ -180,17 +147,14 @@ const RecentSubmissions = async ({
 												</Badge>
 											</TooltipTrigger>
 											<TooltipContent>
-												{feedback.priority
-													.toLowerCase()
-													.charAt(0)
-													.toUpperCase() +
-													feedback.priority.substring(1).toLowerCase()}{" "}
-												Priority
+												{PRIORITY_CONFIG[feedback.priority].label} Priority
 											</TooltipContent>
 										</Tooltip>
 										{/* <SwitchStatusSelect status={feedback.status} /> */}
 										<Button asChild size={"sm"} variant={"outline"}>
-											<Link href={`/dashboard/websites/${feedback.websiteId}`}>
+											<Link
+												href={`/dashboard/websites/${feedback.websiteId}?open=${feedback.id}`}
+											>
 												Open
 											</Link>
 										</Button>

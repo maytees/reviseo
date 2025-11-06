@@ -12,7 +12,7 @@ import {
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { updateWebsiteOnboarding } from "@/app/(main)/(onboarding)/onboarding/_components/actions";
-import type { WebsiteDataTypeNonNull } from "@/app/data/website/get-website-by-id-and-dev-id";
+import type { WebsiteDataTypeNonNullable } from "@/app/data/website/get-website-by-id-and-dev-id";
 import { Button } from "@/components/ui/button";
 import DialogContent, {
 	Dialog,
@@ -37,7 +37,7 @@ const EditWebsiteDetailsDialog = ({
 	website,
 	children,
 }: {
-	website: WebsiteDataTypeNonNull;
+	website: WebsiteDataTypeNonNullable;
 	children?: ReactNode;
 }) => {
 	const [isPending, startTransition] = useTransition();

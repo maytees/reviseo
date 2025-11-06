@@ -19,9 +19,18 @@ import WebsiteDropdownMenu from "../_components/WebsiteDropdownMenu";
 import EditWebsiteDetailsDialog from "./_components/EditWebsiteDetailsDialog";
 import FeedbackTable from "./_components/feedback/FeedbackTable";
 
-const WebsitePage = async ({ params }: { params: Promise<{ id: string }> }) => {
-	const user = await requireUser();
+const WebsitePage = async ({
+	params,
+	searchParams,
+}: {
+	params: Promise<{ id: string }>;
+	searchParams: Promise<{
+		[key: string]: string | string[] | undefined;
+	}>;
+}) => {
+	await requireUser();
 	const { id } = await params;
+	const openId = (await searchParams).open;
 
 	const website = await getWebsiteByIdAndDevId(id);
 
@@ -85,7 +94,7 @@ const WebsitePage = async ({ params }: { params: Promise<{ id: string }> }) => {
 						<TabsTrigger value={"settings"}>Settings</TabsTrigger>
 					</TabsList>
 					<TabsContent value="feedback">
-						<FeedbackTable website={website} />
+						<FeedbackTable website={website} open={openId} />
 					</TabsContent>
 					<TabsContent value="client">
 						<p>Client</p>

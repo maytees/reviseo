@@ -10,7 +10,7 @@ import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
 import { Navbar } from "@/components/landing/Navbar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge, type BadgeVariantsType } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getAllArticles, getArticleData } from "@/lib/blog";
@@ -125,11 +125,7 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 									Category
 								</p>
 								<Badge
-									variant={
-										categoryMap[
-											articleData.category as keyof typeof categoryMap
-										] as BadgeVariantsType
-									}
+									variant={categoryMap[articleData.category]}
 									appearance={"outline"}
 									className="w-fit"
 								>

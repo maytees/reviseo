@@ -6,7 +6,7 @@ import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
 import { Navbar } from "@/components/landing/Navbar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge, type BadgeVariantsType } from "@/components/ui/badge";
+import { Badge } from "@/components/ui/badge";
 import { getAllArticles } from "@/lib/blog";
 import { categoryMap } from "@/lib/types";
 
@@ -50,11 +50,7 @@ const BlogPage = async () => {
 								/>
 								<div className="flex flex-row justify-between mt-2">
 									<Badge
-										variant={
-											categoryMap[
-												article.category as keyof typeof categoryMap
-											] as BadgeVariantsType
-										}
+										variant={categoryMap[article.category]}
 										appearance={"outline"}
 									>
 										{article.category.at(0)?.toUpperCase() +

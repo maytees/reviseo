@@ -14,6 +14,7 @@ export async function getWebsiteByIdAndDevId(id: string) {
 			developerId: user.id,
 		},
 		select: {
+			id: true,
 			url: true,
 			screenshotUrl: true,
 			name: true,

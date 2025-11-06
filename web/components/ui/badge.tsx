@@ -1,11 +1,11 @@
+import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Slot as SlotPrimitive } from "radix-ui";
 import type * as React from "react";
-import { cn } from "@/lib/utils";
 
 export interface BadgeProps
 	extends React.HTMLAttributes<HTMLDivElement>,
-		VariantProps<typeof badgeVariants> {
+	VariantProps<typeof badgeVariants> {
 	asChild?: boolean;
 	dotClassName?: string;
 	disabled?: boolean;
@@ -13,7 +13,7 @@ export interface BadgeProps
 
 export interface BadgeButtonProps
 	extends React.ButtonHTMLAttributes<HTMLDivElement>,
-		VariantProps<typeof badgeButtonVariants> {
+	VariantProps<typeof badgeButtonVariants> {
 	asChild?: boolean;
 }
 
@@ -25,6 +25,7 @@ export type BadgeVariantsType =
 	| "success"
 	| "warning"
 	| "info"
+	| "info2"
 	| "outline"
 	| "destructive"
 	| null
@@ -42,6 +43,7 @@ const badgeVariants = cva(
 				warning:
 					"bg-[var(--color-warning-accent,var(--color-yellow-500))] text-[var(--color-warning-foreground,var(--color-white))]",
 				info: "bg-[var(--color-info-accent,var(--color-violet-500))] text-[var(--color-info-foreground,var(--color-white))]",
+				info2: "bg-[var(--color-info2-accent,var(--color-blue-500))] text-[var(--color-info2-foreground,var(--color-white))]",
 				outline:
 					"bg-transparent border border-border text-secondary-foreground",
 				destructive: "bg-destructive text-destructive-foreground",
@@ -99,6 +101,12 @@ const badgeVariants = cva(
 					"text-[var(--color-info-accent,var(--color-violet-700))] bg-[var(--color-info-soft,var(--color-violet-100))] dark:bg-[var(--color-info-soft,var(--color-violet-950))] dark:text-[var(--color-info-soft,var(--color-violet-400))]",
 			},
 			{
+				variant: "info2",
+				appearance: "light",
+				className:
+					"text-[var(--color-info2-accent,var(--color-blue-700))] bg-[var(--color-info2-soft,var(--color-blue-100))] dark:bg-[var(--color-info2-soft,var(--color-blue-950))] dark:text-[var(--color-info2-soft,var(--color-blue-400))]",
+			},
+			{
 				variant: "destructive",
 				appearance: "light",
 				className:
@@ -128,6 +136,12 @@ const badgeVariants = cva(
 				appearance: "outline",
 				className:
 					"text-[var(--color-info-accent,var(--color-violet-700))] border-[var(--color-info-soft,var(--color-violet-100))] bg-[var(--color-info-soft,var(--color-violet-50))] dark:bg-[var(--color-info-soft,var(--color-violet-950))] dark:border-[var(--color-info-soft,var(--color-violet-900))] dark:text-[var(--color-info-soft,var(--color-violet-400))]",
+			},
+			{
+				variant: "info2",
+				appearance: "outline",
+				className:
+					"text-[var(--color-info2-accent,var(--color-blue-700))] border-[var(--color-info2-soft,var(--color-blue-200))] bg-[var(--color-info2-soft,var(--color-blue-50))] dark:bg-[var(--color-info2-soft,var(--color-blue-950))] dark:border-[var(--color-info2-soft,var(--color-blue-900))] dark:text-[var(--color-info2-soft,var(--color-blue-400))]",
 			},
 			{
 				variant: "destructive",
@@ -160,6 +174,11 @@ const badgeVariants = cva(
 				variant: "info",
 				appearance: "ghost",
 				className: "text-[var(--color-info-accent,var(--color-violet-500))]",
+			},
+			{
+				variant: "info2",
+				appearance: "ghost",
+				className: "text-[var(--color-info2-accent,var(--color-blue-500))]",
 			},
 			{
 				variant: "destructive",

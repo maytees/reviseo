@@ -34,12 +34,14 @@ import {
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
 	data: TData[];
+	openFeedback: (feedbackId: string) => void;
 }
 
-export function DataTable<TData, TValue>({
+export function DataTable<Feedback, TValue>({
 	columns,
 	data,
-}: DataTableProps<TData, TValue>) {
+	openFeedback,
+}: DataTableProps<Feedback, TValue>) {
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
@@ -56,6 +58,7 @@ export function DataTable<TData, TValue>({
 		getFilteredRowModel: getFilteredRowModel(),
 		onColumnVisibilityChange: setColumnVisibility,
 		onRowSelectionChange: setRowSelection,
+		getRowId: (originalRow) => originalRow.id,
 		state: {
 			sorting,
 			columnFilters,
@@ -130,7 +133,7 @@ export function DataTable<TData, TValue>({
 						{table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row) => (
 								<TableRow
-									onClick={() => console.log("clicked")}
+									onClick={() => openFeedback(row.id)}
 									className="hover:cursor-pointer"
 									key={row.id}
 									data-state={row.getIsSelected() && "selected"}

@@ -3,14 +3,22 @@
 
 import {
 	BugIcon,
+	CheckCircleIcon,
 	CircleAlertIcon,
 	CircleDashedIcon,
+	InboxIcon,
 	type LucideIcon,
+	PlayIcon,
 	SparklesIcon,
 	TriangleAlertIcon,
 } from "lucide-react";
 import type { BadgeVariantsType } from "@/components/ui/badge";
-import type { FeedbackPriority, FeedbackType } from "@/prisma/generated/client";
+import type {
+	FeedbackPriority,
+	FeedbackStatus,
+	FeedbackType,
+	Prisma,
+} from "@/prisma/generated/client";
 
 // 	message: string;
 // };
@@ -36,7 +44,7 @@ export type BlogItem = {
 	title: string;
 	date: Date;
 	lastModified: Date;
-	category: string;
+	category: "story" | "product" | "guide";
 	author: string;
 	authorImage?: string;
 	description?: string;
@@ -47,7 +55,10 @@ export type BlogItem = {
 	authorRole?: string;
 };
 
-export const categoryMap = {
+export const categoryMap: Record<
+	"story" | "product" | "guide",
+	BadgeVariantsType
+> = {
 	story: "info",
 	product: "success",
 	guide: "warning",
@@ -68,6 +79,27 @@ export interface BrowserInfo {
 	os: OS;
 	isMobile: boolean;
 }
+
+export const STATUS_CONFIG: Record<
+	FeedbackStatus,
+	{
+		label: string;
+		icon: LucideIcon;
+		color: string;
+	}
+> = {
+	NEW: { label: "New", icon: InboxIcon, color: "text-blue-300" },
+	IN_PROGRESS: {
+		label: "In Progress",
+		icon: PlayIcon,
+		color: "text-amber-300",
+	},
+	RESOLVED: {
+		label: "Resolved",
+		icon: CheckCircleIcon,
+		color: "text-emerald-300",
+	},
+};
 
 export const PRIORITY_CONFIG: Record<
 	FeedbackPriority,
@@ -102,6 +134,12 @@ export const TYPE_CONFIG: Record<
 	},
 } as const;
 
+export const STATUS_BADGE_MAP: Record<FeedbackStatus, BadgeVariantsType> = {
+	NEW: "info2",
+	IN_PROGRESS: "primary",
+	RESOLVED: "success",
+};
+
 export const PRIORITY_BADGE_MAP: Record<FeedbackPriority, BadgeVariantsType> = {
 	LOW: "secondary",
 	MEDIUM: "warning",
@@ -112,3 +150,28 @@ export const TYPE_BADGE_MAP: Record<FeedbackType, BadgeVariantsType> = {
 	BUG: "destructive",
 	IMPROVEMENT: "info",
 };
+
+export type FeedbackSelectAllPayload = Prisma.FeedbackGetPayload<{
+	select: {
+		id: true;
+		websiteId: true;
+		authorId: true;
+		status: true;
+		pageUrl: true;
+		viewport: true;
+		priority: true;
+		timestamp: true;
+		author: true;
+		website: true;
+		browser: true;
+		screenshotKey: true;
+		browserVersion: true;
+		isMobile: true;
+		os: true;
+		createdAt: true;
+		updatedAt: true;
+		title: true;
+		description: true;
+		type: true;
+	};
+}>;

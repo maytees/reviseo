@@ -16,6 +16,8 @@ import {
 import {
 	PRIORITY_BADGE_MAP,
 	PRIORITY_CONFIG,
+	STATUS_BADGE_MAP,
+	STATUS_CONFIG,
 	TYPE_BADGE_MAP,
 	TYPE_CONFIG,
 } from "@/lib/types";
@@ -97,12 +99,34 @@ export const columns: ColumnDef<Feedback>[] = [
 				</Button>
 			);
 		},
+		// cell: ({ row }) => {
+		// 	const status = row.getValue("status") as string;
+		// 	return (
+		// 		<Badge variant="outline" size="sm">
+		// 			{status.replace("_", " ")}
+		// 		</Badge>
+		// 	);
+		// },
+
 		cell: ({ row }) => {
-			const status = row.getValue("status") as string;
+			const status = row.getValue("status") as keyof typeof STATUS_BADGE_MAP;
+			const StatusIcon = STATUS_CONFIG[status].icon;
+
 			return (
-				<Badge variant="outline" size="sm">
-					{status.replace("_", " ")}
-				</Badge>
+				<Tooltip>
+					<TooltipTrigger>
+						<Badge
+							variant={STATUS_BADGE_MAP[status]}
+							appearance="outline"
+							size="sm"
+							className="hover:cursor-default"
+						>
+							<StatusIcon />
+							{STATUS_CONFIG[status].label}
+						</Badge>
+					</TooltipTrigger>
+					<TooltipContent>{STATUS_CONFIG[status].label} Status</TooltipContent>
+				</Tooltip>
 			);
 		},
 	},
@@ -128,18 +152,16 @@ export const columns: ColumnDef<Feedback>[] = [
 				<Tooltip>
 					<TooltipTrigger>
 						<Badge
-							variant={TYPE_BADGE_MAP[type] as BadgeVariantsType}
+							variant={TYPE_BADGE_MAP[type]}
 							appearance="outline"
 							size="sm"
 							className="hover:cursor-default"
 						>
 							<TypeIcon />
-							{type.charAt(0) + type.substring(1).toLowerCase()}
+							{TYPE_CONFIG[type].label}
 						</Badge>
 					</TooltipTrigger>
-					<TooltipContent>
-						{type.charAt(0) + type.substring(1).toLowerCase()}
-					</TooltipContent>
+					<TooltipContent>{TYPE_CONFIG[type].label}</TooltipContent>
 				</Tooltip>
 			);
 		},
@@ -174,13 +196,11 @@ export const columns: ColumnDef<Feedback>[] = [
 							className="hover:cursor-default"
 						>
 							<PriorityIcon />
-							{priority.charAt(0) + priority.substring(1).toLowerCase()}
+							{PRIORITY_CONFIG[priority].label}
 						</Badge>
 					</TooltipTrigger>
 					<TooltipContent>
-						{priority.toLowerCase().charAt(0).toUpperCase() +
-							priority.substring(1).toLowerCase()}{" "}
-						Priority
+						{PRIORITY_CONFIG[priority].label} Priority
 					</TooltipContent>
 				</Tooltip>
 			);
