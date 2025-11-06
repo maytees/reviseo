@@ -30,6 +30,7 @@ import {
 	TableHeader,
 	TableRow,
 } from "@/components/ui/table";
+import type { FeedbackSelectAllPayload } from "@/lib/types";
 
 interface DataTableProps<TData, TValue> {
 	columns: ColumnDef<TData, TValue>[];
@@ -37,11 +38,11 @@ interface DataTableProps<TData, TValue> {
 	openFeedback: (feedbackId: string) => void;
 }
 
-export function DataTable<Feedback, TValue>({
+export function DataTable<_, TValue>({
 	columns,
 	data,
 	openFeedback,
-}: DataTableProps<Feedback, TValue>) {
+}: DataTableProps<FeedbackSelectAllPayload, TValue>) {
 	const [sorting, setSorting] = useState<SortingState>([]);
 	const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
 	const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
