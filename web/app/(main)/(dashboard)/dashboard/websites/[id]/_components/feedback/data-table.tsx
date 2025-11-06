@@ -134,7 +134,9 @@ export function DataTable<_, TValue>({
 						{table.getRowModel().rows?.length ? (
 							table.getRowModel().rows.map((row) => (
 								<TableRow
-									onClick={() => openFeedback(row.id)}
+									onClick={(e) => {
+										openFeedback(row.id);
+									}}
 									className="hover:cursor-pointer"
 									key={row.id}
 									data-state={row.getIsSelected() && "selected"}

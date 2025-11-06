@@ -69,3 +69,50 @@ export async function updateFeedbackStatus(
 		};
 	}
 }
+
+export async function deleteFeedback(feedbackId: string): Promise<ApiResponse> {
+	await requireUser();
+
+	try {
+		const existingFeedback = await prisma.feedback.findUnique({
+			where: {
+				id: feedbackId,
+			},
+		});
+
+		if (!existingFeedback) {
+			return {
+				status: "error",
+				message: "Feedback not found",
+			};
+		}
+
+		// Update the website
+		await prisma.feedback.delete({
+			where: {
+				id: feedbackId,
+			},
+		});
+
+		return {
+			status: "success",
+			message: "Feedback deleted successfully",
+		};
+	} catch (e: unknown) {
+		if (e instanceof PrismaClientKnownRequestError) {
+			switch (e.code) {
+				default:
+					return {
+						status: "error",
+						message: `Failed to update feedback: ${e.code}`,
+					};
+			}
+		}
+
+		console.error("Failed to delete feedback:\n", e);
+		return {
+			status: "error",
+			message: `Failed to delete feedback`,
+		};
+	}
+}

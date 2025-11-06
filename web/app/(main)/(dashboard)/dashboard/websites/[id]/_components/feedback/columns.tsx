@@ -1,13 +1,21 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown } from "lucide-react";
+import { ArrowUpDown, MoreHorizontal, Trash } from "lucide-react";
 import moment from "moment";
 import Link from "next/link";
+import type React from "react";
+import { useState } from "react";
 import ScreenshotPreview from "@/app/(main)/(dashboard)/dashboard/_components/ScreenshotPreview";
 import type { WebsiteDataTypeNonNullable } from "@/app/data/website/get-website-by-id-and-dev-id";
 import { Badge, type BadgeVariantsType } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuTrigger,
+} from "@/components/ui/dropdown-menu";
 import {
 	Tooltip,
 	TooltipContent,
@@ -21,6 +29,7 @@ import {
 	TYPE_BADGE_MAP,
 	TYPE_CONFIG,
 } from "@/lib/types";
+import DeleteFeedbackDialog from "./DeleteFeedbackDialog";
 
 type Feedback = WebsiteDataTypeNonNullable["feedback"][number];
 
@@ -253,6 +262,48 @@ export const columns: ColumnDef<Feedback>[] = [
 				<Badge variant="outline" size="sm">
 					{moment(createdAt).fromNow()}
 				</Badge>
+			);
+		},
+	},
+	{
+		id: "actions",
+		cell: ({ row }) => {
+			const feedback = row.original;
+			const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+
+			const handleDelete = (_: React.MouseEvent) => {
+				setDeleteDialogOpen(true);
+			};
+
+			return (
+				// biome-ignore lint/a11y/noStaticElementInteractions: goon
+				// biome-ignore lint/a11y/useKeyWithClickEvents: goon
+				<div onClick={(e) => e.stopPropagation()}>
+					<DropdownMenu>
+						<DropdownMenuTrigger asChild>
+							<Button variant="ghost" className="w-8 h-8 p-0">
+								<span className="sr-only">Open menu</span>
+								<MoreHorizontal className="w-4 h-4" />
+							</Button>
+						</DropdownMenuTrigger>
+						<DropdownMenuContent>
+							{/* TODO: Add more */}
+							{/* <DropdownMenuItem>
+								<CopyIcon size={16} className="opacity-60" aria-hidden="true" />
+								Open
+							</DropdownMenuItem> */}
+							<DropdownMenuItem onClick={handleDelete} variant="destructive">
+								<Trash size={16} className="opacity-60" aria-hidden="true" />
+								Delete
+							</DropdownMenuItem>
+						</DropdownMenuContent>
+					</DropdownMenu>
+					<DeleteFeedbackDialog
+						feedbackId={feedback.id}
+						open={deleteDialogOpen}
+						onOpenChange={setDeleteDialogOpen}
+					/>
+				</div>
 			);
 		},
 	},
