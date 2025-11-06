@@ -53,6 +53,9 @@ const FeedbackTable = ({
 	open: string | string[] | undefined;
 }) => {
 	const [modalOpen, setModalOpen] = useState(false);
+	const [canClose, setCanClose] = useState(true);
+	const [isImageZoomed, setIsImageZoomed] = useState(false);
+
 	// TODO: Not found modal
 	const [_, setNotFoundOpen] = useState(false);
 	const router = useRouter();
@@ -115,7 +118,17 @@ const FeedbackTable = ({
 				data={website.feedback}
 				openFeedback={openFeedbackModal}
 			/>
-			<Dialog open={modalOpen} onOpenChange={setModalOpen}>
+			<Dialog
+				modal
+				open={modalOpen}
+				onOpenChange={(shouldOpen) => {
+					if (!shouldOpen && (!canClose || isImageZoomed)) {
+						return;
+					}
+
+					setModalOpen(!modalOpen);
+				}}
+			>
 				{selectedFeedback ? (
 					<DialogContent className="overflow-y-scroll" variant={"feedback"}>
 						<DialogHeader>
@@ -139,6 +152,7 @@ const FeedbackTable = ({
 										<Link
 											href={`/api/s3/annotations/${selectedFeedback.screenshotKey}`}
 											download={`${selectedFeedback.id}-${selectedFeedback.timestamp}`}
+											target="_blank"
 										>
 											<Download />
 										</Link>
@@ -153,6 +167,7 @@ const FeedbackTable = ({
 								app_url=""
 								className="rounded-sm lg:w-full"
 								screenshotKey={selectedFeedback.screenshotKey}
+								onZoomChange={setIsImageZoomed}
 							/>
 						</div>
 

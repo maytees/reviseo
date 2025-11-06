@@ -30,7 +30,13 @@ export const columns: ColumnDef<Feedback>[] = [
 		header: "Screenshot",
 		cell: ({ row }) => {
 			const screenshotKey = row.getValue("screenshotKey") as string;
-			return <ScreenshotPreview app_url={""} screenshotKey={screenshotKey} />;
+			return (
+				// biome-ignore lint/a11y/noStaticElementInteractions: goon need this
+				// biome-ignore lint/a11y/useKeyWithClickEvents: goon need this
+				<div onClick={(e) => e.stopPropagation()}>
+					<ScreenshotPreview app_url={""} screenshotKey={screenshotKey} />{" "}
+				</div>
+			);
 		},
 	},
 	{
