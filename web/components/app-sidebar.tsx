@@ -31,7 +31,6 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
-import { authClient } from "@/lib/auth-client";
 import { NavUser } from "./nav-user";
 
 const data = {
@@ -73,7 +72,6 @@ const data = {
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 	const { theme, setTheme } = useTheme();
-	const { data: _, isPending } = authClient.useSession();
 
 	return (
 		<Sidebar {...props}>
