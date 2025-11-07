@@ -53,13 +53,13 @@ const SelectStatus = ({ feedback }: { feedback: FeedbackSelectAllPayload }) => {
 			</SelectTrigger>
 			<SelectContent>
 				<SelectItem value="NEW">
-					<span className="flex items-center gap-2 text-blue-300">
+					<span className="flex items-center gap-2 text-blue-500">
 						<Inbox className="size-4" />
 						<span>New</span>
 					</span>
 				</SelectItem>
 				<SelectItem value="IN_PROGRESS">
-					<span className="flex items-center gap-2 text-amber-300">
+					<span className="flex items-center gap-2 text-amber-500">
 						<Play className="size-4" />
 						<span>In Progress</span>
 					</span>

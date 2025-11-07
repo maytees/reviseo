@@ -2,8 +2,6 @@
 
 import type { ColumnDef } from "@tanstack/react-table";
 import { ArrowUpDown, MoreHorizontal, Trash } from "lucide-react";
-import moment from "moment";
-import Link from "next/link";
 import type React from "react";
 import { useState } from "react";
 import ScreenshotPreview from "@/app/(main)/(dashboard)/dashboard/_components/ScreenshotPreview";
@@ -221,50 +219,50 @@ export const columns: ColumnDef<Feedback>[] = [
 			);
 		},
 	},
-	{
-		accessorKey: "pageUrl",
-		header: "Page URL",
-		cell: ({ row }) => {
-			const pageUrl = row.getValue("pageUrl") as string;
-			return (
-				<Tooltip>
-					<TooltipTrigger>
-						<span className="text-sm text-muted-foreground truncate max-w-[200px] block">
-							{pageUrl}
-						</span>
-					</TooltipTrigger>
-					<TooltipContent>
-						<Link href={pageUrl} target="_blank" className="hover:underline">
-							{pageUrl}
-						</Link>
-					</TooltipContent>
-				</Tooltip>
-			);
-		},
-	},
-	{
-		accessorKey: "createdAt",
-		header: ({ column }) => {
-			return (
-				<Button
-					variant="foreground"
-					className="p-0 py-0 "
-					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
-				>
-					Created
-					<ArrowUpDown className="w-4 h-4 ml-2" />
-				</Button>
-			);
-		},
-		cell: ({ row }) => {
-			const createdAt = row.getValue("createdAt") as Date;
-			return (
-				<Badge variant="outline" size="sm">
-					{moment(createdAt).fromNow()}
-				</Badge>
-			);
-		},
-	},
+	// {
+	// 	accessorKey: "pageUrl",
+	// 	header: "Page URL",
+	// 	cell: ({ row }) => {
+	// 		const pageUrl = row.getValue("pageUrl") as string;
+	// 		return (
+	// 			<Tooltip>
+	// 				<TooltipTrigger>
+	// 					<span className="text-sm text-muted-foreground truncate max-w-[200px] block">
+	// 						{pageUrl}
+	// 					</span>
+	// 				</TooltipTrigger>
+	// 				<TooltipContent>
+	// 					<Link href={pageUrl} target="_blank" className="hover:underline">
+	// 						{pageUrl}
+	// 					</Link>
+	// 				</TooltipContent>
+	// 			</Tooltip>
+	// 		);
+	// 	},
+	// },
+	// {
+	// 	accessorKey: "createdAt",
+	// 	header: ({ column }) => {
+	// 		return (
+	// 			<Button
+	// 				variant="foreground"
+	// 				className="p-0 py-0 "
+	// 				onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
+	// 			>
+	// 				Created
+	// 				<ArrowUpDown className="w-4 h-4 ml-2" />
+	// 			</Button>
+	// 		);
+	// 	},
+	// 	cell: ({ row }) => {
+	// 		const createdAt = row.getValue("createdAt") as Date;
+	// 		return (
+	// 			<Badge variant="outline" size="sm">
+	// 				{moment(createdAt).fromNow()}
+	// 			</Badge>
+	// 		);
+	// 	},
+	// },
 	{
 		id: "actions",
 		cell: ({ row }) => {

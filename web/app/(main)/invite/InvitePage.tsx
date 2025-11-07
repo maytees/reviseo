@@ -9,12 +9,13 @@ import { finalizeClientToken } from "./actions";
 const InvitePage = ({
 	searchParams,
 }: {
-	searchParams: Promise<{ token?: string }>;
+	searchParams: Promise<{ token?: string; clientName?: string }>;
 }) => {
 	const { data: session, isPending } = authClient.useSession();
 	const router = useRouter();
 	const search = use(searchParams);
 	const token = search.token ?? null;
+	const clientName = search.clientName ?? null;
 
 	useEffect(() => {
 		if (isPending) return;
@@ -22,6 +23,7 @@ const InvitePage = ({
 		// If query param present, persist it for the login page to use
 		if (token) {
 			localStorage.setItem("token", token);
+			// localStorage.setItem("clientName", clientName || "No Name");
 		}
 
 		const storageToken = localStorage.getItem("token");
@@ -44,7 +46,7 @@ const InvitePage = ({
 		const finalize = async () => {
 			try {
 				const { data: result, error } = await tryCatch(
-					finalizeClientToken(storageToken),
+					finalizeClientToken(storageToken, clientName),
 				);
 
 				if (error) {
@@ -75,7 +77,7 @@ const InvitePage = ({
 		};
 
 		finalize();
-	}, [token, session?.user, isPending, router]);
+	}, [token, session?.user, isPending, router, clientName]);
 
 	if (isPending) return <div>Loading...</div>;
 	return <div>InvitePage</div>;

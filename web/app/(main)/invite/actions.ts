@@ -4,7 +4,10 @@ import { prisma } from "@/lib/db";
 import type { ApiResponse } from "@/lib/types";
 import { requireUser } from "../../data/require-user";
 
-export async function finalizeClientToken(token: string): Promise<ApiResponse> {
+export async function finalizeClientToken(
+	token: string,
+	clientName: string | null,
+): Promise<ApiResponse> {
 	// This SHOULD give the client
 	// ?TODO?: Check make sure its client
 	const user = await requireUser();
@@ -89,6 +92,15 @@ export async function finalizeClientToken(token: string): Promise<ApiResponse> {
 		await prisma.invite.delete({
 			where: {
 				id: invite.id,
+			},
+		});
+
+		await prisma.user.update({
+			where: {
+				id: invitedUser.id,
+			},
+			data: {
+				name: clientName || "No Name",
 			},
 		});
 

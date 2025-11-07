@@ -88,11 +88,11 @@ export const STATUS_CONFIG: Record<
 		color: string;
 	}
 > = {
-	NEW: { label: "New", icon: InboxIcon, color: "text-blue-300" },
+	NEW: { label: "New", icon: InboxIcon, color: "text-blue-500" },
 	IN_PROGRESS: {
 		label: "In Progress",
 		icon: PlayIcon,
-		color: "text-amber-300",
+		color: "text-amber-500",
 	},
 	RESOLVED: {
 		label: "Resolved",

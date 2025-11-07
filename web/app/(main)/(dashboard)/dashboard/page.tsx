@@ -16,6 +16,7 @@ import {
 	CardTitle,
 } from "@/components/ui/old-card";
 import ClientAttention from "./_components/ClientAttention";
+import InviteClientDialog from "./_components/InviteClientDialog";
 import RecentSubmissions from "./_components/RecentSubmissions";
 import CreateWebsiteDialog from "./websites/_components/CreateWebsiteDialog";
 
@@ -60,7 +61,7 @@ export default async function DashboardPage() {
 						<Card className="w-1/3 gap-1 h-34">
 							<CardHeader className="flex gap-1.5 flex-col items-start justify-between space-y-0">
 								<div className="p-1.5 rounded-sm bg-blue-300/20">
-									<PersonStanding className="text-blue-300 size-4" />
+									<PersonStanding className="text-blue-500 size-4" />
 								</div>
 								<CardTitle className="text-base font-semibold font-caudex text-muted-foreground">
 									Clients
@@ -75,7 +76,7 @@ export default async function DashboardPage() {
 						<Card className="w-1/3 gap-1 h-34">
 							<CardHeader className="flex gap-1.5 flex-col items-start justify-between space-y-0">
 								<div className="p-1.5 rounded-sm bg-amber-300/20">
-									<MessageCircle className="size-4 text-amber-300" />
+									<MessageCircle className="size-4 text-amber-500" />
 								</div>
 								<CardTitle className="text-base font-semibold font-caudex text-muted-foreground">
 									Feedback
@@ -98,17 +99,16 @@ export default async function DashboardPage() {
 						</CardHeader>
 						<CardContent className="flex flex-col gap-1.5">
 							<CreateWebsiteDialog className="justify-start w-full" />
-							<Button
-								asChild
-								size={"sm"}
-								className="justify-start"
-								variant={"outline"}
-							>
-								<Link href={`/dashboard/websites`}>
+							<InviteClientDialog userData={userData}>
+								<Button
+									size={"sm"}
+									className="justify-start"
+									variant={"outline"}
+								>
 									<UserRoundPlus />
 									Invite Client
-								</Link>
-							</Button>
+								</Button>
+							</InviteClientDialog>
 							<Button
 								asChild
 								size={"sm"}

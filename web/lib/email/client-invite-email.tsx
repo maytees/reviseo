@@ -38,7 +38,7 @@ export default function ClientInviteEmail({
 					<Container className="px-4 py-12 mx-auto">
 						{/* Main Card */}
 						<Section
-							className="border-solid border-gray-200 border-2 max-w-md mx-auto text-left bg-white rounded-2xl overflow-hidden"
+							className="max-w-md mx-auto overflow-hidden text-left bg-white border-2 border-gray-200 border-solid rounded-2xl"
 							style={{
 								boxShadow:
 									"0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
@@ -86,13 +86,13 @@ export default function ClientInviteEmail({
 										border: "1px solid #dfe2dc",
 									}}
 								>
-									<Text className="m-0 mb-1 text-xs text-gray-500 uppercase tracking-wide">
+									<Text className="m-0 mb-1 text-xs tracking-wide text-gray-500 uppercase">
 										Website
 									</Text>
 									<Text className="m-0 mb-0 text-sm font-semibold text-gray-900">
 										{websiteName}
 									</Text>
-									<Link href={websiteUrl} className="m-0 text-sm  break-all">
+									<Link href={websiteUrl} className="m-0 text-sm break-all">
 										{websiteUrl}
 									</Link>
 								</Section>
@@ -107,7 +107,7 @@ export default function ClientInviteEmail({
 								</Text>
 
 								{/* CTA Button */}
-								<Section className="text-center mb-6">
+								<Section className="mb-6 text-center">
 									<Button
 										href={inviteUrl}
 										className="w-full py-2 text-base font-semibold text-white rounded-lg"
@@ -121,7 +121,7 @@ export default function ClientInviteEmail({
 									</Button>
 								</Section>
 
-								<Text className="mb-4 text-sm text-gray-500 text-center">
+								<Text className="mb-4 text-sm text-center text-gray-500">
 									Or click this link into your browser:
 								</Text>
 								<Container
@@ -129,7 +129,7 @@ export default function ClientInviteEmail({
 										backgroundColor: "#f4f6f3",
 										border: "1px solid #dfe2dc",
 									}}
-									className="mb-6 rounded-xl  p-3"
+									className="p-3 mb-6 rounded-xl"
 								>
 									<Link className="text-xs break-all" href={inviteUrl}>
 										{inviteUrl}
@@ -175,7 +175,7 @@ export default function ClientInviteEmail({
 export const PreviewProps: ClientInviteEmailProps = {
 	clientName: "Nicole",
 	developerName: "Maytham",
-	inviteUrl: 'https://reviseo.app/invite?token="abc"',
+	inviteUrl: 'https://reviseo.app/invite?token="abc"&clientName=asdf',
 	websiteName: "One Life Counseling",
 	websiteUrl: "https://onelifecounseling.net",
 };

@@ -31,6 +31,27 @@ export async function inviteClient({
 	}
 
 	try {
+		const website = await prisma.website.findUnique({
+			where: {
+				id: websiteId,
+			},
+		});
+
+		if (!website) {
+			return {
+				status: "error",
+				message: "Could not find website",
+			};
+		}
+
+		// TODO: Allow multiple clients
+		if (website.clientId) {
+			return {
+				status: "error",
+				message: "Website already has client!",
+			};
+		}
+
 		// Create invite
 		const invite = await prisma.invite.create({
 			data: {
@@ -44,13 +65,12 @@ export async function inviteClient({
 
 		// Send invite
 		const email = await resend.emails.send({
-			// TODO: Use reviseo domain
 			from: "Reviseo <onboarding@reviseo.app>",
 			to: [clientEmail],
 			subject: "Reviseo - You have an invite!",
 			react: ClientInviteEmail({
 				clientName,
-				inviteUrl: `${env.BETTER_AUTH_URL}/invite?token=${token}`,
+				inviteUrl: `${env.BETTER_AUTH_URL}/invite?token=${token}&clientName=${clientName}`,
 				// TODO: Fix fields
 				developerName: user.name,
 				websiteName,

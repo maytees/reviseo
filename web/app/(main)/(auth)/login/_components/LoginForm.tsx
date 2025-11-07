@@ -73,12 +73,12 @@ export function LoginForm() {
 		});
 	}
 	return (
-		<Card className="border-border py-7 px-3 bg-gradient-to-br from-card to-card/50 backdrop-blur-sm shadow-xl">
-			<CardHeader className="space-y-1 py-2">
-				<CardTitle className="text-2xl sm:text-3xl font-bold font-caudex text-center">
+		<Card className="px-3 shadow-xl border-border py-7 bg-gradient-to-br from-card to-card/50 backdrop-blur-sm">
+			<CardHeader className="py-2 space-y-1">
+				<CardTitle className="text-2xl font-bold text-center sm:text-3xl font-caudex">
 					Welcome Back!
 				</CardTitle>
-				<CardDescription className="text-base sm:text-lg text-center font-inter">
+				<CardDescription className="text-base text-center sm:text-lg font-inter">
 					Sign in to access your dashboard
 				</CardDescription>
 			</CardHeader>
@@ -108,7 +108,7 @@ export function LoginForm() {
 					<div className="grid gap-2.5">
 						<Label
 							htmlFor={emailId}
-							className="text-base font-inter font-medium"
+							className="text-base font-medium font-inter"
 						>
 							Email
 						</Label>
