@@ -29,7 +29,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 				<Navbar />
 			</div>
 
-			<div className="flex min-h-[calc(100vh-6rem)] flex-col items-center justify-center relative z-10">
+			<div className="flex min-h-[calc(100vh-6rem)] mt-20 flex-col items-center justify-center relative z-10">
 				<div className="flex flex-col w-full max-w-md gap-6 px-4">
 					{children}
 					<div className="text-sm text-center text-balance text-muted-foreground font-inter">
