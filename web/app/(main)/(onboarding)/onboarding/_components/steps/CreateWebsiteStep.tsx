@@ -23,6 +23,7 @@ interface CreateWebsiteStepProps {
 	isPending?: boolean;
 	defaultValues?: Partial<WebsiteFormData>;
 	userData: UserOnboardingDataType;
+	handleComplete: () => Promise<void>;
 }
 
 export function CreateWebsiteStep({
@@ -31,12 +32,11 @@ export function CreateWebsiteStep({
 	isPending = false,
 	defaultValues,
 	userData,
+	handleComplete,
 }: CreateWebsiteStepProps) {
 	const websiteNameId = useId();
 	const websiteUrlId = useId();
-	const [selectedWebsiteId, setSelectedWebsiteId] = useState<string | null>(
-		null,
-	);
+	const [_, setSelectedWebsiteId] = useState<string | null>(null);
 
 	const existingWebsites = userData?.developerWebsites || [];
 	const hasExistingWebsites = existingWebsites.length > 0;
@@ -45,7 +45,7 @@ export function CreateWebsiteStep({
 		register,
 		handleSubmit,
 		formState: { errors, isValid },
-		setValue,
+		// setValue,
 	} = useForm<WebsiteFormData>({
 		resolver: zodResolver(websiteSchema),
 		mode: "onChange",
@@ -70,10 +70,10 @@ export function CreateWebsiteStep({
 			animate={{ opacity: 1, y: 0 }}
 			exit={{ opacity: 0, y: -20 }}
 			transition={{ duration: 0.3, ease: "easeOut" }}
-			className="space-y-6 py-4"
+			className="py-4 space-y-6"
 		>
-			<div className="space-y-1  text-center">
-				<h2 className="text-2xl sm:text-4xl font-bold font-caudex">
+			<div className="space-y-1 text-center">
+				<h2 className="text-2xl font-bold sm:text-4xl font-caudex">
 					{hasExistingWebsites
 						? "Select or create a website"
 						: "Create your first website"}
@@ -87,8 +87,8 @@ export function CreateWebsiteStep({
 
 			{hasExistingWebsites && (
 				<div className="max-w-2xl mx-auto">
-					<div className="bg-accent/20 border border-border rounded-lg p-4">
-						<Label className="text-base font-inter font-medium mb-3 block">
+					<div className="p-4 border rounded-lg bg-accent/20 border-border">
+						<Label className="block mb-3 text-base font-medium font-inter">
 							Select Existing Website
 						</Label>
 						<Select onValueChange={handleExistingWebsiteSelect}>
@@ -119,7 +119,7 @@ export function CreateWebsiteStep({
 							<span className="w-full border-t border-border" />
 						</div>
 						<div className="relative flex justify-center text-xs uppercase">
-							<span className="bg-background px-2 text-muted-foreground font-inter">
+							<span className="px-2 bg-background text-muted-foreground font-inter">
 								Or create new
 							</span>
 						</div>
@@ -129,17 +129,18 @@ export function CreateWebsiteStep({
 
 			<form
 				onSubmit={handleSubmit(onNext)}
-				className="space-y-5 max-w-2xl mx-auto"
+				className="max-w-2xl mx-auto space-y-5"
 			>
-				<div className="grid sm:grid-cols-2 gap-4">
+				<div className="grid gap-4 sm:grid-cols-2">
 					<div className="space-y-2">
 						<Label
 							htmlFor={websiteNameId}
-							className="text-base font-inter font-medium"
+							className="text-base font-medium font-inter"
 						>
 							Website Name
 						</Label>
 						<Input
+							autoComplete="off"
 							id={websiteNameId}
 							placeholder="My Client's Portfolio"
 							{...register("websiteName")}
@@ -163,7 +164,7 @@ export function CreateWebsiteStep({
 								id={`${websiteNameId}-helper`}
 								className="text-sm text-muted-foreground font-inter"
 							>
-								A friendly name for your project
+								A friendly name for your client&apos;s website
 							</p>
 						)}
 					</div>
@@ -171,11 +172,12 @@ export function CreateWebsiteStep({
 					<div className="space-y-2">
 						<Label
 							htmlFor={websiteUrlId}
-							className="text-base font-inter font-medium"
+							className="text-base font-medium font-inter"
 						>
 							Website URL
 						</Label>
 						<Input
+							autoComplete="off"
 							id={websiteUrlId}
 							type="url"
 							placeholder="https://example.com"
@@ -216,13 +218,18 @@ export function CreateWebsiteStep({
 					>
 						← Back
 					</Button>
-					<Button
-						type="submit"
-						disabled={!isValid || isPending}
-						className="font-inter"
-					>
-						Continue →
-					</Button>
+					<div className="space-x-2">
+						<Button variant={"outline"} onClick={handleComplete}>
+							Quit Onboarding
+						</Button>
+						<Button
+							type="submit"
+							disabled={!isValid || isPending}
+							className="font-inter"
+						>
+							Continue →
+						</Button>
+					</div>
 				</div>
 			</form>
 		</motion.div>

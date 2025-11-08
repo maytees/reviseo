@@ -15,12 +15,14 @@ interface InviteClientStepProps {
 	onSubmit: (data: ClientFormData) => void;
 	isPending?: boolean;
 	defaultValues?: Partial<ClientFormData>;
+	handleComplete: () => Promise<void>;
 }
 
 export function InviteClientStep({
 	onSubmit,
 	isPending = false,
 	defaultValues,
+	handleComplete,
 }: InviteClientStepProps) {
 	const clientNameId = useId();
 	const clientEmailId = useId();
@@ -41,10 +43,10 @@ export function InviteClientStep({
 			animate={{ opacity: 1, y: 0 }}
 			exit={{ opacity: 0, y: -20 }}
 			transition={{ duration: 0.3, ease: "easeOut" }}
-			className="space-y-6 py-4"
+			className="py-4 space-y-6"
 		>
 			<div className="space-y-1 text-center">
-				<h2 className="text-2xl sm:text-3xl font-bold font-caudex">
+				<h2 className="text-2xl font-bold sm:text-3xl font-caudex">
 					Invite your first client
 				</h2>
 				<p className="text-base text-muted-foreground font-inter">
@@ -54,13 +56,13 @@ export function InviteClientStep({
 
 			<form
 				onSubmit={handleSubmit(onSubmit)}
-				className="space-y-5 max-w-2xl mx-auto"
+				className="max-w-2xl mx-auto space-y-5"
 			>
-				<div className="grid sm:grid-cols-2 gap-4">
+				<div className="grid gap-4 sm:grid-cols-2">
 					<div className="space-y-2">
 						<Label
 							htmlFor={clientNameId}
-							className="text-base font-inter font-medium"
+							className="text-base font-medium font-inter"
 						>
 							Client Name
 						</Label>
@@ -87,7 +89,7 @@ export function InviteClientStep({
 					<div className="space-y-2">
 						<Label
 							htmlFor={clientEmailId}
-							className="text-base font-inter font-medium"
+							className="text-base font-medium font-inter"
 						>
 							Client Email
 						</Label>
@@ -130,7 +132,10 @@ export function InviteClientStep({
 					</AlertDescription>
 				</Alert>
 
-				<div className="flex justify-end pt-2">
+				<div className="flex justify-end gap-5 pt-2">
+					<Button onClick={handleComplete} type="button" variant={"ghost"}>
+						Skip
+					</Button>
 					<Button
 						type="submit"
 						disabled={!isValid || isPending}

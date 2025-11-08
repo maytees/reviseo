@@ -14,11 +14,15 @@ export async function completeOnboarding() {
 		throw new Error("Unauthorized");
 	}
 
-	// Update user's onboarding status
-	await prisma.user.update({
-		where: { id: session.user.id },
-		data: { hasCompletedOnboarding: true },
-	});
-
-	redirect("/dashboard");
+	try {
+		// Update user's onboarding status
+		await prisma.user.update({
+			where: { id: session.user.id },
+			data: { hasCompletedOnboarding: true },
+		});
+	} catch (e) {
+		console.error(e);
+	} finally {
+		await redirect("/dashboard");
+	}
 }

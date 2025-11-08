@@ -195,6 +195,7 @@ export function OnboardingFlow(props: { userData: UserOnboardingDataType }) {
 							<>
 								{currentStep === 0 && (
 									<WelcomeStep
+										handleComplete={handleComplete}
 										onNext={() => setCurrentStep(1)}
 										userName={
 											props.userData?.name ||
@@ -206,6 +207,7 @@ export function OnboardingFlow(props: { userData: UserOnboardingDataType }) {
 								{currentStep === 1 && (
 									<CreateWebsiteStep
 										onNext={handleWebsiteSubmit}
+										handleComplete={handleComplete}
 										onBack={() => setCurrentStep(0)}
 										isPending={isWebsitePending}
 										defaultValues={{
@@ -224,6 +226,7 @@ export function OnboardingFlow(props: { userData: UserOnboardingDataType }) {
 								)}
 								{currentStep === 3 && (
 									<InviteClientStep
+										handleComplete={handleComplete}
 										onSubmit={handleClientSubmit}
 										isPending={isClientPending}
 										defaultValues={{

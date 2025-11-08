@@ -51,7 +51,7 @@ export function InstallWidgetStep({
 					Install the widget
 				</h2>
 				<p className="text-base text-muted-foreground font-inter">
-					Add this code snippet before the closing &lt;/body&gt; tag
+					Add this code snippet before the closing &lt;/head&gt; tag
 				</p>
 			</div>
 
