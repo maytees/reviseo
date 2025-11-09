@@ -9,6 +9,7 @@ import { env } from "@/lib/env";
 import { getDomain } from "@/lib/getDomain";
 import { resend } from "@/lib/resend";
 import type { ApiResponse } from "@/lib/types";
+import { fetchSetSiteScreenshot } from "@/lib/utils";
 import type { ClientFormData, WebsiteFormData } from "@/lib/validations";
 import { PrismaClientKnownRequestError } from "@/prisma/generated/client/runtime/library";
 
@@ -126,18 +127,20 @@ export async function createWebsiteOnboarding({
 			},
 		});
 
+		// fetch(`${env.BETTER_AUTH_URL}/api/s3/screenshot`, {
+		// 	method: "POST",
+		// 	headers: { "Content-Type": "application/json" },
+		// 	body: JSON.stringify({
+		// 		url: websiteUrl,
+		// 		websiteId: newWebsite.id,
+		// 	}),
+		// }).catch((error) => {
+		// 	// Log error but don't block the response
+		// 	console.error("Failed to trigger screenshot:", error);
+		// });
+
 		// Trigger screenshot generation asynchronously (fire and forget)
-		fetch(`${env.BETTER_AUTH_URL}/api/s3/screenshot`, {
-			method: "POST",
-			headers: { "Content-Type": "application/json" },
-			body: JSON.stringify({
-				url: websiteUrl,
-				websiteId: newWebsite.id,
-			}),
-		}).catch((error) => {
-			// Log error but don't block the response
-			console.error("Failed to trigger screenshot:", error);
-		});
+		fetchSetSiteScreenshot(websiteUrl, newWebsite.id);
 
 		return {
 			status: "success",
@@ -198,6 +201,10 @@ export async function updateWebsiteOnboarding({
 				message: "Website not found or unauthorized",
 			};
 		}
+
+		// If URL changed, take a new screenshot and save it
+		if (existingWebsite.url !== websiteUrl)
+			fetchSetSiteScreenshot(websiteUrl, websiteId);
 
 		// Update the website
 		await prisma.website.update({

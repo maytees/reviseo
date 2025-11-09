@@ -103,3 +103,17 @@ export function generateWidgetScriptFormatted(projectId: string): string {
   }(window, document);
 </script>`;
 }
+
+export function fetchSetSiteScreenshot(websiteUrl: string, websiteId: string) {
+	fetch(`${env.BETTER_AUTH_URL}/api/s3/screenshot`, {
+		method: "POST",
+		headers: { "Content-Type": "application/json" },
+		body: JSON.stringify({
+			url: websiteUrl,
+			websiteId,
+		}),
+	}).catch((error) => {
+		// Log error but don't block the response
+		console.error("Failed to trigger screenshot:", error);
+	});
+}
