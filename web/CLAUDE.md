@@ -4,130 +4,201 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-Reviseo is a visual feedback tool for websites. It allows developers to collect annotated screenshots from clients, managing feedback through a developer-client relationship model. The application uses Next.js 15 with React 19, TypeScript, Prisma ORM, and Better Auth for authentication.
+Reviseo is a visual feedback collection platform for web developers and their clients. The application allows:
+- **Developers** to create websites/projects and install a feedback widget
+- **Clients** to submit visual feedback (screenshots with annotations) on websites
+- **Both** to track and manage feedback with status updates and priorities
 
-## Commands
+## Tech Stack
 
-### Development
+- **Framework**: Next.js 16 (App Router with Turbopack)
+- **Language**: TypeScript (strict mode)
+- **Database**: PostgreSQL with Prisma ORM
+- **Authentication**: Better Auth with email OTP and GitHub OAuth
+- **Storage**: AWS S3 (via custom endpoint) for screenshots and annotations
+- **UI**: Radix UI components, Tailwind CSS, shadcn/ui components
+- **Email**: Resend for transactional emails
+- **Screenshot**: Puppeteer (with @sparticuz/chromium for serverless)
+
+## Development Commands
+
+### Running the app
 ```bash
-pnpm dev                # Start development server with Turbopack
-pnpm build              # Build for production with Turbopack
-pnpm start              # Start production server
+pnpm dev              # Start dev server with Turbopack
+pnpm build            # Build for production with Turbopack
+pnpm start            # Start production server
 ```
 
-### Database
+### Database operations
 ```bash
-pnpm db:generate        # Generate Prisma client
-pnpm db:push            # Push schema changes to database
+pnpm db:generate      # Generate Prisma client
+pnpm db:push          # Push schema changes to database
 ```
 
-Note: Prisma client is generated to `./prisma/generated/client` (not the default location).
+Note: Prisma client is generated to `./prisma/generated/client` (custom output path)
 
-### Deployment
+### Code quality
+The project uses Biome for linting/formatting (configured in package.json as `@biomejs/biome`). There are no scripts defined for linting, so run Biome directly if needed:
 ```bash
-pnpm vercel-build       # Production build command for Vercel (pushes DB + builds)
+npx biome check .     # Check for issues
+npx biome format .    # Format code
 ```
 
 ## Architecture
 
-### App Structure (Next.js App Router)
+### Route Groups and Layouts
 
-The application uses Next.js route groups for organization:
+The app uses Next.js route groups for distinct application sections:
 
-- **`(auth)/`** - Authentication pages (login, verify-request)
-- **`(dashboard)/`** - Authenticated dashboard routes (dashboard, websites, clients, settings)
-- **`(onboarding)/`** - Onboarding flow for new developers
-- **`api/`** - API routes (auth, s3, websites)
-- **`data/`** - Server-side data access layer
+- **`app/(main)`**: Public marketing pages, auth pages, and authenticated sections
+  - **`app/(main)/(auth)`**: Login and email verification pages (uses custom auth layout)
+  - **`app/(main)/(onboarding)`**: Onboarding flow for new developers (separate layout)
+  - **`app/(main)/(dashboard)`**: Main dashboard for developers to manage websites and feedback
 
-### Key Patterns
+- **`app/widget`**: Isolated widget application that runs in client websites
+  - `/widget/modal` - Main feedback submission modal (Excalidraw annotations)
+  - `/widget/trigger` - Widget trigger button
+  - Uses separate layout with custom CSS (`widget.css`)
 
-**Data Access Layer**: All database queries should go through the `app/data/` directory. Server components fetch data using functions from this layer.
+- **`app/api`**: API routes
+  - `/api/auth/[...all]` - Better Auth endpoints
+  - `/api/s3/*` - S3 operations (upload, delete, presigned URLs)
+  - `/api/puppeteer` - Screenshot generation
+  - `/api/websites/verify/[projectId]` - Widget installation verification
 
-**Authentication**: The app uses Better Auth with:
-- GitHub OAuth provider
-- Email OTP for passwordless login
-- Custom `requireUser()` helper at `app/data/require-user.ts` for protected routes
+### Database Schema (Key Models)
 
-**Database Schema**: The core data model revolves around:
-- `User` - Both developers and clients (distinguished by relationships)
-- `Website` - Projects owned by developers, optionally linked to clients via `clientId`
-- `Feedback` - Visual feedback items with annotated SVG screenshots
-- `Invite` - Client invitation system for website access
+- **Website**: Central model linking developers to projects
+  - `projectId` (UUID): Public identifier for widget installation
+  - `widgetInstalled` + `verifiedAt`: Track widget installation status
+  - `screenshotUrl`: Auto-captured site preview
+  - Relations: developer (User), client (User, optional during onboarding), feedback, invites
 
-Each `Website` has a unique `projectId` used for widget installation.
+- **Feedback**: Visual feedback submissions
+  - Stores screenshot in S3 (`screenshotKey`)
+  - Tracks status (NEW, IN_PROGRESS, RESOLVED), type (BUG, IMPROVEMENT), priority
+  - Captures browser metadata (browser, OS, viewport, etc.)
+  - Relations: website, author (User, optional for anonymous feedback)
 
-**Onboarding Flow**: Multi-step process for new developers:
-1. Welcome screen
-2. Create website
-3. Install widget (provides projectId-based snippet)
-4. Invite client (optional)
-5. Success/completion
+- **User**: Dual-role model (developer or client)
+  - `role`: "developer" | "client" | "admin"
+  - `hasCompletedOnboarding`: Tracks onboarding completion
+  - Better Auth manages sessions and accounts
 
-The flow uses React state and `useTransition` for optimistic UI updates. Website creation happens at step 2, generating a `projectId` that's used in step 3 for widget installation.
-
-### UI Components
-
-Uses shadcn/ui component library with:
-- Path alias: `@/` maps to project root
-- Components in `components/ui/` (excluded from ESLint)
-- Custom components in `components/` (site-header, app-sidebar, nav-main, etc.)
-- Multiple registry support: @reui, @aceternity, @magicui
-
-Theme: "new-york" style with neutral base color and CSS variables.
-
-### Environment Variables
-
-Environment variables are validated at build time using `@t3-oss/env-nextjs` (see `lib/env.ts`).
-
-Required server variables:
-- `DATABASE_URL` - PostgreSQL connection string
-- `BETTER_AUTH_SECRET` & `BETTER_AUTH_URL`
-- `AUTH_GITHUB_CLIENT_ID` & `AUTH_GITHUB_SECRET`
-- `RESEND_API_KEY` - For transactional emails
-- AWS S3 credentials (5 variables for custom S3-compatible storage)
-
-Required client variables:
-- `NEXT_PUBLIC_S3_BUCKET_NAME_UPLOADS`
-
-### File Storage
-
-The app uses S3-compatible storage (configured via AWS SDK) for:
-- User-uploaded feedback screenshots
-- Annotated SVG files
-
-See `lib/s3client.ts` for the S3 client configuration.
+- **Invite**: Client invitation system
+  - Token-based invites with expiration
+  - Status: PENDING, ACCEPTED, REVOKED
+  - On user creation, checks for pending invites to set role to "client"
 
 ### Authentication Flow
 
-Better Auth configuration at `lib/auth.ts` includes:
-- Prisma adapter with PostgreSQL
-- Custom `hasCompletedOnboarding` field on User model (cannot be set by users directly)
-- Email OTP plugin with 10-minute expiry
-- Transactional emails via Resend
+- Uses Better Auth with Prisma adapter
+- Email OTP authentication (magic links) + GitHub OAuth
+- Custom user fields: `role` and `hasCompletedOnboarding`
+- Database hook: On user creation, checks for pending invites → assigns "client" role
+- Session management with cookies (`sameSite: "none"` for widget cross-origin)
+- Auth utility: `requireUser()` in `app/data/require-user.ts` for protected routes
 
-Use `requireUser()` in Server Components to enforce authentication. It redirects to `/login` if unauthenticated.
+### Data Access Patterns
 
-### Important Files
+- **Server-side data fetching**: Use `app/data/` directory for reusable data queries
+  - Example: `app/data/user/get-user-data.ts`, `app/data/website/get-website-by-id-and-dev-id.ts`
+  - Always use `"server-only"` directive in data files
+  - Cache queries with React's `cache()` when appropriate
 
-- `lib/validations.ts` - Zod schemas for form validation
-- `lib/try-catch.ts` - Error handling utility for async operations
-- `lib/getDomain.ts` - Domain extraction utility
-- `components/email/` - React Email templates
-- `prisma/schema.prisma` - Database schema with Better Auth integration
+- **Actions**: Server actions typically colocated in `actions.ts` files within feature directories
+  - Example: `app/(main)/(dashboard)/dashboard/websites/actions.ts`
 
-### TypeScript Configuration
+### Component Organization
 
-- Target: ES2017
-- Strict mode enabled
-- Path alias: `@/*` maps to project root
-- Module resolution: bundler (for Next.js 15 compatibility)
+- **Global components**: `components/` - Reusable UI components
+  - `components/ui/` - shadcn/ui and custom UI primitives
+  - `components/landing/` - Marketing/landing page sections
 
-## Development Notes
+- **Feature components**: Colocated in `_components/` directories next to routes
+  - Example: `app/(main)/(dashboard)/dashboard/_components/`
+  - Naming pattern: PascalCase (e.g., `CreateWebsiteDialog.tsx`)
 
-- The app uses **pnpm** as the package manager (lockfile present)
-- Database migrations use `prisma db push` (schema-first development, not migration files)
-- Prisma generates client to non-standard location: `prisma/generated/client`
-- ESLint ignores: node_modules, .next, build, generated files, and `components/ui/**`
-- No test suite currently configured
-- Biome is available for formatting but no config file present (using defaults)
+### Widget System
+
+The feedback widget is a separate Next.js application embedded in client websites:
+
+- Built as iframe or modal injection
+- Excalidraw integration for annotations on screenshots
+- Network and console logging hooks (`useNetworkLogger`, `useConsoleLogger`)
+- Styled with isolated CSS (`widget.css`) to avoid conflicts
+- Communicates with main app via API routes
+
+### S3 Storage Buckets
+
+Three separate buckets managed via environment variables:
+- `NEXT_PUBLIC_S3_BUCKET_NAME_SITE_SCREENSHOTS` - Website preview screenshots
+- `NEXT_PUBLIC_S3_BUCKET_NAME_ANNOTATIONS` - Feedback screenshot annotations
+- `NEXT_PUBLIC_S3_BUCKET_NAME_UPLOADS` - General file uploads
+
+S3 client configured in `lib/s3client.ts` with custom endpoint support.
+
+### Environment Variables
+
+Managed with `@t3-oss/env-nextjs` in `lib/env.ts`:
+- Validates all env vars at build time
+- Separates server-only and client vars (`NEXT_PUBLIC_*`)
+- Required vars: Database, Auth (Better Auth + GitHub), Resend, AWS S3, Router token
+
+## Development Guidelines
+
+### Path Aliases
+
+TypeScript is configured with `@/*` alias mapping to root:
+```typescript
+import { Button } from "@/components/ui/button"
+import { prisma } from "@/lib/db"
+```
+
+### Prisma Usage
+
+Always import from the custom generated path:
+```typescript
+import { PrismaClient } from "@/prisma/generated/client"
+```
+
+Use the singleton instance from `lib/db.ts`:
+```typescript
+import { prisma } from "@/lib/db"
+```
+
+### Working with Better Auth
+
+- Auth instance: `lib/auth.ts`
+- Client hooks: Use `lib/auth-client.ts`
+- Protect routes: Import `requireUser()` from `app/data/require-user.ts`
+- API routes: Get session with `auth.api.getSession({ headers })`
+
+### Onboarding Flow
+
+New developers go through a multi-step onboarding:
+1. Welcome
+2. Create website
+3. Install widget (with verification)
+4. Invite client (optional)
+5. Success
+
+Components in `app/(main)/(onboarding)/onboarding/_components/`
+
+### Screenshot Generation
+
+- Puppeteer endpoint: `/api/puppeteer`
+- Uses `@sparticuz/chromium` for serverless compatibility
+- Captures website screenshots on-demand
+- Stores in S3 site screenshots bucket
+
+## Testing
+
+No testing scripts are currently defined in package.json.
+
+## Common Gotchas
+
+- Dev indicators are disabled (`devIndicators: false` in next.config.ts) to avoid conflicts with widget
+- Prisma client output is in `./prisma/generated/client`, not default location
+- Better Auth cookies use `sameSite: "none"` for widget cross-origin access
+- Widget routes are completely isolated from main app (separate layout)
