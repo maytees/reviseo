@@ -12,7 +12,6 @@ import {
 } from "@/components/ui/empty";
 import {
 	Card,
-	CardAction,
 	CardContent,
 	CardDescription,
 	CardHeader,
@@ -42,15 +41,10 @@ const RecentSubmissions = async ({
 		<Card>
 			<CardHeader className="max-lg:px-4">
 				<CardTitle>Recent Feedback</CardTitle>
-				<CardDescription>
+				<CardDescription className="max-w-[80%]">
 					Latest feedback submissions across all websites. Open a feedback card
 					to view more details or modify it.
 				</CardDescription>
-				<CardAction>
-					<Button size={"sm"} asChild variant={"outline"}>
-						<Link href={`/dashboard/websites`}>See All Websites</Link>
-					</Button>
-				</CardAction>
 			</CardHeader>
 			<CardContent className="max-lg:px-4">
 				{feedbacks && feedbacks.length !== 0 ? (

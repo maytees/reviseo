@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Footer } from "@/components/landing/Footer";
 import { Navbar } from "@/components/landing/Navbar";
 
@@ -139,9 +140,9 @@ export default function TermsPage() {
 						</h2>
 						<p className="leading-relaxed">
 							For questions about these Terms, contact us via the contact form:{" "}
-							<a href="/#contact" className="text-primary hover:underline">
+							<Link href="/#contact" className="text-primary hover:underline">
 								https://reviseo.app/#contact
-							</a>
+							</Link>
 						</p>
 					</section>
 				</div>

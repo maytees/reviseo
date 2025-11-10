@@ -18,6 +18,7 @@ import {
 import ClientAttention from "./_components/ClientAttention";
 import InviteClientDialog from "./_components/InviteClientDialog";
 import RecentSubmissions from "./_components/RecentSubmissions";
+import WebsitesOverview from "./_components/WebsitesOverview";
 import CreateWebsiteDialog from "./websites/_components/CreateWebsiteDialog";
 
 export default async function DashboardPage() {
@@ -89,6 +90,7 @@ export default async function DashboardPage() {
 							</CardContent>
 						</Card>
 					</div>
+					<WebsitesOverview userData={userData} />
 					<RecentSubmissions feedbacks={userData.feedback} />
 				</div>
 				<div className="flex-col hidden w-2/6 h-full gap-5 xl:flex">

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { Footer } from "@/components/landing/Footer";
 import { Navbar } from "@/components/landing/Navbar";
 
@@ -163,9 +164,9 @@ export default function PrivacyPage() {
 						</ul>
 						<p className="mt-4 leading-relaxed">
 							You can reach us anytime through our contact form:{" "}
-							<a href="/#contact" className="text-primary hover:underline">
+							<Link href="/#contact" className="text-primary hover:underline">
 								https://reviseo.app/#contact
-							</a>
+							</Link>
 						</p>
 					</section>
 
@@ -176,9 +177,9 @@ export default function PrivacyPage() {
 						<p className="leading-relaxed">
 							We may update this Privacy Policy occasionally. The latest version
 							will always be available at{" "}
-							<a href="/privacy" className="text-primary hover:underline">
+							<Link href="/privacy" className="text-primary hover:underline">
 								https://reviseo.app/privacy
-							</a>
+							</Link>
 							.
 						</p>
 					</section>
