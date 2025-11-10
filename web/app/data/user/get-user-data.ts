@@ -24,7 +24,7 @@ export async function getUserData() {
 				select: {
 					id: true,
 					url: true,
-					screenshotUrl: true,
+					screenshotKey: true,
 					name: true,
 					invites: true,
 					projectId: true,
@@ -77,7 +77,7 @@ export async function getUserData() {
 				select: {
 					id: true,
 					url: true,
-					screenshotUrl: true,
+					screenshotKey: true,
 					name: true,
 					invites: true,
 					projectId: true,

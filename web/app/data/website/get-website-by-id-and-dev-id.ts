@@ -16,7 +16,7 @@ export async function getWebsiteByIdAndDevId(id: string) {
 		select: {
 			id: true,
 			url: true,
-			screenshotUrl: true,
+			screenshotKey: true,
 			name: true,
 			invites: true,
 			projectId: true,

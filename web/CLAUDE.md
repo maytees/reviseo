@@ -71,7 +71,7 @@ The app uses Next.js route groups for distinct application sections:
 - **Website**: Central model linking developers to projects
   - `projectId` (UUID): Public identifier for widget installation
   - `widgetInstalled` + `verifiedAt`: Track widget installation status
-  - `screenshotUrl`: Auto-captured site preview
+  - `screenshotKey`: Auto-captured site preview (s3 key)
   - Relations: developer (User), client (User, optional during onboarding), feedback, invites
 
 - **Feedback**: Visual feedback submissions

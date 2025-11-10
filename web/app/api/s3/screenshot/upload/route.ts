@@ -1,14 +1,11 @@
 import { PutObjectCommand } from "@aws-sdk/client-s3";
 import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
-import { requireUser } from "@/app/data/require-user";
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
 import { S3 } from "@/lib/s3client";
 
 export async function POST(request: Request) {
-	await requireUser();
-
 	try {
 		const { url, websiteId } = await request.json();
 
@@ -33,7 +30,7 @@ export async function POST(request: Request) {
 		const buffer = Buffer.from(screenshotBuffer);
 
 		// Generate unique key for S3
-		const uniqueKey = `screenshots/${uuidv4()}.jpeg`;
+		const uniqueKey = uuidv4();
 
 		// Upload directly to S3
 		const command = new PutObjectCommand({
@@ -45,14 +42,10 @@ export async function POST(request: Request) {
 
 		await S3.send(command);
 
-		// Construct the S3 URL
-		// const screenshotUrl = `https://${env.NEXT_PUBLIC_S3_BUCKET_NAME_SITE_SCREENSHOTS}.t3.storage.dev/${uniqueKey}`;
-		// Or if you use CloudFront: `https://your-cloudfront-domain/${uniqueKey}`
-
-		// Update the website with the screenshot URL
+		// Update the website with the screenshot key
 		await prisma.website.update({
 			where: { id: websiteId },
-			data: { siteScreenshotKey: uniqueKey },
+			data: { screenshotKey: uniqueKey },
 		});
 
 		return NextResponse.json({ uniqueKey }, { status: 200 });

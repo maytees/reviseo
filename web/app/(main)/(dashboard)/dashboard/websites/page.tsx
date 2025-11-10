@@ -30,6 +30,7 @@ import {
 	ItemMedia,
 	ItemTitle,
 } from "@/components/ui/item";
+import { env } from "@/lib/env";
 import { getDomain } from "@/lib/getDomain";
 import DashboardFooter from "../_components/DashboardFooter";
 import CreateWebsiteDialog from "./_components/CreateWebsiteDialog";
@@ -95,8 +96,9 @@ export default async function WebsitesPage() {
 									<ItemMedia variant={"siteImage"} className="w-full group">
 										<SiteLinkMedia
 											url={site.url}
-											screenshotUrl={site.screenshotUrl}
+											screenshotKey={site.screenshotKey}
 											name={site.name}
+											app_url={env.BETTER_AUTH_URL}
 										/>
 									</ItemMedia>
 								</ItemHeader>
@@ -106,8 +108,9 @@ export default async function WebsitesPage() {
 									className="hidden lg:block group"
 								>
 									<SiteLinkMedia
+										app_url={env.BETTER_AUTH_URL}
 										url={site.url}
-										screenshotUrl={site.screenshotUrl}
+										screenshotKey={site.screenshotKey}
 										name={site.name}
 									/>
 								</ItemMedia>

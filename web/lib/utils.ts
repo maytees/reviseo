@@ -1,6 +1,7 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
 import { prisma } from "./db";
+import { env } from "./env";
 
 /**
  * Merges Tailwind class names, resolving any conflicts.
@@ -60,8 +61,6 @@ export async function isClient(userId: string): Promise<boolean> {
 
 // lib/utils/widget-script.ts (or utils/widget-script.ts)
 
-import { env } from "@/lib/env";
-
 /**
  * Generates the Reviseo widget installation script
  * @param projectId - The unique project identifier
@@ -105,7 +104,7 @@ export function generateWidgetScriptFormatted(projectId: string): string {
 }
 
 export function fetchSetSiteScreenshot(websiteUrl: string, websiteId: string) {
-	fetch(`${env.BETTER_AUTH_URL}/api/s3/screenshot`, {
+	fetch(`${env.BETTER_AUTH_URL}/api/s3/screenshot/upload`, {
 		method: "POST",
 		headers: { "Content-Type": "application/json" },
 		body: JSON.stringify({

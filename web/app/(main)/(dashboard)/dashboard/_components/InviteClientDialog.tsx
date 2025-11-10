@@ -175,13 +175,13 @@ const InviteClientDialog = ({
 														disabled={hasClient}
 													/>
 													<div className="flex items-start gap-3 grow">
-														{website.screenshotUrl ? (
-															// eslint-disable-next-line @next/next/no-img-element
+														{website.screenshotKey ? (
 															<Image
-																src={website.screenshotUrl}
+																src={`/api/s3/screenshot/${website.screenshotKey}`}
 																alt={website.name}
 																width={1920}
 																height={1080}
+																unoptimized
 																className="object-cover w-32 h-auto rounded aspect-video shrink-0 size-8"
 															/>
 														) : (

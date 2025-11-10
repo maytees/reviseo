@@ -5,13 +5,20 @@ import Link from "next/link";
 
 const SiteLinkMedia = ({
 	url,
-	screenshotUrl,
+	screenshotKey,
 	name,
+	app_url,
 }: {
 	url: string;
-	screenshotUrl: string | null;
+	app_url: string;
+	screenshotKey: string | null;
 	name: string;
 }) => {
+	// Construct the URL from the key, similar to how feedback screenshots work
+	const screenshotUrl = screenshotKey
+		? `${app_url}/api/s3/screenshot/${screenshotKey}`
+		: null;
+
 	return (
 		<div className="relative group">
 			<Link
@@ -24,6 +31,7 @@ const SiteLinkMedia = ({
 					src={screenshotUrl ?? "https://avatar.vercel.sh/1"}
 					alt={name}
 					width={1920}
+					unoptimized
 					height={1080}
 					className="z-40 object-cover w-full h-auto transition-all ease-in-out rounded lg:w-36 duration-400 hover:opacity-80"
 				/>

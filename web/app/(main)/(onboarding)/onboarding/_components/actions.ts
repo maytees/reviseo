@@ -127,18 +127,6 @@ export async function createWebsiteOnboarding({
 			},
 		});
 
-		// fetch(`${env.BETTER_AUTH_URL}/api/s3/screenshot`, {
-		// 	method: "POST",
-		// 	headers: { "Content-Type": "application/json" },
-		// 	body: JSON.stringify({
-		// 		url: websiteUrl,
-		// 		websiteId: newWebsite.id,
-		// 	}),
-		// }).catch((error) => {
-		// 	// Log error but don't block the response
-		// 	console.error("Failed to trigger screenshot:", error);
-		// });
-
 		// Trigger screenshot generation asynchronously (fire and forget)
 		fetchSetSiteScreenshot(websiteUrl, newWebsite.id);
 
@@ -202,9 +190,27 @@ export async function updateWebsiteOnboarding({
 			};
 		}
 
-		// If URL changed, take a new screenshot and save it
-		if (existingWebsite.url !== websiteUrl)
+		// If URL changed, delete old screenshot and take a new one
+		if (existingWebsite.url !== websiteUrl) {
+			// Delete old screenshot if it exists
+			if (existingWebsite.screenshotKey) {
+				try {
+					await fetch(`${env.BETTER_AUTH_URL}/api/s3/screenshot/delete`, {
+						method: "DELETE",
+						headers: { "Content-Type": "application/json" },
+						body: JSON.stringify({
+							key: existingWebsite.screenshotKey,
+						}),
+					});
+				} catch (error) {
+					console.error("Failed to delete old screenshot:", error);
+					// Continue even if deletion fails
+				}
+			}
+
+			// Take new screenshot
 			fetchSetSiteScreenshot(websiteUrl, websiteId);
+		}
 
 		// Update the website
 		await prisma.website.update({

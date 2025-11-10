@@ -13,6 +13,7 @@ import {
 	HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { env } from "@/lib/env";
 import DashboardFooter from "../../_components/DashboardFooter";
 import CopyProjectId from "../_components/CopyProjectId";
 import WebsiteDropdownMenu from "../_components/WebsiteDropdownMenu";
@@ -24,6 +25,7 @@ const WebsitePage = async ({
 	searchParams,
 }: {
 	params: Promise<{ id: string }>;
+	appUrl: string;
 	searchParams: Promise<{
 		[key: string]: string | string[] | undefined;
 	}>;
@@ -79,10 +81,15 @@ const WebsitePage = async ({
 				</div>
 				<HoverCardContent align="start" className="p-1 border border-border">
 					<Image
-						src={website.screenshotUrl ?? "https://avatar.vercel.sh/1"}
+						src={
+							website.screenshotKey
+								? `/api/s3/screenshot/${website.screenshotKey}`
+								: "https://avatar.vercel.sh/1"
+						}
 						alt={website.name}
 						width={1920}
 						height={1080}
+						unoptimized
 						className="z-40 object-cover w-full h-auto rounded"
 					/>
 				</HoverCardContent>

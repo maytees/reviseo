@@ -48,7 +48,7 @@ model Website {
   widgetInstalled Boolean   @default(false)
   verifiedAt      DateTime?
 
-  screenshotUrl String?
+  screenshotKey String?
 
   developerId String
   developer   User   @relation("DeveloperWebsites", fields: [developerId], references: [id])
