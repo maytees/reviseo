@@ -48,7 +48,7 @@ export async function sendWaitlistInvite(
 		});
 
 		if (emailResponse.error) {
-			console.log(emailResponse);
+			console.error(emailResponse);
 		}
 
 		return {
