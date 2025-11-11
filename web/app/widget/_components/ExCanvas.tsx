@@ -158,7 +158,6 @@ const ExCanvas = ({
 		};
 
 		img.onerror = (e) => {
-			console.log(imageUrl);
 			console.error("Failed to load screenshot image: ", e);
 			setImageLoading(false);
 		};

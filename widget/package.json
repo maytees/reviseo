@@ -13,7 +13,8 @@
 		"html2canvas-pro": "^1.5.12",
 		"modern-screenshot": "^4.6.6",
 		"preact": "^10.27.2",
-		"react-use-system-theme": "^1.1.1"
+		"react-use-system-theme": "^1.1.1",
+		"ua-parser-js": "^2.0.6"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "^2.3.0",

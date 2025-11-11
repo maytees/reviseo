@@ -4,9 +4,10 @@ import { render } from "preact";
 import ReviseoWidget from "./ReviseoWidget";
 
 // TODO: Add where to put widget, e.g 'bottom-left', 'bottom-right'
+// TODO: Add window definition for ReviseoConfig
 const config: {
 	projectId: string;
-} = (window as any).ReviseoConfig;
+} = (window as typeof window).ReviseoConfig;
 
 if (!config?.projectId) {
 	console.error("Reviseo: Missing ReviseoConfig");

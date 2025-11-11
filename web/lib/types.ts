@@ -74,10 +74,12 @@ export type Browser =
 export type OS = "Windows" | "MacOS" | "Linux" | "Android" | "iOS" | "Unknown";
 
 export interface BrowserInfo {
-	browser: Browser;
+	browser: string;
 	browserVersion: string;
-	os: OS;
-	isMobile: boolean;
+	cpu: string;
+	os: string;
+	device: string;
+	engine: string;
 }
 
 export const STATUS_CONFIG: Record<

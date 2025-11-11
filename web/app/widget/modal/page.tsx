@@ -146,14 +146,13 @@ const ReviseoModal = () => {
 		startTransition(async () => {
 			const { exportToSvg } = await import("@excalidraw/excalidraw");
 			if (!excalidrawApi) {
-				console.log(excalidrawApi, " is api");
 				return;
 			}
 
 			const dat = sceneData.current;
 
 			if (!dat) {
-				console.log("No Dat");
+				console.error("No Data");
 				return;
 			}
 
@@ -162,10 +161,6 @@ const ReviseoModal = () => {
 			if (!elements || !initialData) {
 				return;
 			}
-
-			console.log(JSON.stringify(excalidrawApi.getAppState()), "is app state");
-			console.log(excalidrawApi.getFiles(), "is files");
-			console.log(elements);
 
 			const svg = await exportToSvg({
 				elements,
@@ -250,8 +245,6 @@ const ReviseoModal = () => {
 					"*",
 				);
 			}
-
-			console.log(data);
 		});
 	}
 

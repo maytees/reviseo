@@ -1,6 +1,6 @@
 import { snapdom } from "@zumer/snapdom";
 import { useEffect, useRef } from "preact/hooks";
-import useBrowserAndOS from "./hooks/useBrowserInfo";
+import { useUserAgent } from "./hooks/useBrowserInfo";
 
 /** Remove all HTML comments (prevents invalid XML like "--") */
 function removeAllComments(root) {
@@ -197,7 +197,8 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const triggerIframeRef = useRef<HTMLIFrameElement>(null);
 	const healthTimeoutRef = useRef<number>();
-	const browserInfo = useBrowserAndOS();
+
+	const browserInfo = useUserAgent();
 
 	useEffect(() => {
 		// Health check timeout
@@ -209,8 +210,6 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 		const handleMessage = async (event: MessageEvent) => {
 			if (event.origin !== WIDGET_ORIGIN) return;
 			if (!event.data?.type) return;
-
-			console.log(projectId, " is projid");
 
 			switch (event.data.type) {
 				case "HEALTH_CHECK":
@@ -325,7 +324,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 				clearTimeout(healthTimeoutRef.current);
 			}
 		};
-	}, []);
+	}, [browserInfo]);
 
 	return (
 		<div
