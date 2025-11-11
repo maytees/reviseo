@@ -4,12 +4,9 @@ import { render } from "preact";
 import ReviseoWidget from "./ReviseoWidget";
 
 // TODO: Add where to put widget, e.g 'bottom-left', 'bottom-right'
-// TODO: Add window definition for ReviseoConfig
-const config: {
-	projectId: string;
-} = (window as typeof window).ReviseoConfig;
+const config = window.ReviseoConfig;
 
-if (!config?.projectId) {
+if (!config.projectId) {
 	console.error("Reviseo: Missing ReviseoConfig");
 } else {
 	const reviseoRoot = document.createElement("div");
