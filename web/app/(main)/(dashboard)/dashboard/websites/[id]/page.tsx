@@ -13,7 +13,6 @@ import {
 	HoverCardTrigger,
 } from "@/components/ui/hover-card";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { env } from "@/lib/env";
 import DashboardFooter from "../../_components/DashboardFooter";
 import CopyProjectId from "../_components/CopyProjectId";
 import WebsiteDropdownMenu from "../_components/WebsiteDropdownMenu";
@@ -55,7 +54,9 @@ const WebsitePage = async ({
 							size={"sm"}
 							className="text-xs text-muted-foreground"
 						>
-							{moment(website.verifiedAt).fromNow()}
+							{moment(website.verifiedAt).fromNow()
+								? moment(website.verifiedAt).fromNow()
+								: "Not Verified"}
 						</Badge>
 						<VerifyInstallation
 							hideIcon
