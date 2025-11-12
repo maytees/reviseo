@@ -9,12 +9,12 @@ const config = window.ReviseoConfig;
 if (!config.projectId) {
 	console.error("Reviseo: Missing ReviseoConfig");
 } else {
-	const reviseoRoot = document.createElement("div");
-	reviseoRoot.id = "reviseo-container";
-	reviseoRoot.style.zIndex = "2147483647";
-	reviseoRoot.style.position = "fixed";
+	// const reviseoRoot = document.createElement("div");
+	// reviseoRoot.id = "reviseo-container";
+	// reviseoRoot.style.zIndex = "2147483640";
+	// reviseoRoot.style.position = "fixed";
 
-	document.body.appendChild(reviseoRoot);
+	// document.body.appendChild(reviseoRoot);
 
-	render(<ReviseoWidget projectId={config.projectId} />, reviseoRoot);
+	render(<ReviseoWidget projectId={config.projectId} />, document.body);
 }

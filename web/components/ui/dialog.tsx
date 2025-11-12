@@ -15,7 +15,7 @@ const dialogContentVariants = cva(
 					"left-[50%] top-[50%] max-w-lg translate-x-[-50%] translate-y-[-50%] w-full",
 				feedback:
 					"inset-5 md:inset-y-10 md:inset-x-1/12 lg:inset-x-1/12 xl:inset-x-2/12",
-				fullscreen: "inset-5",
+				fullscreen: "inset-3",
 			},
 		},
 		defaultVariants: {

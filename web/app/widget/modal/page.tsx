@@ -291,8 +291,9 @@ const ReviseoModal = () => {
 	return (
 		<Fragment>
 			{session?.user && (
-				<Dialog open={true} onOpenChange={setOpen}>
+				<Dialog modal={false} open={true} onOpenChange={setOpen}>
 					<DialogContent
+						onEscapeKeyDown={(e) => e.preventDefault()}
 						className="overflow-y-scroll bg-card"
 						variant={"fullscreen"}
 					>
