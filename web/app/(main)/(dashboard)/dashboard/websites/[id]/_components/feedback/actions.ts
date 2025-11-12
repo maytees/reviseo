@@ -2,6 +2,7 @@
 
 import { requireUser } from "@/app/data/require-user";
 import { prisma } from "@/lib/db";
+import { env } from "@/lib/env";
 import type { ApiResponse } from "@/lib/types";
 import type { FeedbackStatus } from "@/prisma/generated/client";
 import { PrismaClientKnownRequestError } from "@/prisma/generated/client/runtime/library";
@@ -85,6 +86,18 @@ export async function deleteFeedback(feedbackId: string): Promise<ApiResponse> {
 				status: "error",
 				message: "Feedback not found",
 			};
+		}
+
+		try {
+			await fetch(`${env.BETTER_AUTH_URL}/api/s3/annotations/delete`, {
+				method: "DELETE",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({
+					key: existingFeedback.screenshotKey,
+				}),
+			});
+		} catch (error) {
+			console.error("Failed to delete feedback screenshot from s3: ", error);
 		}
 
 		// Update the website
