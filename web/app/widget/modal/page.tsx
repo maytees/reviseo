@@ -514,7 +514,7 @@ const ReviseoModal = () => {
 													disabled={loading || isPending}
 													type="button"
 													variant="outline"
-													className={step === "canvas" ? "hidden" : ""}
+													// className={step === "canvas" ? "hidden" : ""}
 													onClick={() => setOpen(false)}
 												>
 													Close
