@@ -157,7 +157,7 @@ export function DataTable<_, TValue>({
 									colSpan={columns.length}
 									className="h-24 text-center"
 								>
-									No feedback from clients.
+									No feedback from client.
 								</TableCell>
 							</TableRow>
 						)}
