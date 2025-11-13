@@ -25,6 +25,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { ScrollArea } from "@/components/ui/scroll-area";
+import { useIsMounted } from "@/lib/hooks/use-is-mounted";
 import { tryCatch } from "@/lib/try-catch";
 import { cn } from "@/lib/utils";
 import { type ClientFormData, clientSchema } from "@/lib/validations";
@@ -41,6 +42,7 @@ const InviteClientDialog = ({
 	const [open, setOpen] = useState(false);
 	const [step, setStep] = useState(1);
 	const [selectedWebsiteId, setSelectedWebsiteId] = useState<string>("");
+	const isMounted = useIsMounted();
 	const [isPending, startTransition] = useTransition();
 
 	const clientNameId = useId();
@@ -115,6 +117,8 @@ const InviteClientDialog = ({
 			toast.error(result.message);
 		});
 	};
+
+	if (!isMounted) return null;
 
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>

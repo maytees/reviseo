@@ -2,13 +2,7 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Edit2 } from "lucide-react";
 import { useRouter } from "next/navigation";
-import {
-	type ReactNode,
-	useEffect,
-	useId,
-	useState,
-	useTransition,
-} from "react";
+import { type ReactNode, useId, useState, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { updateWebsiteOnboarding } from "@/app/(main)/(onboarding)/onboarding/_components/actions";
@@ -30,6 +24,7 @@ import {
 	FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import { useIsMounted } from "@/lib/hooks/use-is-mounted";
 import { tryCatch } from "@/lib/try-catch";
 import { type WebsiteFormData, websiteSchema } from "@/lib/validations";
 
@@ -41,9 +36,9 @@ const EditWebsiteDetailsDialog = ({
 	children?: ReactNode;
 }) => {
 	const [isPending, startTransition] = useTransition();
-	const [isMounted, setIsMounted] = useState(false);
 	const [open, setOpen] = useState(false);
 	const router = useRouter();
+	const isMounted = useIsMounted();
 
 	const formId = useId();
 	const titleId = useId();
@@ -83,10 +78,6 @@ const EditWebsiteDetailsDialog = ({
 			}
 		});
 	}
-
-	useEffect(() => {
-		setIsMounted(true);
-	}, []);
 
 	if (!isMounted) {
 		return null;

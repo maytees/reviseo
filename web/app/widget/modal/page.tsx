@@ -270,10 +270,9 @@ const ReviseoModal = () => {
 						...prev,
 						url: event.data.url || "",
 						viewport: `${event.data.viewportWidth}x${event.data.viewportHeight}`,
-						browserInfo: event.data.browserInfo satisfies BrowserInfo,
+						browserInfo: event.data.browserInfo,
 						projectId: event.data.projectId,
 					}));
-					console.log("Browser info is ", screenshotMetadata.browserInfo);
 					break;
 				case "PAGE_SCREENSHOT_RESPONSE":
 					setScreenshotMetadata((prev) => ({

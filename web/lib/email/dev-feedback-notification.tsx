@@ -119,11 +119,13 @@ const FeedbackNotificationEmail = (props: FeedbackNotificationEmailProps) => {
 						<Section className="bg-[#ffffff] rounded-[8px] px-[32px] py-[40px] border border-solid border-[#e5e7eb]">
 							{/* Header */}
 							<Row>
-								<Img
-									src="https://reviseo.app/logo.svg"
-									alt="Reviseo"
-									className="size-10 h-auto mb-[12px]"
-								/>
+								<Column className="p-1">
+									<Img
+										src="https://reviseo.app/logo.png"
+										alt="Reviseo"
+										className="size-10 h-auto mb-[12px]"
+									/>
+								</Column>
 							</Row>
 
 							{/* Main Content */}
@@ -155,7 +157,10 @@ const FeedbackNotificationEmail = (props: FeedbackNotificationEmailProps) => {
 											</Text>
 											<div style={getTypeBadgeStyles(feedbackType)}>
 												<span>{getTypeIcon(feedbackType)}</span>
-												<span style={{ textTransform: "capitalize" }}>
+												<span
+													className="ml-2"
+													style={{ textTransform: "capitalize" }}
+												>
 													{feedbackType}
 												</span>
 											</div>
@@ -165,8 +170,11 @@ const FeedbackNotificationEmail = (props: FeedbackNotificationEmailProps) => {
 												Priority
 											</Text>
 											<div style={getPriorityBadgeStyles(priority)}>
-												<span>{getPriorityIcon(priority)}</span>
-												<span style={{ textTransform: "capitalize" }}>
+												<span>{getPriorityIcon(priority)}</span>{" "}
+												<span
+													className="ml-2"
+													style={{ textTransform: "capitalize" }}
+												>
 													{priority}
 												</span>
 											</div>
