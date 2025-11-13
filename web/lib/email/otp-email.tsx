@@ -1,11 +1,15 @@
 import {
 	Body,
 	CodeInline,
+	Column,
 	Container,
 	Head,
+	Hr,
 	Html,
 	Img,
+	Link,
 	Preview,
+	Row,
 	Section,
 	Tailwind,
 	Text,
@@ -18,75 +22,88 @@ interface OtpEmailProps {
 
 export default function OtpEmail({ otp, email }: OtpEmailProps) {
 	return (
-		<Html>
-			<Head />
-			<Preview>Your verification code for Reviseo</Preview>
+		<Html lang="en" dir="ltr">
 			<Tailwind>
-				<Body className="font-sans">
-					<Container className="px-4 py-12 mx-auto">
-						{/* Main Card */}
-						<Section className="max-w-md mt-10 mx-auto text-left border-solid overflow-hidden border-gray-200 border-2 bg-white rounded-2xl">
+				<Head />
+				<Preview>Your verification code for Reviseo</Preview>
+				<Body className="bg-[#f9fafb] font-sans py-[40px]">
+					<Container className="mx-auto px-[20px] max-w-[600px]">
+						<Section className="bg-[#ffffff] rounded-[8px] px-[32px] py-[40px] border border-solid border-[#e5e7eb]">
 							{/* Header */}
-							<Section
-								className="px-8 pt-8 pb-6"
-								style={{
-									backgroundColor: "#6538e0",
-								}}
-							>
-								<Img
-									src="https://reviseo.app/logo.svg"
-									srcSet="https://reviseo.app/logo.svg"
-									width="40"
-									height="40"
-									alt="Reviseo"
-									className="mb-4"
-								/>
-								<Text className="m-0 text-2xl font-bold text-white">
+							<Row>
+								<Column className="p-1">
+									<Img
+										src="https://reviseo.app/logo.png"
+										alt="Reviseo"
+										className="size-10 h-auto mb-[12px]"
+									/>
+								</Column>
+							</Row>
+
+							{/* Main Content */}
+							<Section>
+								<Text className="text-[#111827] text-[24px] font-bold mb-[8px] leading-[32px]">
 									Verify Your Email
 								</Text>
-								<Text className="m-0 mt-2 text-sm text-white/80">
-									Welcome to Reviseo
-								</Text>
-							</Section>
 
-							{/* Content */}
-							<Section className="px-8 py-8">
-								<Text className="mb-6 text-base text-gray-700">
+								<Text className="text-[#374151] text-[16px] mb-[24px] leading-[24px]">
 									Hi there! Enter this verification code to sign in to your
 									account:
 								</Text>
 
 								{/* OTP Code Box */}
-								<Section
-									style={{
-										backgroundColor: "#f4f6f3",
-										border: "1px solid #dfe2dc",
-									}}
-									className="mb-6 p-4 rounded-xl text-center"
-								>
-									<CodeInline className="font-mono text-gray-700 text-4xl font-bold tracking-[0.7em]">
+								<Section className="bg-[#f9fafb] rounded-[8px] p-[24px] mb-[24px] border border-solid border-[#e5e7eb] text-center">
+									<CodeInline className="font-mono text-[#111827] text-[32px] font-bold tracking-[0.5em]">
 										{otp}
 									</CodeInline>
 								</Section>
 
-								<Text className="mb-2 text-sm text-gray-600">
+								<Text className="text-[#6b7280] text-[14px] mb-[8px] leading-[20px]">
 									<strong>Email:</strong> {email}
 								</Text>
-								<Text className="mb-4 text-xs text-gray-500">
-									This code expires in 10 minutes. If you didn&apos;t request
-									this, please ignore the email.
+
+								<Text className="text-[#6b7280] text-[12px] mb-[24px] leading-[18px]">
+									This code expires in 10 minutes. If you didn't request this,
+									please ignore this email.
 								</Text>
 							</Section>
-						</Section>
 
-						{/* Footer */}
-						<Section className="mt-8 text-center">
-							<Text className="m-0 mb-2 text-xs text-gray-400">
-								© 2025 Reviseo. All rights reserved.
-							</Text>
-							<Text className="m-0 text-xs text-gray-500">
-								Visual feedback, simplified.
-							</Text>
+							<Hr className="border-[#e5e7eb]" />
+
+							{/* Footer */}
+							<Section>
+								<Text className="text-[#6b7280] text-[14px] leading-[20px] mb-[16px]">
+									Visual feedback for web freelancers.
+								</Text>
+
+								<Row className="mb-[6px]">
+									<Column>
+										<Link
+											href="https://www.linkedin.com/company/reviseoapp/"
+											className="mr-[16px]"
+										>
+											<Img
+												src="https://new.email/static/emails/social/social-linkedin.png"
+												alt="LinkedIn"
+												className="size-6"
+											/>
+										</Link>
+									</Column>
+								</Row>
+
+								<Text className="text-[#9ca3af] text-[12px] leading-[16px] mt-0">
+									© 2025 Reviseo. All rights reserved.
+								</Text>
+
+								<Text className="text-[#9ca3af] text-[12px] leading-[16px]">
+									<Link
+										href="https://reviseo.app"
+										className="text-[#9c40ff] no-underline"
+									>
+										Visit Reviseo
+									</Link>
+								</Text>
+							</Section>
 						</Section>
 					</Container>
 				</Body>

@@ -1,12 +1,15 @@
 import {
 	Body,
 	Button,
+	Column,
 	Container,
 	Head,
+	Hr,
 	Html,
 	Img,
 	Link,
 	Preview,
+	Row,
 	Section,
 	Tailwind,
 	Text,
@@ -28,142 +31,143 @@ export default function ClientInviteEmail({
 	inviteUrl,
 }: ClientInviteEmailProps) {
 	return (
-		<Html>
-			<Head />
-			<Preview>
-				{developerName} invited you to give feedback on {websiteName}
-			</Preview>
+		<Html lang="en" dir="ltr">
 			<Tailwind>
-				<Body className="font-sans">
-					<Container className="px-4 py-12 mx-auto">
-						{/* Main Card */}
-						<Section
-							className="max-w-md mx-auto overflow-hidden text-left bg-white border-2 border-gray-200 border-solid rounded-2xl"
-							style={{
-								boxShadow:
-									"0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04)",
-							}}
-						>
+				<Head />
+				<Preview>
+					{developerName} invited you to give feedback on {websiteName}
+				</Preview>
+				<Body className="bg-[#f9fafb] font-sans py-[40px]">
+					<Container className="mx-auto px-[20px] max-w-[600px]">
+						<Section className="bg-[#ffffff] rounded-[8px] px-[32px] py-[40px] border border-solid border-[#e5e7eb]">
 							{/* Header */}
-							<Section
-								className="px-8 pt-8 pb-6"
-								style={{
-									backgroundColor: "#6538e0",
-								}}
-							>
-								<Img
-									src="https://reviseo.app/logo.svg"
-									srcSet="https://reviseo.app/logo.svg"
-									width="40"
-									height="40"
-									alt="Reviseo"
-									className="mb-4"
-								/>
-								<Text className="m-0 text-2xl font-bold text-white">
-									You&apos;re Invited!
-								</Text>
-								<Text className="m-0 mt-2 text-sm text-white/80">
-									Share your feedback with Reviseo
-								</Text>
-							</Section>
+							<Row>
+								<Column className="p-1">
+									<Img
+										src="https://reviseo.app/logo.png"
+										alt="Reviseo"
+										className="size-10 h-auto mb-[12px]"
+									/>
+								</Column>
+							</Row>
 
-							{/* Content */}
-							<Section className="px-8 py-8">
-								<Text className="mb-4 text-base text-gray-700">
-									Hi <strong>{clientName}</strong>,
+							{/* Main Content */}
+							<Section>
+								<Text className="text-[#111827] text-[24px] font-bold mb-[8px] leading-[32px]">
+									You're Invited! 🎉
 								</Text>
 
-								<Text className="mb-6 text-base text-gray-700">
-									<strong>{developerName}</strong> has invited you to{" "}
-									<em>Reviseo</em>.
+								<Text className="text-[#374151] text-[16px] mb-[24px] leading-[24px]">
+									Hi <strong>{clientName}</strong>! {developerName} has invited
+									you to collaborate on <strong>{websiteName}</strong> using
+									Reviseo.
 								</Text>
 
-								{/* Website Info Box */}
-								<Section
-									className="mb-6 p-3.5 rounded-lg"
-									style={{
-										backgroundColor: "#f4f6f3",
-										border: "1px solid #dfe2dc",
-									}}
-								>
-									<Text className="m-0 mb-1 text-xs tracking-wide text-gray-500 uppercase">
+								{/* Website Info Card */}
+								<Section className="bg-[#f9fafb] rounded-[8px] p-[20px] mb-[24px] border border-solid border-[#e5e7eb]">
+									<Text className="text-[#6b7280] text-[12px] mb-[4px] leading-[16px] uppercase tracking-wide">
 										Website
 									</Text>
-									<Text className="m-0 mb-0 text-sm font-semibold text-gray-900">
+									<Text className="text-[#111827] text-[16px] font-semibold mb-[4px] leading-[24px]">
 										{websiteName}
 									</Text>
-									<Link href={websiteUrl} className="m-0 text-sm break-all">
+									<Link
+										href={websiteUrl}
+										className="text-[#9c40ff] text-[14px] font-mono leading-[20px] break-all"
+									>
 										{websiteUrl}
 									</Link>
 								</Section>
 
-								<Text className="mb-6 text-sm text-gray-600">
-									{/* With Reviseo, you can click anywhere on the website, draw
-									annotations, and send feedback directly to {developerName}.
-									It&apos;s fast, visual, and easy. */}
+								<Text className="text-[#374151] text-[14px] mb-[24px] leading-[20px]">
 									{developerName} wants to make getting your feedback easier.
-									With Reviseo, you can point directly at what needs to change
-									on your website. Just click, annotate, and submit.
+									With Reviseo, you can click the widget and a screenshot will
+									show up which you can annotate to explain in detail what you
+									want {developerName} to change. Simply click, annotate, and
+									submit no more confusing email threads!
 								</Text>
 
 								{/* CTA Button */}
-								<Section className="mb-6 text-center">
+								<Section className="mb-[24px]">
 									<Button
 										href={inviteUrl}
-										className="w-full py-2 text-base font-semibold text-white rounded-lg"
-										style={{
-											backgroundColor: "#6538e0",
-											boxShadow:
-												"0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)",
-										}}
+										className="bg-[#9c40ff] text-[#ffffff] px-[24px] py-[12px] rounded-[6px] text-[14px] font-medium no-underline text-center box-border w-full"
 									>
 										Accept Invitation
 									</Button>
 								</Section>
 
-								<Text className="mb-4 text-sm text-center text-gray-500">
-									Or click this link into your browser:
+								<Text className="text-[#6b7280] text-[12px] mb-[8px] leading-[16px] text-center">
+									Or copy this link into your browser:
 								</Text>
-								<Container
-									style={{
-										backgroundColor: "#f4f6f3",
-										border: "1px solid #dfe2dc",
-									}}
-									className="p-3 mb-6 rounded-xl"
-								>
-									<Link className="text-xs break-all" href={inviteUrl}>
+								<Section className="bg-[#f9fafb] rounded-[8px] p-[12px] mb-[24px] border border-solid border-[#e5e7eb]">
+									<Link
+										href={inviteUrl}
+										className="text-[#9c40ff] text-[12px] font-mono leading-[16px] break-all"
+									>
 										{inviteUrl}
 									</Link>
-								</Container>
+								</Section>
 
-								<Section
-									className="p-4 rounded-lg"
-									style={{
-										backgroundColor: "#f0d6d6",
-										border: "1px solid #dfe2dc",
-									}}
-								>
-									<Text className="m-0 text-xs text-gray-600">
-										💡 <strong>Tip:</strong> Once you accept, you&apos;ll be
-										able to give feedback on any page of {websiteName} by
-										clicking on the feedback widget. You must be logged into{" "}
-										<Link href={"https://reviseo.app"}>Reviseo</Link>
+								<Section className="bg-[#fef2f2] rounded-[8px] p-[16px] border border-solid border-[#fee2e2]">
+									<Text className="text-[#374151] text-[12px] leading-[18px] m-0">
+										💡 <strong>Tip:</strong> Once you accept, you'll be able to
+										give feedback on any page of {websiteName} by clicking on
+										the feedback widget. Make sure you're logged into{" "}
+										<Link
+											href="https://reviseo.app"
+											className="text-[#9c40ff] no-underline"
+										>
+											Reviseo
+										</Link>{" "}
+										and have{" "}
+										<Link
+											href="https://reviseo.app/blog/cookies"
+											className="text-[#9c40ff] underline"
+										>
+											third party cookies enabled
+										</Link>
+										!
 									</Text>
 								</Section>
 							</Section>
-						</Section>
 
-						{/* Footer */}
-						<Section className="mt-8 text-center">
-							<Text className="m-0 mb-2 text-xs text-gray-400">
-								This invitation was sent by {developerName} via Reviseo
-							</Text>
-							<Text className="m-0 mb-2 text-xs text-gray-400">
-								© 2025 Reviseo. All rights reserved.
-							</Text>
-							<Text className="m-0 text-xs text-gray-500">
-								Visual feedback, simplified.
-							</Text>
+							<Hr className="border-[#e5e7eb]" />
+
+							{/* Footer */}
+							<Section>
+								<Text className="text-[#6b7280] text-[14px] leading-[20px] mb-[16px]">
+									Visual feedback for web freelancers.
+								</Text>
+
+								<Row className="mb-[6px]">
+									<Column>
+										<Link
+											href="https://www.linkedin.com/company/reviseoapp/"
+											className="mr-[16px]"
+										>
+											<Img
+												src="https://new.email/static/emails/social/social-linkedin.png"
+												alt="LinkedIn"
+												className="size-6"
+											/>
+										</Link>
+									</Column>
+								</Row>
+
+								<Text className="text-[#9ca3af] text-[12px] leading-[16px] mt-0">
+									© 2025 Reviseo. All rights reserved.
+								</Text>
+
+								<Text className="text-[#9ca3af] text-[12px] leading-[16px]">
+									<Link
+										href="https://reviseo.app"
+										className="text-[#9c40ff] no-underline"
+									>
+										Visit Reviseo
+									</Link>
+								</Text>
+							</Section>
 						</Section>
 					</Container>
 				</Body>
