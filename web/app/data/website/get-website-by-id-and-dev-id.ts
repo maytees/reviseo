@@ -54,7 +54,7 @@ export async function getWebsiteByIdAndDevId(id: string) {
 					website: true,
 					browser: true,
 					browserVersion: true,
-					isMobile: true,
+					device: true,
 					os: true,
 					createdAt: true,
 					updatedAt: true,

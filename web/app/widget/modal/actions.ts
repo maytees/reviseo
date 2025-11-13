@@ -1,7 +1,11 @@
 "use server";
 
+import moment from "moment";
 import { requireUser } from "@/app/data/require-user";
 import { prisma } from "@/lib/db";
+import FeedbackNotificationEmail from "@/lib/email/dev-feedback-notification";
+import { env } from "@/lib/env";
+import { resend } from "@/lib/resend";
 import type { ApiResponse, BrowserInfo } from "@/lib/types";
 import { type FeedbackFormData, feedbackFormSchema } from "@/lib/validations";
 import { PrismaClientKnownRequestError } from "@/prisma/generated/client/runtime/library";
@@ -35,7 +39,6 @@ export async function submitFeedbackForm(
 		};
 	}
 
-	// TODO: Add image url
 	const { description, priority, title, type } = validation.data;
 
 	try {
@@ -43,6 +46,23 @@ export async function submitFeedbackForm(
 			where: {
 				projectId,
 				// url: websiteUrl,
+			},
+			select: {
+				clientId: true,
+				name: true,
+				id: true,
+				developerId: true,
+				developer: {
+					select: {
+						email: true,
+						name: true,
+					},
+				},
+				client: {
+					select: {
+						email: true,
+					},
+				},
 			},
 		});
 
@@ -73,7 +93,7 @@ export async function submitFeedbackForm(
 			};
 		}
 
-		await prisma.feedback.create({
+		const newFeedback = await prisma.feedback.create({
 			data: {
 				title,
 				type,
@@ -85,7 +105,7 @@ export async function submitFeedbackForm(
 				browser: browserInfo?.browser,
 				os: browserInfo?.os,
 				browserVersion: browserInfo?.browserVersion,
-				isMobile: browserInfo?.isMobile,
+				device: browserInfo?.device,
 				timestamp,
 				author: {
 					connect: {
@@ -99,6 +119,29 @@ export async function submitFeedbackForm(
 				},
 			},
 		});
+
+		const emailResponse = await resend.emails.send({
+			from: "Reviseo <info@reviseo.app>",
+			to: [existingWebsite.developer.email],
+			subject: `${existingWebsite.name} - New Feedback Submitted`,
+			react: FeedbackNotificationEmail({
+				developerName: existingWebsite.developer.name,
+				feedbackTitle: title,
+				feedbackType: type,
+				priority: priority,
+				pageUrl: pageUrl,
+				description: description.substring(0, 249),
+				submittedAt: moment(timestamp).format("MMMM Do YYYY, h:mm:ss a"),
+				websiteName: existingWebsite.name,
+				feedbackUrl: `${env.BETTER_AUTH_URL}/dashboard/websites/${existingWebsite.id}?open=${newFeedback.id}`,
+				allFeedbackUrl: `${env.BETTER_AUTH_URL}/dashboard/websites/${existingWebsite.id}`,
+				dashboardUrl: `${env.BETTER_AUTH_URL}/dashboard`,
+			}),
+		});
+
+		if (emailResponse.error) {
+			console.error(emailResponse);
+		}
 
 		return {
 			status: "success",

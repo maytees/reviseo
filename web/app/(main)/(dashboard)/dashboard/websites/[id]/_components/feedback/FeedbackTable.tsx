@@ -396,12 +396,7 @@ const FeedbackTable = ({
 								</h3>
 								<div className="p-3 border rounded-md bg-card/30">
 									<span className="text-xs text-muted-foreground">
-										{selectedFeedback.isMobile !== null &&
-										selectedFeedback.isMobile !== undefined
-											? selectedFeedback.isMobile
-												? "Mobile"
-												: "Desktop"
-											: "Device type not available"}
+										{selectedFeedback.device || "Unknown device"}
 									</span>
 								</div>
 							</div>

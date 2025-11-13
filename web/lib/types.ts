@@ -168,8 +168,8 @@ export type FeedbackSelectAllPayload = Prisma.FeedbackGetPayload<{
 		browser: true;
 		screenshotKey: true;
 		browserVersion: true;
-		isMobile: true;
 		os: true;
+		device: true;
 		createdAt: true;
 		updatedAt: true;
 		title: true;
