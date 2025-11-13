@@ -84,7 +84,7 @@ export default function ClientInviteEmail({
 									With Reviseo, you can click the widget and a screenshot will
 									show up which you can annotate to explain in detail what you
 									want {developerName} to change. Simply click, annotate, and
-									submit no more confusing email threads!
+									submit. No more confusing email threads!
 								</Text>
 
 								{/* CTA Button */}
