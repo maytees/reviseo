@@ -22,8 +22,8 @@ function useUserAgent(uastring = window.navigator.userAgent) {
 				os: uaParser.getOS().name,
 				browser: uaParser.getBrowser().name,
 				browserVersion: uaParser.getBrowser().version,
-				cpu: uaParser.getCPU().architecture,
-				device: uaParser.getDevice().toString(),
+				cpu: uaParser.getCPU().toString(),
+				device: uaParser.getDevice().type,
 				engine: uaParser.getEngine().name,
 			};
 			if (didRun) {

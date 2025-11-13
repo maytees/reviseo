@@ -21,6 +21,7 @@
 		"@dnd-kit/utilities": "^3.2.2",
 		"@excalidraw/excalidraw": "^0.18.0",
 		"@hookform/resolvers": "^5.2.2",
+		"@icons-pack/react-simple-icons": "^13.8.0",
 		"@internationalized/date": "^3.10.0",
 		"@open-iframe-resizer/react": "^2.1.0",
 		"@prisma/client": "^6.17.1",

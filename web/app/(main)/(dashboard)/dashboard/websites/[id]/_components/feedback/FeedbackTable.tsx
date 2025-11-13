@@ -1,21 +1,37 @@
 "use client";
 
 import {
+	SiAndroid,
+	SiApple,
+	SiGooglechrome,
+	SiLinux,
+	SiOpera,
+	SiSafari,
+} from "@icons-pack/react-simple-icons";
+import {
 	Calendar,
-	Chrome,
+	CalendarClock,
+	Camera,
 	Clock,
 	Download,
+	Glasses,
 	Globe,
 	Hash,
+	Laptop,
 	Maximize,
 	Monitor,
 	PersonStanding,
 	Smartphone,
+	Tablet,
+	Tv,
+	Watch,
 } from "lucide-react";
 import moment from "moment";
 import Link from "next/link";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
+import { FaEdgeLegacy, FaMicrosoft } from "react-icons/fa";
+import { SiFirefoxbrowser } from "react-icons/si";
 import type { WebsiteDataTypeNonNullable } from "@/app/data/website/get-website-by-id-and-dev-id";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
@@ -44,6 +60,58 @@ import ScreenshotPreview from "../../../../_components/ScreenshotPreview";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
 import SelectStatus from "./SelectStatus";
+
+// Browser icon mapping
+const BROWSER_ICON_MAP: Record<
+	string,
+	{
+		icon: React.ComponentType<{ size?: number; className?: string }>;
+		color: string;
+	}
+> = {
+	chrome: { icon: SiGooglechrome, color: "#4285F4" },
+	firefox: { icon: SiFirefoxbrowser, color: "#FF7139" },
+	safari: { icon: SiSafari, color: "#006CFF" },
+	edge: { icon: FaEdgeLegacy, color: "#0078D7" },
+	opera: { icon: SiOpera, color: "#FF1B2D" },
+};
+
+// OS icon mapping
+const OS_ICON_MAP: Record<
+	string,
+	{
+		icon: React.ComponentType<{ size?: number; className?: string }>;
+		color: string;
+	}
+> = {
+	windows: { icon: FaMicrosoft, color: "#0078D6" },
+	macos: { icon: SiApple, color: "#ffffff" },
+	linux: { icon: SiLinux, color: "#FCC624" },
+	android: { icon: SiAndroid, color: "#3DDC84" },
+	ios: { icon: SiApple, color: "#000000" },
+};
+
+const getBrowserIcon = (browser?: string | null) => {
+	if (!browser) return null;
+	const browserLower = browser.toLowerCase();
+	for (const [key, value] of Object.entries(BROWSER_ICON_MAP)) {
+		if (browserLower.includes(key)) {
+			return value;
+		}
+	}
+	return null;
+};
+
+const getOSIcon = (os?: string | null) => {
+	if (!os) return null;
+	const osLower = os.toLowerCase();
+	for (const [key, value] of Object.entries(OS_ICON_MAP)) {
+		if (osLower.includes(key)) {
+			return value;
+		}
+	}
+	return null;
+};
 
 const FeedbackTable = ({
 	website,
@@ -361,16 +429,38 @@ const FeedbackTable = ({
 							{/* Browser Information */}
 							<div className="flex flex-col gap-2">
 								<h3 className="flex items-center gap-2 text-sm font-medium">
-									<Chrome className="size-4" />
+									<Globe className="size-4" />
 									Browser
 								</h3>
 								<div className="p-3 border rounded-md bg-card/30">
-									<span className="text-xs text-muted-foreground">
-										{selectedFeedback.browser ||
-											"Browser information not available"}{" "}
-										{selectedFeedback.browserVersion &&
-											`v${selectedFeedback.browserVersion}`}
-									</span>
+									<div className="flex items-center gap-2">
+										{(() => {
+											const browserIcon = getBrowserIcon(
+												selectedFeedback.browser,
+											);
+											if (browserIcon) {
+												const BrowserIconComponent = browserIcon.icon;
+												return (
+													<div className="flex items-center justify-center border rounded-full size-8 bg-background border-border">
+														<span style={{ color: browserIcon.color }}>
+															<BrowserIconComponent size={16} />
+														</span>
+													</div>
+												);
+											}
+											return (
+												<div className="flex items-center justify-center border rounded-full size-8 bg-background border-border">
+													<Globe className="size-4 text-muted-foreground" />
+												</div>
+											);
+										})()}
+										<span className="text-xs text-muted-foreground">
+											{selectedFeedback.browser ||
+												"Browser information not available"}{" "}
+											{selectedFeedback.browserVersion &&
+												`v${selectedFeedback.browserVersion}`}
+										</span>
+									</div>
 								</div>
 							</div>
 
@@ -381,10 +471,30 @@ const FeedbackTable = ({
 									Operating System
 								</h3>
 								<div className="p-3 border rounded-md bg-card/30">
-									<span className="text-xs text-muted-foreground">
-										{selectedFeedback.os ||
-											"Operating system information not available"}
-									</span>
+									<div className="flex items-center gap-2">
+										{(() => {
+											const osIcon = getOSIcon(selectedFeedback.os);
+											if (osIcon) {
+												const OSIconComponent = osIcon.icon;
+												return (
+													<div className="flex items-center justify-center border rounded-full size-8 bg-background border-border">
+														<span style={{ color: osIcon.color }}>
+															<OSIconComponent size={16} />
+														</span>
+													</div>
+												);
+											}
+											return (
+												<div className="flex items-center justify-center border rounded-full size-8 bg-background border-border">
+													<Monitor className="size-4 text-muted-foreground" />
+												</div>
+											);
+										})()}
+										<span className="text-xs text-muted-foreground">
+											{selectedFeedback.os ||
+												"Operating system information not available"}
+										</span>
+									</div>
 								</div>
 							</div>
 
@@ -395,9 +505,60 @@ const FeedbackTable = ({
 									Device Type
 								</h3>
 								<div className="p-3 border rounded-md bg-card/30">
-									<span className="text-xs text-muted-foreground">
-										{selectedFeedback.device || "Unknown device"}
-									</span>
+									<div className="flex items-center gap-2">
+										{(() => {
+											const device = selectedFeedback.device?.toLowerCase();
+											let DeviceIcon = Monitor;
+											let colorClass = "text-emerald-500";
+
+											if (
+												device?.includes("mobile") ||
+												device?.includes("phone")
+											) {
+												DeviceIcon = Smartphone;
+												colorClass = "text-blue-400";
+											} else if (device?.includes("tablet")) {
+												DeviceIcon = Tablet;
+												colorClass = "text-purple-400";
+											} else if (device?.includes("desktop")) {
+												DeviceIcon = Monitor;
+												colorClass = "text-gray-400";
+											} else if (device?.includes("console")) {
+												DeviceIcon = Laptop;
+												colorClass = "text-indigo-400";
+											} else if (
+												device?.includes("smarttv") ||
+												device?.includes("tv")
+											) {
+												DeviceIcon = Tv;
+												colorClass = "text-red-400";
+											} else if (
+												device?.includes("wearable") ||
+												device?.includes("watch")
+											) {
+												DeviceIcon = Watch;
+												colorClass = "text-green-400";
+											} else if (
+												device?.includes("xr") ||
+												device?.includes("vr")
+											) {
+												DeviceIcon = Glasses;
+												colorClass = "text-cyan-400";
+											} else if (device?.includes("embedded")) {
+												DeviceIcon = Monitor;
+												colorClass = "text-orange-400";
+											}
+
+											return (
+												<div className="flex items-center justify-center border rounded-full size-8 bg-background border-border">
+													<DeviceIcon className={`size-4 ${colorClass}`} />
+												</div>
+											);
+										})()}
+										<span className="text-xs text-muted-foreground">
+											{selectedFeedback.device || "Unknown device"}
+										</span>
+									</div>
 								</div>
 							</div>
 
@@ -408,9 +569,13 @@ const FeedbackTable = ({
 									Viewport Size
 								</h3>
 								<div className="p-3 border rounded-md bg-card/30">
-									<span className="text-xs text-muted-foreground">
-										{selectedFeedback.viewport || "Viewport size not available"}
-									</span>
+									<div className="flex items-center gap-2">
+										<Maximize className="size-4 text-muted-foreground" />
+										<span className="text-xs text-muted-foreground">
+											{selectedFeedback.viewport ||
+												"Viewport size not available"}
+										</span>
+									</div>
 								</div>
 							</div>
 
@@ -420,32 +585,28 @@ const FeedbackTable = ({
 									<Clock className="size-4" />
 									Timestamps
 								</h3>
-								<div className="p-3 space-y-2 border rounded-md bg-card/30">
-									<div className="flex justify-between">
-										<span className="text-xs text-muted-foreground">
-											Created:
-										</span>
+								<div className="p-3 space-y-3 border rounded-md bg-card/30">
+									{/* <div className="flex items-center justify-between">
+										<div className="flex items-center gap-2">
+											<CalendarPlus className="text-green-600 size-4" />
+											<span className="text-xs font-medium text-muted-foreground">
+												Created:
+											</span>
+										</div>
 										<span className="text-xs text-muted-foreground">
 											{moment(selectedFeedback.createdAt).format(
 												"MMM Do YYYY, h:mm:ss a",
 											)}
 										</span>
-									</div>
-									<div className="flex justify-between">
-										<span className="text-xs text-muted-foreground">
-											Updated:
-										</span>
-										<span className="text-xs text-muted-foreground">
-											{moment(selectedFeedback.updatedAt).format(
-												"MMM Do YYYY, h:mm:ss a",
-											)}
-										</span>
-									</div>
+									</div> */}
 									{selectedFeedback.timestamp && (
-										<div className="flex justify-between">
-											<span className="text-xs text-muted-foreground">
-												Captured:
-											</span>
+										<div className="flex items-center justify-between">
+											<div className="flex items-center gap-2">
+												<Camera className="text-blue-600 size-4" />
+												<span className="text-xs font-medium text-muted-foreground">
+													Captured:
+												</span>
+											</div>
 											<span className="text-xs text-muted-foreground">
 												{moment(selectedFeedback.timestamp).format(
 													"MMM Do YYYY, h:mm:ss a",
@@ -453,6 +614,19 @@ const FeedbackTable = ({
 											</span>
 										</div>
 									)}
+									<div className="flex items-center justify-between">
+										<div className="flex items-center gap-2">
+											<CalendarClock className="size-4 text-amber-600" />
+											<span className="text-xs font-medium text-muted-foreground">
+												Updated:
+											</span>
+										</div>
+										<span className="text-xs text-muted-foreground">
+											{moment(selectedFeedback.updatedAt).format(
+												"MMM Do YYYY, h:mm:ss a",
+											)}
+										</span>
+									</div>
 								</div>
 							</div>
 
