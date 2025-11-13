@@ -122,7 +122,7 @@ const InviteClientDialog = ({
 				{!children ? (
 					children
 				) : (
-					<Button>
+					<Button size={"sm"} variant={"outline"} className="justify-start">
 						<UserPlus />
 						Invite Client
 					</Button>
