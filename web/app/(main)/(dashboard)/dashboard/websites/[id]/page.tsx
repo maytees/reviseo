@@ -16,6 +16,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DashboardFooter from "../../_components/DashboardFooter";
 import CopyProjectId from "../_components/CopyProjectId";
 import WebsiteDropdownMenu from "../_components/WebsiteDropdownMenu";
+import ClientInfo from "./_components/client/ClientInfo";
 import EditWebsiteDetailsDialog from "./_components/EditWebsiteDetailsDialog";
 import FeedbackTable from "./_components/feedback/FeedbackTable";
 
@@ -105,7 +106,7 @@ const WebsitePage = async ({
 						<FeedbackTable website={website} open={openId} />
 					</TabsContent>
 					<TabsContent value="client">
-						<p>Client</p>
+						<ClientInfo website={website} />
 					</TabsContent>
 					<TabsContent value="widget">
 						<p>Widget</p>

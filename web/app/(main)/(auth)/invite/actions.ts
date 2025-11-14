@@ -1,8 +1,9 @@
 "use server";
 
+import { isBefore } from "date-fns";
+import { requireUser } from "@/app/data/require-user";
 import { prisma } from "@/lib/db";
 import type { ApiResponse } from "@/lib/types";
-import { requireUser } from "../../data/require-user";
 
 export async function finalizeClientToken(
 	token: string,
@@ -37,6 +38,27 @@ export async function finalizeClientToken(
 			return {
 				status: "error",
 				message: "No invite with given token",
+			};
+		}
+
+		if (invite.expiresAt && isBefore(invite.expiresAt, new Date())) {
+			return {
+				status: "error",
+				message: "Invite is expired",
+			};
+		}
+
+		if (invite.status === "REVOKED") {
+			return {
+				status: "error",
+				message: "Invite was revoked",
+			};
+		}
+
+		if (invite.status === "ACCEPTED") {
+			return {
+				status: "error",
+				message: "Invite already accepted",
 			};
 		}
 
@@ -88,21 +110,25 @@ export async function finalizeClientToken(
 			},
 		});
 
-		// Delete invite
-		await prisma.invite.delete({
+		// Set invite to accepted
+		await prisma.invite.update({
 			where: {
 				id: invite.id,
 			},
+			data: {
+				status: "ACCEPTED",
+			},
 		});
 
-		await prisma.user.update({
-			where: {
-				id: invitedUser.id,
-			},
-			data: {
-				name: clientName || "No Name",
-			},
-		});
+		if (!invitedUser.name)
+			await prisma.user.update({
+				where: {
+					id: invitedUser.id,
+				},
+				data: {
+					name: clientName || "No Name",
+				},
+			});
 
 		return {
 			status: "success",

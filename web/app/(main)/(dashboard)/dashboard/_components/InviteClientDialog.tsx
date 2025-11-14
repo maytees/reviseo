@@ -3,12 +3,14 @@
 import { zodResolver } from "@hookform/resolvers/zod";
 import { GlobeIcon, Info, Mail, UserPlus } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
 import type React from "react";
-import { useId, useState, useTransition } from "react";
+import { useEffect, useId, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { inviteClient } from "@/app/(main)/(onboarding)/onboarding/_components/actions";
 import type { UserDataType } from "@/app/data/user/get-user-data";
+import type { WebsiteDataTypeNonNullable } from "@/app/data/website/get-website-by-id-and-dev-id";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
 import {
@@ -21,6 +23,7 @@ import {
 	DialogTitle,
 	DialogTrigger,
 } from "@/components/ui/dialog";
+import { FieldDescription } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
@@ -34,16 +37,22 @@ const InviteClientDialog = ({
 	userData,
 	children,
 	asChild = true,
+	website,
+	refresh,
 }: {
 	userData: UserDataType;
 	children?: React.ReactNode;
 	asChild?: boolean;
+	website?: WebsiteDataTypeNonNullable;
+	refresh?: boolean;
 }) => {
 	const [open, setOpen] = useState(false);
 	const [step, setStep] = useState(1);
 	const [selectedWebsiteId, setSelectedWebsiteId] = useState<string>("");
 	const isMounted = useIsMounted();
 	const [isPending, startTransition] = useTransition();
+
+	const router = useRouter();
 
 	const clientNameId = useId();
 	const clientEmailId = useId();
@@ -106,10 +115,12 @@ const InviteClientDialog = ({
 			if (result.status === "success") {
 				toast.success(result.message);
 				setOpen(false);
+				if (refresh) router.refresh();
 				// Reset form after successful submission
 				setStep(1);
 				setSelectedWebsiteId("");
 				reset();
+
 				return;
 			}
 
@@ -118,12 +129,19 @@ const InviteClientDialog = ({
 		});
 	};
 
+	useEffect(() => {
+		if (!website || !open) return;
+
+		setSelectedWebsiteId(website.id);
+		setStep(2);
+	}, [open, website]);
+
 	if (!isMounted) return null;
 
 	return (
 		<Dialog open={open} onOpenChange={handleOpenChange}>
 			<DialogTrigger asChild={asChild}>
-				{!children ? (
+				{children ? (
 					children
 				) : (
 					<Button size={"sm"} variant={"outline"} className="justify-start">
@@ -251,7 +269,7 @@ const InviteClientDialog = ({
 							)}
 
 							<div className="grid gap-4">
-								<div className="">
+								<div>
 									<Label
 										htmlFor={clientNameId}
 										className="text-base font-medium text-muted-foreground"
@@ -259,6 +277,7 @@ const InviteClientDialog = ({
 										Client Name
 									</Label>
 									<Input
+										autoComplete="off"
 										id={clientNameId}
 										placeholder="John Smith"
 										{...register("clientName")}
@@ -275,6 +294,10 @@ const InviteClientDialog = ({
 											{errors.clientName.message}
 										</p>
 									)}
+									<FieldDescription className="pt-1 text-xs">
+										User will be able to set their own name. This name is shown
+										in the invite email.
+									</FieldDescription>
 								</div>
 
 								<div className="space-y-2">
@@ -285,6 +308,7 @@ const InviteClientDialog = ({
 										Client Email
 									</Label>
 									<Input
+										autoComplete="off"
 										id={clientEmailId}
 										type="email"
 										placeholder="john@example.com"
@@ -328,19 +352,21 @@ const InviteClientDialog = ({
 
 					{/* Footer with Step Indicators and Actions */}
 					<div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-						<div className="flex justify-center space-x-1.5 max-sm:order-1">
-							{[...Array(totalSteps)].map((_, index) => (
-								<div
-									// biome-ignore lint/suspicious/noArrayIndexKey: goon
-									key={index}
-									className={cn(
-										"size-1.5 rounded-full bg-primary transition-opacity",
-										index + 1 === step ? "opacity-100" : "opacity-20",
-									)}
-								/>
-							))}
-						</div>
-						<DialogFooter>
+						{!website && (
+							<div className="flex justify-center space-x-1.5 max-sm:order-1">
+								{[...Array(totalSteps)].map((_, index) => (
+									<div
+										// biome-ignore lint/suspicious/noArrayIndexKey: goon
+										key={index}
+										className={cn(
+											"size-1.5 rounded-full bg-primary transition-opacity",
+											index + 1 === step ? "opacity-100" : "opacity-20",
+										)}
+									/>
+								))}
+							</div>
+						)}
+						<DialogFooter className="ml-auto">
 							{step === 1 ? (
 								<>
 									<DialogClose asChild>
@@ -358,14 +384,26 @@ const InviteClientDialog = ({
 								</>
 							) : (
 								<>
-									<Button
-										type="button"
-										variant="ghost"
-										onClick={() => setStep(1)}
-										disabled={isPending}
-									>
-										Back
-									</Button>
+									{!website ? (
+										<Button
+											type="button"
+											variant="ghost"
+											onClick={() => setStep(1)}
+											disabled={isPending}
+										>
+											Back
+										</Button>
+									) : (
+										<DialogClose asChild>
+											<Button
+												type="button"
+												variant="ghost"
+												disabled={isPending}
+											>
+												Cancel
+											</Button>
+										</DialogClose>
+									)}
 									<Button
 										type="submit"
 										disabled={!isValid || isPending}

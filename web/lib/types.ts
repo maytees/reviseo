@@ -6,17 +6,20 @@ import {
 	CheckCircleIcon,
 	CircleAlertIcon,
 	CircleDashedIcon,
+	ClockIcon,
 	InboxIcon,
 	type LucideIcon,
 	PlayIcon,
 	SparklesIcon,
 	TriangleAlertIcon,
+	XCircleIcon,
 } from "lucide-react";
 import type { BadgeVariantsType } from "@/components/ui/badge";
 import type {
 	FeedbackPriority,
 	FeedbackStatus,
 	FeedbackType,
+	InviteStatus,
 	Prisma,
 } from "@/prisma/generated/client";
 
@@ -152,6 +155,30 @@ export const TYPE_BADGE_MAP: Record<FeedbackType, BadgeVariantsType> = {
 	BUG: "destructive",
 	IMPROVEMENT: "info",
 };
+
+export const INVITE_STATUS_CONFIG: Record<
+	InviteStatus,
+	{
+		label: string;
+		icon: LucideIcon;
+		color: string;
+	}
+> = {
+	PENDING: { label: "Pending", icon: ClockIcon, color: "text-amber-500" },
+	ACCEPTED: {
+		label: "Accepted",
+		icon: CheckCircleIcon,
+		color: "text-emerald-500",
+	},
+	REVOKED: { label: "Revoked", icon: XCircleIcon, color: "text-red-500" },
+};
+
+export const INVITE_STATUS_BADGE_MAP: Record<InviteStatus, BadgeVariantsType> =
+	{
+		PENDING: "warning",
+		ACCEPTED: "success",
+		REVOKED: "destructive",
+	};
 
 export type FeedbackSelectAllPayload = Prisma.FeedbackGetPayload<{
 	select: {
