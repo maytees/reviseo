@@ -132,7 +132,7 @@ export async function finalizeClientToken(
 
 		return {
 			status: "success",
-			message: `Added client to ${existingWebsite.name}`,
+			message: `You've been added to ${existingWebsite.name} as a client`,
 		};
 	} catch (e) {
 		console.log(e);

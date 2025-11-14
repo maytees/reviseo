@@ -250,12 +250,6 @@ const InvitePage = ({
 	if (state === "success") {
 		return (
 			<Card className="w-full mx-auto">
-				<CardHeader>
-					<CardTitle className="text-xl">Invitation Accepted!</CardTitle>
-					<CardDescription>
-						You've successfully joined the project
-					</CardDescription>
-				</CardHeader>
 				<CardContent className="space-y-6">
 					<div className="flex flex-col items-center gap-4">
 						<div className="flex items-center justify-center rounded-full size-16 bg-emerald-500/10">
@@ -263,9 +257,6 @@ const InvitePage = ({
 						</div>
 						<div className="text-center">
 							<p className="text-lg font-medium">{successMessage}</p>
-							<p className="text-sm text-muted-foreground">
-								Redirecting you to your dashboard after 10 seconds.
-							</p>
 						</div>
 					</div>
 					<Alert variant="success" appearance="light">
