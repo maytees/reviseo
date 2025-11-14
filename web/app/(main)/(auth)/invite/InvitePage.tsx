@@ -178,9 +178,9 @@ const InvitePage = ({
 				);
 
 				// Redirect to client dashboard after a brief delay
-				// setTimeout(() => {
-				// 	router.push("/client/dashboard");
-				// }, 2000);
+				setTimeout(() => {
+					router.push("/client/dashboard");
+				}, 10000);
 			} catch (err) {
 				console.error("Unexpected finalize error", err);
 				setState("error");
@@ -264,7 +264,7 @@ const InvitePage = ({
 						<div className="text-center">
 							<p className="text-lg font-medium">{successMessage}</p>
 							<p className="text-sm text-muted-foreground">
-								Redirecting you to your dashboard...
+								Redirecting you to your dashboard after 10 seconds.
 							</p>
 						</div>
 					</div>

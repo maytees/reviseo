@@ -250,6 +250,23 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 					break;
 				}
 
+				case "REQUEST_PROJECT_ID": {
+					// Send current page URL to modal iframe
+					const modalIframe = document.getElementById(
+						"reviseo-modal",
+					) as HTMLIFrameElement;
+
+					if (modalIframe?.contentWindow) {
+						modalIframe.contentWindow.postMessage(
+							{
+								projectId,
+							},
+							WIDGET_ORIGIN,
+						);
+					}
+					break;
+				}
+
 				case "REQUEST_PAGE_DATA": {
 					// Send current page URL to modal iframe
 					const modalIframe = document.getElementById(

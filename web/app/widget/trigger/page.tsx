@@ -10,7 +10,6 @@ const TriggerButton = () => {
 	const {
 		data: session,
 		isPending, //loading state
-		error,
 	} = authClient.useSession();
 
 	const [healthy, setHealthy] = useState(false);
