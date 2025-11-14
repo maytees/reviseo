@@ -215,7 +215,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 				case "HEALTH_CHECK":
 					// Respond to health check
 					triggerIframeRef.current?.contentWindow?.postMessage(
-						{ type: "HEALTH_OK" },
+						{ type: "HEALTH_OK", projectId },
 						WIDGET_ORIGIN,
 					);
 					break;
@@ -247,23 +247,6 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 				case "CLOSE_FORM": {
 					const modal = document.getElementById("reviseo-modal");
 					if (modal) modal.remove();
-					break;
-				}
-
-				case "REQUEST_PROJECT_ID": {
-					// Send current page URL to modal iframe
-					const modalIframe = document.getElementById(
-						"reviseo-modal",
-					) as HTMLIFrameElement;
-
-					if (modalIframe?.contentWindow) {
-						modalIframe.contentWindow.postMessage(
-							{
-								projectId,
-							},
-							WIDGET_ORIGIN,
-						);
-					}
 					break;
 				}
 

@@ -127,6 +127,7 @@ export async function finalizeClientToken(
 				},
 				data: {
 					name: clientName || "No Name",
+					hasCompletedOnboarding: true,
 				},
 			});
 
