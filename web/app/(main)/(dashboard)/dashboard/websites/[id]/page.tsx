@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import { ExternalLink } from "lucide-react";
 import moment from "moment";
 import Image from "next/image";
@@ -7,6 +8,19 @@ import VerifyInstallation from "@/app/(main)/(onboarding)/onboarding/_components
 import { requireUser } from "@/app/data/require-user";
 import { getWebsiteByIdAndDevId } from "@/app/data/website/get-website-by-id-and-dev-id";
 import { Badge } from "@/components/ui/badge";
+
+export async function generateMetadata({
+	params,
+}: {
+	params: Promise<{ id: string }>;
+}): Promise<Metadata> {
+	const { id } = await params;
+	const website = await getWebsiteByIdAndDevId(id);
+
+	return {
+		title: website ? website.name : "Website",
+	};
+}
 import {
 	HoverCard,
 	HoverCardContent,

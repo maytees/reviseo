@@ -1,4 +1,9 @@
+import type { Metadata } from "next";
 import DashboardFooter from "../_components/DashboardFooter";
+
+export const metadata: Metadata = {
+	title: "Clients",
+};
 
 export default function ClientsPage() {
 	return (

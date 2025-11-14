@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
 	Globe,
 	MessageCircle,
@@ -8,6 +9,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getUserData } from "@/app/data/user/get-user-data";
 import { Button } from "@/components/ui/button";
+
+export const metadata: Metadata = {
+	title: "Dashboard",
+};
 import {
 	Card,
 	CardContent,

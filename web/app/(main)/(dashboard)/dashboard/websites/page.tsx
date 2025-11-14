@@ -1,3 +1,4 @@
+import type { Metadata } from "next";
 import {
 	BookOpen,
 	CalendarPlus,
@@ -13,6 +14,10 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getUserData } from "@/app/data/user/get-user-data";
 import { Button } from "@/components/ui/button";
+
+export const metadata: Metadata = {
+	title: "Websites",
+};
 import {
 	Empty,
 	EmptyContent,

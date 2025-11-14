@@ -1,8 +1,13 @@
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
 import { requireUser } from "@/app/data/require-user";
 import { getUserOnboardingData } from "@/app/data/user/get-user-onboarding-data";
 import { OnboardingFlow } from "./_components/OnboardingFlow";
+
+export const metadata: Metadata = {
+	title: "Get Started",
+};
 
 export default async function OnboardingPage() {
 	const user = await requireUser();
