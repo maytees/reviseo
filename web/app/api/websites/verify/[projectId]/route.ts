@@ -71,7 +71,7 @@ export async function POST(
 		// All checks must pass
 		const isInstalled = checks.every((check) => check === true);
 
-		//// Debug;
+		// Debug;
 		// const checksWithLabels = {
 		// 	hasScriptTag: normalizedHtml.includes("<script>"),
 		// 	hasConfig: normalizedHtml.includes(

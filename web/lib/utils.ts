@@ -59,46 +59,95 @@ export async function isClient(userId: string): Promise<boolean> {
 	return user.role === "client";
 }
 
-// lib/utils/widget-script.ts (or utils/widget-script.ts)
+function objectToStringWithoutQuotedKeys(obj: Record<string, string>) {
+	const parts = [];
+	for (const key in obj) {
+		if (Object.hasOwn(obj, key)) {
+			let value = obj[key];
+			if (typeof value === "string") {
+				value = `"${value}"`; // Quote string values with single quotes for JS literal
+			} else if (typeof value === "object" && value !== null) {
+				value = objectToStringWithoutQuotedKeys(value); // Recursively handle nested objects
+			}
+			parts.push(`${key}: ${value}`);
+		}
+	}
+	return `{${parts.join(", ")}}`;
+}
 
 /**
  * Generates the Reviseo widget installation script
  * @param projectId - The unique project identifier
+ * @param config - Optional widget configuration
  * @returns The complete script tag as a string
  */
-export function generateWidgetScript(projectId: string): string {
+export function generateWidgetScript(
+	projectId: string,
+	config?: { position?: string; theme?: string },
+): string {
 	const scriptSrc =
 		env.NEXT_PUBLIC_WIDGET_SCRIPT_URL || "./dist/widget.iife.js";
 
-	return `<script>window.ReviseoConfig = { projectId: "${projectId}" }, function (e, t) { if (e.__Reviseo) return; e.__Reviseo = {}; const i = t.createElement("script"); i.src = "${scriptSrc}"; const n = t.getElementsByTagName("script")[0]; n.parentNode.insertBefore(i, n) }(window, document);</script>`;
+	const configObj = {
+		projectId,
+		...(config?.position && { position: config.position }),
+		...(config?.theme && { theme: config.theme }),
+	};
+
+	const configStr = objectToStringWithoutQuotedKeys(configObj);
+
+	return `<script>window.ReviseoConfig = ${configStr}, function (e, t) { if (e.__Reviseo) return; e.__Reviseo = {}; const i = t.createElement("script"); i.src = "${scriptSrc}"; const n = t.getElementsByTagName("script")[0]; n.parentNode.insertBefore(i, n) }(window, document);</script>`;
 }
 
 /**
  * Generates a minified version (removes unnecessary spaces)
  */
-export function generateWidgetScriptMinified(projectId: string): string {
+export function generateWidgetScriptMinified(
+	projectId: string,
+	config?: { position?: string; theme?: string },
+): string {
 	const scriptSrc =
 		env.NEXT_PUBLIC_WIDGET_SCRIPT_URL || "./dist/widget.iife.js";
 
-	return `<script>window.ReviseoConfig={projectId:"${projectId}"},function(e,t){if(e.__Reviseo)return;e.__Reviseo={};const i=t.createElement("script");i.src="${scriptSrc}";const n=t.getElementsByTagName("script")[0];n.parentNode.insertBefore(i,n)}(window,document);</script>`;
+	const configObj = {
+		projectId,
+		...(config?.position && { position: config.position }),
+		...(config?.theme && { theme: config.theme }),
+	};
+
+	const configStr = objectToStringWithoutQuotedKeys(configObj);
+
+	return `<script>window.ReviseoConfig=${configStr},function(e,t){if(e.__Reviseo)return;e.__Reviseo={};const i=t.createElement("script");i.src="${scriptSrc}";const n=t.getElementsByTagName("script")[0];n.parentNode.insertBefore(i,n)}(window,document);</script>`;
 }
 
 /**
  * Generates a formatted version with proper indentation
  */
-export function generateWidgetScriptFormatted(projectId: string): string {
+export function generateWidgetScriptFormatted(
+	projectId: string,
+	config?: { position?: string; theme?: string },
+): string {
 	const scriptSrc =
 		env.NEXT_PUBLIC_WIDGET_SCRIPT_URL || "./dist/widget.iife.js";
 
+	const configObj = {
+		projectId,
+		...(config?.position && { position: config.position }),
+		...(config?.theme && { theme: config.theme }),
+	};
+
+	// const configStr = JSON.stringify(configObj, null, 2).replace(/\n/g, "\n  ");
+	const configStr = objectToStringWithoutQuotedKeys(configObj);
+
 	return `<script>
-  window.ReviseoConfig = { projectId: "${projectId}" }, 
-  function (e, t) { 
-    if (e.__Reviseo) return; 
-    e.__Reviseo = {}; 
-    const i = t.createElement("script"); 
-    i.src = "${scriptSrc}"; 
-    const n = t.getElementsByTagName("script")[0]; 
-    n.parentNode.insertBefore(i, n) 
+  window.ReviseoConfig = ${configStr},
+  function (e, t) {
+    if (e.__Reviseo) return;
+    e.__Reviseo = {};
+    const i = t.createElement("script");
+    i.src = "${scriptSrc}";
+    const n = t.getElementsByTagName("script")[0];
+    n.parentNode.insertBefore(i, n)
   }(window, document);
 </script>`;
 }

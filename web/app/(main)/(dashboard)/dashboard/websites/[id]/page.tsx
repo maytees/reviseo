@@ -33,6 +33,7 @@ import WebsiteDropdownMenu from "../_components/WebsiteDropdownMenu";
 import ClientInfo from "./_components/client/ClientInfo";
 import EditWebsiteDetailsDialog from "./_components/EditWebsiteDetailsDialog";
 import FeedbackTable from "./_components/feedback/FeedbackTable";
+import WidgetTab from "./_components/widget/WidgetTab";
 
 const WebsitePage = async ({
 	params,
@@ -123,7 +124,11 @@ const WebsitePage = async ({
 						<ClientInfo website={website} />
 					</TabsContent>
 					<TabsContent value="widget">
-						<p>Widget</p>
+						<WidgetTab
+							projectId={website.projectId}
+							widgetInstalled={website.widgetInstalled}
+							verifiedAt={website.verifiedAt}
+						/>
 					</TabsContent>
 					<TabsContent value="settings">
 						<p>settings</p>

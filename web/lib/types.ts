@@ -204,3 +204,17 @@ export type FeedbackSelectAllPayload = Prisma.FeedbackGetPayload<{
 		type: true;
 	};
 }>;
+
+// Widget Config Types
+export type WidgetPosition =
+	| "bottom-right"
+	| "bottom-left"
+	| "top-right"
+	| "top-left";
+export type WidgetTheme = "light" | "dark" | "auto";
+
+export interface WidgetConfig {
+	projectId: string;
+	position?: WidgetPosition;
+	theme?: WidgetTheme;
+}

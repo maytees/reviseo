@@ -1,12 +1,5 @@
 "use client";
-import {
-	Code,
-	Copy,
-	EllipsisVertical,
-	LinkIcon,
-	Pencil,
-	Trash,
-} from "lucide-react";
+import { Copy, EllipsisVertical, LinkIcon, Pencil, Trash } from "lucide-react";
 import Link from "next/link";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
@@ -20,7 +13,6 @@ import {
 	DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
 import { useCopyToClipboard } from "@/lib/hooks/useCopyToClipboard";
-import { generateWidgetScriptMinified } from "@/lib/utils";
 import EditWebsiteDetailsDialog from "../[id]/_components/EditWebsiteDetailsDialog";
 import DeleteWebsiteDialog from "./DeleteWebsiteDialog";
 
@@ -78,14 +70,14 @@ const WebsiteDropdownMenu = ({
 							Edit
 						</DropdownMenuItem>
 					</EditWebsiteDetailsDialog>
-					<DropdownMenuItem
+					{/* <DropdownMenuItem
 						onClick={handleCopy(
 							generateWidgetScriptMinified(website.projectId),
 						)}
 					>
 						<Code />
 						Copy Snippet
-					</DropdownMenuItem>
+					</DropdownMenuItem> */}
 					<DropdownMenuItem onClick={handleCopy(website.projectId)}>
 						<Copy />
 						Project Id
