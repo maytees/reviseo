@@ -182,7 +182,7 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 							</div>
 						</div> */}
 						{articleData.cover ? (
-							<div className="relative w-full aspect-[16/9] rounded-xl overflow-hidden border border-border/50 bg-muted/30">
+							<div className="relative w-full overflow-hidden border aspect-video rounded-xl border-border/50 bg-muted/30">
 								<Image
 									src={articleData.cover}
 									alt={articleData.title}

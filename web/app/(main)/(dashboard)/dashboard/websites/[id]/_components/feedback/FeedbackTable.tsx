@@ -28,7 +28,7 @@ import {
 } from "lucide-react";
 import moment from "moment";
 import Link from "next/link";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import { FaEdgeLegacy, FaMicrosoft } from "react-icons/fa";
 import { SiFirefoxbrowser } from "react-icons/si";
@@ -126,7 +126,6 @@ const FeedbackTable = ({
 	// TODO: Not found modal
 	const [_, setNotFoundOpen] = useState(false);
 	const router = useRouter();
-	const pathname = usePathname();
 	const searchParams = useSearchParams();
 
 	const [selectedFeedback, setSelectedFeedback] =
@@ -148,7 +147,8 @@ const FeedbackTable = ({
 		const nextSearchParams = new URLSearchParams(searchParams.toString());
 		nextSearchParams.delete("open");
 
-		router.replace(`${pathname}?${nextSearchParams}`);
+		// router.replace(`${pathname}?${nextSearchParams}`);
+		router.replace(`/dashboard/websites/${website.id}?${nextSearchParams}`);
 	}, []);
 
 	// biome-ignore lint/correctness/useExhaustiveDependencies: goon
