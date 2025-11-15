@@ -2,11 +2,8 @@
 
 import {
 	SiHtml5,
-	SiReact,
 	SiShopify,
-	SiSvelte,
 	SiVite,
-	SiVuedotjs,
 	SiWordpress,
 } from "@icons-pack/react-simple-icons";
 import moment from "moment";
