@@ -3,8 +3,8 @@
 	"type": "module",
 	"scripts": {
 		"dev": "vite",
-		"build": "vite build",
-		"dev:build": "vite build --outDir ../example/dist",
+		"build": "vite build --emptyOutDir --outDir ../web/public/cdn && mv ../web/public/cdn/widget.iife.js ../web/public/cdn/reviseo.js",
+		"dev:build": "vite build --emptyOutDir --outDir ../example/dist",
 		"preview": "vite preview"
 	},
 	"dependencies": {
