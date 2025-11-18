@@ -34,7 +34,9 @@ import WebsiteDropdownMenu from "../_components/WebsiteDropdownMenu";
 import ClientInfo from "./_components/client/ClientInfo";
 import EditWebsiteDetailsDialog from "./_components/EditWebsiteDetailsDialog";
 import FeedbackTable from "./_components/feedback/FeedbackTable";
+import SettingsTab from "./_components/settings/SettingsTab";
 import WidgetTab from "./_components/widget/WidgetTab";
+
 
 const WebsitePage = async ({
 	params,
@@ -132,8 +134,8 @@ const WebsitePage = async ({
 						/>
 					</TabsContent>
 					<TabsContent value="settings">
-						<p>settings</p>
-					</TabsContent>
+					<SettingsTab website={website} />
+				</TabsContent>
 				</Tabs>
 				<div className="mt-auto">
 					<DashboardFooter />
