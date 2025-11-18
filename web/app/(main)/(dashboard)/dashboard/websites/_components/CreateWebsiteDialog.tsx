@@ -3,7 +3,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { Plus, PlusCircle } from "lucide-react";
 import { useRouter } from "next/navigation";
 import type React from "react";
-import { useId, useTransition } from "react";
+import { useEffect, useId, useState, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { createWebsiteOnboarding } from "@/app/(main)/(onboarding)/onboarding/_components/actions";
@@ -25,7 +25,6 @@ import {
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import { useConfetti } from "@/lib/hooks/use-confetti";
-import { useIsMounted } from "@/lib/hooks/use-is-mounted";
 import { tryCatch } from "@/lib/try-catch";
 import { cn } from "@/lib/utils";
 import { type WebsiteFormData, websiteSchema } from "@/lib/validations";
@@ -33,7 +32,7 @@ import { type WebsiteFormData, websiteSchema } from "@/lib/validations";
 const CreateWebsiteDialog = ({ className }: React.ComponentProps<"button">) => {
 	const [isPending, startTransition] = useTransition();
 	const router = useRouter();
-	const isMounted = useIsMounted();
+	const [isMounted, setIsMounted] = useState(false);
 
 	const formId = useId();
 	const titleId = useId();
@@ -71,6 +70,12 @@ const CreateWebsiteDialog = ({ className }: React.ComponentProps<"button">) => {
 			}
 		});
 	}
+
+	useEffect(() => {
+		if(!isMounted) {
+			setIsMounted(true)
+		}
+	}, []) 
 
 	if (!isMounted) {
 		return null;
