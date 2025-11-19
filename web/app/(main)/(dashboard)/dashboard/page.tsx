@@ -9,10 +9,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getUserData } from "@/app/data/user/get-user-data";
 import { Button } from "@/components/ui/button";
-
-export const metadata: Metadata = {
-	title: "Dashboard",
-};
 import {
 	Card,
 	CardContent,
@@ -25,6 +21,10 @@ import InviteClientDialog from "./_components/InviteClientDialog";
 import RecentSubmissions from "./_components/RecentSubmissions";
 import WebsitesOverview from "./_components/WebsitesOverview";
 import CreateWebsiteDialog from "./websites/_components/CreateWebsiteDialog";
+
+export const metadata: Metadata = {
+	title: "Dashboard",
+};
 
 export default async function DashboardPage() {
 	const userData = await getUserData();
@@ -75,7 +75,9 @@ export default async function DashboardPage() {
 							</CardHeader>
 							<CardContent>
 								<div className="text-3xl font-bold">
-									{userData.developerWebsites.length || "N/A"}
+									{userData.developerWebsites.reduce((acc, website) => {
+										return acc + (website.clientId ? 1 : 0);
+									}, 0) || "N/A"}
 								</div>
 							</CardContent>
 						</Card>

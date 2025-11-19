@@ -178,7 +178,7 @@ const ExCanvas = ({
 					</EmptyHeader>
 				</Empty>
 			) : (
-				<div style={{ width: "100%", height: "100%" }}>
+				<div className="overflow-hidden rounded-lg" style={{ width: "100%", height: "100%" }}>
 					{/* <button
 						className="custom-button"
 						type="button"
