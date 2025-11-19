@@ -1,10 +1,10 @@
-import type { Metadata } from "next";
 import {
 	Globe,
 	MessageCircle,
 	PersonStanding,
 	UserRoundPlus,
 } from "lucide-react";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getUserData } from "@/app/data/user/get-user-data";
