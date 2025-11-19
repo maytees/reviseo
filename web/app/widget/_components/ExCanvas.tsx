@@ -16,11 +16,10 @@ import type {
 } from "@excalidraw/excalidraw/types";
 import { useTheme } from "next-themes";
 import {
-	type Dispatch,
-	type RefObject,
+	type Dispatch, type RefObject,
 	type SetStateAction,
 	useEffect,
-	useState,
+	useState
 } from "react";
 import {
 	Empty,
