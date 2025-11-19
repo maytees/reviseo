@@ -136,10 +136,10 @@ const InviteClientDialog = ({
 	}, [open, website]);
 
 	useEffect(() => {
-		if(!isMounted) {
-			setIsMounted(true)
+		if (!isMounted) {
+			setIsMounted(true);
 		}
-	}, []) 
+	}, [isMounted]);
 
 	if (!isMounted) {
 		return null;
