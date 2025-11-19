@@ -80,7 +80,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 					<SidebarMenuItem>
 						<SidebarMenuButton
 							asChild
-							className="data-[slot=sidebar-menu-button]:!p-1.5 "
+							className="data-[slot=sidebar-menu-button]:p-1.5! "
 						>
 							<Link href="/">
 								<Image
@@ -88,7 +88,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 									width={32}
 									height={32}
 									alt="Reviseo Logo"
-									className="!size-5"
+									className="size-5!"
 								/>
 								<span className="text-2xl font-semibold font-caudex">
 									Reviseo

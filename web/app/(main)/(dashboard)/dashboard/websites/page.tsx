@@ -14,10 +14,6 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getUserData } from "@/app/data/user/get-user-data";
 import { Button } from "@/components/ui/button";
-
-export const metadata: Metadata = {
-	title: "Websites",
-};
 import {
 	Empty,
 	EmptyContent,
@@ -41,6 +37,10 @@ import DashboardFooter from "../_components/DashboardFooter";
 import CreateWebsiteDialog from "./_components/CreateWebsiteDialog";
 import SiteLinkMedia from "./_components/SiteLinkMedia";
 import WebsiteDropdownMenu from "./_components/WebsiteDropdownMenu";
+
+export const metadata: Metadata = {
+	title: "Websites",
+};
 
 export default async function WebsitesPage() {
 	const userData = await getUserData();
@@ -125,19 +125,19 @@ export default async function WebsitesPage() {
 									</ItemTitle>
 									<div className="grid grid-cols-3 mt-1 space-x-4 xl:max-w-96 gap-y-2">
 										<div className="flex flex-row items-center gap-1">
-											<Globe className="flex-shrink-0 text-green-400 size-3" />
+											<Globe className="shrink-0 text-green-400 size-3" />
 											<span className="text-sm font-normal truncate text-muted-foreground">
 												{getDomain(site.url)}
 											</span>
 										</div>
 										<div className="flex flex-row items-center gap-1">
-											<PersonStanding className="flex-shrink-0 text-blue-400 size-3" />
+											<PersonStanding className="shrink-0 text-blue-400 size-3" />
 											<span className="text-xs font-normal truncate text-muted-foreground">
 												{site.client?.name ?? "No Client"}
 											</span>
 										</div>
 										<div className="flex flex-row items-center gap-1">
-											<MessageCircle className="flex-shrink-0 size-3 text-amber-400" />
+											<MessageCircle className="shrink-0 size-3 text-amber-400" />
 											<span className="text-xs font-normal text-muted-foreground">
 												{site.feedback.length}
 											</span>
@@ -155,7 +155,7 @@ export default async function WebsitesPage() {
 											</span>
 										</div>
 										<div className="flex flex-row items-center gap-1">
-											<CalendarPlus className="flex-shrink-0 text-teal-400 size-3" />
+											<CalendarPlus className="shrink-0 text-teal-400 size-3" />
 											<span className="text-xs font-normal text-muted-foreground">
 												{moment(site.createdAt).format("MMM Do YY")}
 											</span>
