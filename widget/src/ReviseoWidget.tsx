@@ -290,6 +290,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 						],
 						exclude: ["#reviseo-container"],
 						scale: 0.5,
+						quality: 1,
 						embedFonts: true,
 						useProxy: "https://proxy.corsfix.com/?",
 					});
