@@ -31,6 +31,11 @@ export default async function DashboardPage() {
 
 	if (!userData) return notFound();
 
+	// Aggregate all feedback from developer's websites
+	const allFeedback = userData.developerWebsites.flatMap(
+		(website) => website.feedback
+	);
+
 	return (
 		<div className="flex flex-col gap-10">
 			<div className="flex flex-col gap-0.5">
@@ -92,13 +97,13 @@ export default async function DashboardPage() {
 							</CardHeader>
 							<CardContent>
 								<div className="text-3xl font-bold">
-									{userData.feedback.length || "0"}
+									{allFeedback.length || "0"}
 								</div>
 							</CardContent>
 						</Card>
 					</div>
 					<WebsitesOverview userData={userData} />
-					<RecentSubmissions feedbacks={userData.feedback} />
+					<RecentSubmissions feedbacks={allFeedback} />
 				</div>
 				<div className="flex-col hidden w-2/6 h-full gap-5 xl:flex">
 					<Card>
