@@ -191,7 +191,7 @@ const InviteClientDialog = ({
 													className={cn(
 														"relative flex w-full items-start gap-2 rounded-md border border-input p-4 shadow-xs outline-none transition-colors",
 														!hasClient &&
-															"has-[[data-state=checked]]:border-primary/50",
+															"has-data-[state=checked]:border-primary/50",
 														hasClient &&
 															"opacity-60 cursor-not-allowed bg-muted/30",
 													)}

@@ -76,7 +76,7 @@ const WebsitesOverview = ({ userData }: { userData: UserDataType }) => {
 										{website.name}
 									</h3>
 									<div className="flex items-center gap-1.5 mt-0.5">
-										<Globe className="flex-shrink-0 text-green-400 size-3" />
+										<Globe className="shrink-0 text-green-400 size-3" />
 										<p className="text-sm truncate text-muted-foreground">
 											{getDomain(website.url)}
 										</p>

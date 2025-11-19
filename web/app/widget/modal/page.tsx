@@ -2,52 +2,52 @@
 
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type {
-    AppState,
-    BinaryFiles,
-    ExcalidrawImperativeAPI,
+	AppState,
+	BinaryFiles,
+	ExcalidrawImperativeAPI,
 } from "@excalidraw/excalidraw/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-    ArrowLeftIcon,
-    ChevronRightIcon,
-    ClockIcon,
-    GlobeIcon,
-    Grid2X2,
+	ArrowLeftIcon,
+	ChevronRightIcon,
+	ClockIcon,
+	GlobeIcon,
+	Grid2X2,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-    Fragment,
-    useEffect,
-    useId,
-    useRef,
-    useState,
-    useTransition,
+	Fragment,
+	useEffect,
+	useId,
+	useRef,
+	useState,
+	useTransition,
 } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-    Dialog,
-    DialogClose,
-    DialogContent,
-    DialogDescription,
-    DialogFooter,
-    DialogTitle,
+	Dialog,
+	DialogClose,
+	DialogContent,
+	DialogDescription,
+	DialogFooter,
+	DialogTitle,
 } from "@/components/ui/dialog";
 import {
-    Field,
-    FieldError,
-    FieldGroup,
-    FieldLabel,
+	Field,
+	FieldError,
+	FieldGroup,
+	FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
-    Select,
-    SelectContent,
-    SelectItem,
-    SelectTrigger,
-    SelectValue,
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
@@ -292,10 +292,10 @@ const ReviseoModal = () => {
 	return (
 		<Fragment>
 			{session?.user && (
-				<Dialog modal={false} open={true} onOpenChange={setOpen}>
+				<Dialog modal={false} open={open} onOpenChange={setOpen}>
 					<DialogContent
 						onEscapeKeyDown={(e) => e.preventDefault()}
-						className="overflow-y-scroll bg-card"
+						className="overflow-y-scroll bg-card transition-all ease-in-out duration-500"
 						variant={"fullscreen"}
 					>
 						<DialogTitle>Submit Feedback</DialogTitle>
