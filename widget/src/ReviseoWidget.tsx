@@ -206,6 +206,17 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 			console.error("Reviseo widget failed health check. Not showing iframe.");
 		}, 5000);
 
+		// Preload modal iframe (hidden)
+		const modalIframe = document.createElement("iframe");
+		modalIframe.src = `${WIDGET_ORIGIN}/widget/modal`;
+		modalIframe.style.cssText =
+			"display:none;position:fixed;bottom:0;right:0;width:100%;height:100%;border:none;z-index:2147483647;";
+		modalIframe.id = "reviseo-modal";
+		modalIframe.onerror = () => {
+			console.error("Error occurred when loading Reviseo modal.");
+		};
+		containerRef.current?.appendChild(modalIframe);
+
 		// Message listener
 		const handleMessage = async (event: MessageEvent) => {
 			if (event.origin !== WIDGET_ORIGIN) return;
@@ -231,22 +242,23 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 					break;
 
 				case "OPEN_FORM": {
-					const formIframe = document.createElement("iframe");
-					formIframe.onerror = () => {
-						console.error("Error occurred when rendering Reviseo modal.");
-						formIframe.style.display = "none";
-					};
-					formIframe.src = `${WIDGET_ORIGIN}/widget/modal`;
-					formIframe.style.cssText =
-						"display:block;position:fixed;bottom:0;right:0;width:100%;height:100%;border:none;";
-					formIframe.id = "reviseo-modal";
-					containerRef.current?.appendChild(formIframe);
+					const modal = document.getElementById("reviseo-modal") as HTMLIFrameElement;
+					if (modal) {
+						modal.style.display = "block";
+						// Tell modal to show and capture screenshot
+						modal.contentWindow?.postMessage(
+							{ type: "SHOW_MODAL" },
+							WIDGET_ORIGIN,
+						);
+					}
 					break;
 				}
 
 				case "CLOSE_FORM": {
 					const modal = document.getElementById("reviseo-modal");
-					if (modal) modal.remove();
+					if (modal) {
+						modal.style.display = "none";
+					}
 					break;
 				}
 
