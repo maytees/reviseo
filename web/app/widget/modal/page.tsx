@@ -2,52 +2,52 @@
 
 import type { ExcalidrawElement } from "@excalidraw/excalidraw/element/types";
 import type {
-	AppState,
-	BinaryFiles,
-	ExcalidrawImperativeAPI,
+    AppState,
+    BinaryFiles,
+    ExcalidrawImperativeAPI,
 } from "@excalidraw/excalidraw/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
-	ArrowLeftIcon,
-	ChevronRightIcon,
-	ClockIcon,
-	GlobeIcon,
-	Grid2X2,
+    ArrowLeftIcon,
+    ChevronRightIcon,
+    ClockIcon,
+    GlobeIcon,
+    Grid2X2,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {
-	Fragment,
-	useEffect,
-	useId,
-	useRef,
-	useState,
-	useTransition,
+    Fragment,
+    useEffect,
+    useId,
+    useRef,
+    useState,
+    useTransition,
 } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
-	Dialog,
-	DialogClose,
-	DialogContent,
-	DialogDescription,
-	DialogFooter,
-	DialogTitle,
+    Dialog,
+    DialogClose,
+    DialogContent,
+    DialogDescription,
+    DialogFooter,
+    DialogTitle,
 } from "@/components/ui/dialog";
 import {
-	Field,
-	FieldError,
-	FieldGroup,
-	FieldLabel,
+    Field,
+    FieldError,
+    FieldGroup,
+    FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
+    Select,
+    SelectContent,
+    SelectItem,
+    SelectTrigger,
+    SelectValue,
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
@@ -59,7 +59,7 @@ import { submitFeedbackForm } from "./actions";
 
 const ReviseoModal = () => {
 	const { data: session } = authClient.useSession();
-	const [open, setOpen] = useState(true);
+	const [open, setOpen] = useState(false);
 	const [step, setStep] = useState<"canvas" | "form">("canvas");
 	const [loading, setLoading] = useState<boolean>(false);
 	const [isPending, startTransition] = useTransition();
@@ -255,16 +255,17 @@ const ReviseoModal = () => {
 		}
 	}, [open]);
 
-	// Request page URL from parent window
+	// Listen for SHOW_MODAL message and request data only when opening
 	useEffect(() => {
-		// Request URL from parent
-		window.parent.postMessage({ type: "REQUEST_PAGE_DATA" }, "*");
-		window.parent.postMessage({ type: "REQUEST_PAGE_SCREENSHOT" }, "*");
-		setLoading(true);
-
-		// Listen for URL response
 		const handleMessage = (event: MessageEvent) => {
 			switch (event.data?.type) {
+				case "SHOW_MODAL":
+					// Modal is being shown, request fresh data
+					setOpen(true);
+					window.parent.postMessage({ type: "REQUEST_PAGE_DATA" }, "*");
+					window.parent.postMessage({ type: "REQUEST_PAGE_SCREENSHOT" }, "*");
+					setLoading(true);
+					break;
 				case "PAGE_DATA_RESPONSE":
 					setScreenshotMetadata((prev) => ({
 						...prev,
