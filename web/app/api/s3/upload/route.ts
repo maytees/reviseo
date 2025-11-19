@@ -29,7 +29,7 @@ export async function POST(request: Request) {
 		const uniqueKey = `${uuidv4()}-${fileName}`;
 
 		const command = new PutObjectCommand({
-			Bucket: env.NEXT_PUBLIC_S3_BUCKET_NAME_UPLOADS,
+			Bucket: env.NEXT_PUBLIC_S3_BUCKET_NAME_PROFILE_PICTURES,
 			Key: uniqueKey,
 			ContentType: contentType,
 			ContentLength: size,

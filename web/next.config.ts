@@ -29,7 +29,15 @@ const nextConfig: NextConfig = {
 			},
 			{
 				protocol: "https",
+				hostname: "avatars.githubusercontent.com",
+			},
+			{
+				protocol: "https",
 				hostname: "reviseo-site-screenshots.t3.storage.dev",
+			},
+			{
+				protocol: "https",
+				hostname: "reviseo-profile-pictures.t3.storage.dev",
 			},
 			{
 				protocol: "https",

@@ -10,19 +10,19 @@ import { updateWebsiteOnboarding } from "@/app/(main)/(onboarding)/onboarding/_c
 import type { WebsiteDataTypeNonNullable } from "@/app/data/website/get-website-by-id-and-dev-id";
 import { Button } from "@/components/ui/button";
 import {
-	Card,
-	CardContent,
-	CardDescription,
-	CardHeader,
-	CardTitle,
-} from "@/components/ui/old-card";
-import {
 	Field,
 	FieldError,
 	FieldGroup,
 	FieldLabel,
 } from "@/components/ui/field";
 import { Input } from "@/components/ui/input";
+import {
+	Card,
+	CardContent,
+	CardDescription,
+	CardHeader,
+	CardTitle,
+} from "@/components/ui/old-card";
 import { Separator } from "@/components/ui/separator";
 import { tryCatch } from "@/lib/try-catch";
 import { type WebsiteFormData, websiteSchema } from "@/lib/validations";
@@ -160,7 +160,7 @@ const SettingsTab = ({ website }: { website: WebsiteDataTypeNonNullable }) => {
 							id={projectIdId}
 							value={website.projectId}
 							readOnly
-							className="font-mono [&[readonly]]:bg-background/80 text-sm"
+							className="font-mono text-sm"
 						/>
 						<Button
 							type="button"
@@ -210,9 +210,7 @@ const SettingsTab = ({ website }: { website: WebsiteDataTypeNonNullable }) => {
 					{/* Delete Section */}
 					<div className="flex items-center justify-between p-4 border rounded-lg border-destructive/50 bg-destructive/5">
 						<div className="flex-1">
-							<h4 className="font-semibold text-destructive">
-								Delete Website
-							</h4>
+							<h4 className="font-semibold text-destructive">Delete Website</h4>
 							<p className="text-sm text-muted-foreground">
 								Permanently delete this website and all associated feedback.
 								This action cannot be undone.

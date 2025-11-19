@@ -51,11 +51,11 @@ model Website {
   screenshotKey String?
 
   developerId String
-  developer   User   @relation("DeveloperWebsites", fields: [developerId], references: [id])
+  developer   User   @relation("DeveloperWebsites", fields: [developerId], references: [id], onDelete: Cascade)
 
   // This is only optional beacuse of the onboarding
   clientId String?
-  client   User?   @relation("ClientWebsites", fields: [clientId], references: [id])
+  client   User?   @relation("ClientWebsites", fields: [clientId], references: [id], onDelete: SetNull)
 
   feedback Feedback[]
   invites  Invite[]
@@ -74,7 +74,7 @@ model Feedback {
   website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
 
   authorId String?
-  author   User?   @relation(fields: [authorId], references: [id])
+  author   User?   @relation(fields: [authorId], references: [id], onDelete: SetNull)
 
   status      FeedbackStatus   @default(NEW)
   type        FeedbackType     @default(IMPROVEMENT)
@@ -131,6 +131,7 @@ model User {
   // Better Auth additional fields
   hasCompletedOnboarding Boolean? @default(false)
   role                   String?  @default("developer")
+  emailNotifications     Boolean  @default(true)
 
   // Reviseo relations
   developerWebsites Website[]  @relation("DeveloperWebsites")

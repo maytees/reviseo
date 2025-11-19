@@ -3,6 +3,7 @@ import { prismaAdapter } from "better-auth/adapters/prisma";
 import { emailOTP } from "better-auth/plugins";
 import OtpEmail from "@/lib/email/otp-email";
 import { prisma } from "./db";
+import DeleteAccountEmail from "./email/delete-account-email";
 import { env } from "./env";
 import { resend } from "./resend";
 
@@ -31,6 +32,28 @@ export const auth = betterAuth({
 				defaultValue: "developer",
 				input: false, // don't allow user to manually set this
 				returned: true,
+			},
+			emailNotifications: {
+				type: "boolean",
+				required: false,
+				defaultValue: true,
+				input: true,
+				returned: true,
+			},
+		},
+		deleteUser: {
+			enabled: true,
+			sendDeleteAccountVerification: async ({ user, url }) => {
+				await resend.emails.send({
+					from: "Reviseo <onboarding@reviseo.app>",
+					to: [user.email],
+					subject: "Confirm your account deletion",
+					react: DeleteAccountEmail({
+						userName: user.name,
+						userEmail: user.email,
+						verificationUrl: url,
+					}),
+				});
 			},
 		},
 	},

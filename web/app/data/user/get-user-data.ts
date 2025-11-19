@@ -18,6 +18,7 @@ export async function getUserData() {
 			image: true,
 			createdAt: true,
 			updatedAt: true,
+			emailNotifications: true,
 			hasCompletedOnboarding: true,
 			role: true,
 			developerWebsites: {
