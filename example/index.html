@@ -14,14 +14,14 @@
 
   <script>
     window.ReviseoConfig = { projectId: "a904f9d0-acbb-49f5-bdcd-3134487ca3b8" },
-      function (e, t) {
+      ((e, t) => {
         if (e.__Reviseo) return;
         e.__Reviseo = {};
         const i = t.createElement("script");
         i.src = "./dist/widget.iife.js";
         const n = t.getElementsByTagName("script")[0];
         n.parentNode.insertBefore(i, n)
-      }(window, document);
+      })(window, document);
   </script>
 </head>
 
@@ -288,7 +288,8 @@
       <h2 class="section-title">See VoltRush in Action</h2>
       <div class="video-wrapper">
         <div class="video-cover" id="videoCover">
-          <img src="https://placehold.co/1200x675/000/fff?text=Play+Video" alt="Video Cover" />
+          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSRMuhMz1tbrZHl2hhXl4ny4Vhj-wsLMD9-Lw&s"
+            alt="Video Cover" />
           <button class="play-btn" id="playBtn">
             <i class="fas fa-play"></i>
           </button>
@@ -383,7 +384,7 @@
               <td><i class="fas fa-times-circle red"></i></td>
             </tr>
             <tr>
-              <td>Fast-Acting (< 10 min)</td>
+              <td>Fast-Acting (less than 10 min)</td>
               <td><i class="fas fa-check-circle green"></i></td>
               <td><i class="fas fa-check-circle green"></i></td>
               <td><i class="fas fa-times-circle red"></i></td>

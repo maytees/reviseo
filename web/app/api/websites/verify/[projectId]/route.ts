@@ -48,7 +48,8 @@ export async function POST(
 				`window.ReviseoConfig={projectId:"${existingWebsite.projectId}"`,
 			),
 			// IIFE parameters
-			normalizedHtml.includes("function(e,t){"),
+			normalizedHtml.includes("function(e,t){") ||
+				normalizedHtml.includes("(e,t)=>{"),
 			// Early return check
 			normalizedHtml.includes("if(e.__Reviseo)return;"),
 			// Reviseo object initialization
@@ -77,7 +78,7 @@ export async function POST(
 		// 	hasConfig: normalizedHtml.includes(
 		// 		`window.ReviseoConfig={projectId:"${existingWebsite.projectId}"`,
 		// 	),
-		// 	hasIIFE: normalizedHtml.includes("function(e,t){"),
+		// 	hasIIFE: normalizedHtml.includes("(e,t)=>{"), //normalizedHtml.includes("function(e,t){") ||
 		// 	hasEarlyReturn: normalizedHtml.includes("if(e.__Reviseo)return;"),
 		// 	hasReviseoInit: normalizedHtml.includes("e.__Reviseo={};"),
 		// 	hasCreateElement: normalizedHtml.includes(

@@ -222,10 +222,10 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
 									value={user.email}
 									disabled
 									readOnly
-									className="bg-muted cursor-not-allowed"
+									className="cursor-not-allowed bg-muted"
 								/>
 								<p className="text-xs text-muted-foreground">
-									Email cannot be changed because you are an OAuth provider.
+									Email cannot be changed.
 								</p>
 							</Field>
 						</FieldGroup>

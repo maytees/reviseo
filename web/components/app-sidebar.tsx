@@ -8,7 +8,6 @@ import {
 	Moon,
 	Settings,
 	Sun,
-	Zap,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -59,11 +58,11 @@ const data = {
 			url: "/#contact",
 			icon: HeartHandshake,
 		},
-		{
-			title: "Changelog",
-			url: "/blog/changelog",
-			icon: Zap,
-		},
+		// {
+		// 	title: "Changelog",
+		// 	url: "/blog/changelog",
+		// 	icon: Zap,
+		// },
 	],
 };
 

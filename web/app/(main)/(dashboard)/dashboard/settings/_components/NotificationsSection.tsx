@@ -1,7 +1,7 @@
 "use client";
 
 import { Bell } from "lucide-react";
-import { useTransition } from "react";
+import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import type { getUserData } from "@/app/data/user/get-user-data";
 import {
@@ -23,8 +23,12 @@ export default function NotificationsSection({
 	user,
 }: NotificationsSectionProps) {
 	const [isPending, startTransition] = useTransition();
+	const [emailNotifications, setEmailNotifications] = useState<boolean>(
+		user.emailNotifications,
+	);
 
 	const handleToggle = (enabled: boolean) => {
+		setEmailNotifications(enabled);
 		startTransition(async () => {
 			const { data: result, error } = await tryCatch(
 				toggleEmailNotifications(enabled),
@@ -32,12 +36,14 @@ export default function NotificationsSection({
 
 			if (error) {
 				toast.error("An unexpected error occurred. Please try again.");
+				setEmailNotifications(!enabled);
 				return;
 			}
 
 			if (result.status === "success") {
 				toast.success(result.message);
 			} else {
+				setEmailNotifications(!enabled);
 				toast.error(result.message);
 			}
 		});
@@ -65,7 +71,7 @@ export default function NotificationsSection({
 						</div>
 					</div>
 					<Switch
-						checked={user.emailNotifications ?? true}
+						checked={emailNotifications}
 						onCheckedChange={handleToggle}
 						disabled={isPending}
 					/>
