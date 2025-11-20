@@ -4,6 +4,7 @@ import { motion } from "framer-motion";
 import { Check, Sparkles, Zap } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
+import { authClient } from "@/lib/auth-client";
 
 const plans = [
 	{
@@ -12,13 +13,14 @@ const plans = [
 		price: "$15",
 		period: "/month",
 		features: [
-			"Up to 3 projects",
-			"100 requests a day",
+			"Unlimited websites",
+			"1 client per website",
+			"100 feedback submissions per month",
 			"Excalidraw annotations",
 			"Email notifications",
-			"Advanced analytics",
 		],
-		cta: "Coming Soon",
+		slug: "starter",
+		cta: "Get Started",
 		highlighted: false,
 		icon: Zap,
 	},
@@ -28,6 +30,7 @@ const plans = [
 			"For growing freelancers and small agencies handling multiple clients",
 		price: "$35",
 		period: "/month",
+		slug: "professional",
 		features: [
 			"Unlimited projects",
 			"1,000 requests a day",
@@ -118,7 +121,7 @@ export function Pricing() {
 							} w-full`}
 						>
 							<Card
-								className={`h-full relative border-border bg-gradient-to-br from-card to-card/50 p-6 sm:p-8 overflow-hidden transition-all duration-300 ${
+								className={`h-full relative border-border bg-linear-to-br from-card to-card/50 p-6 sm:p-8 overflow-hidden transition-all duration-300 ${
 									plan.highlighted
 										? "border-primary/50 shadow-lg shadow-primary/10"
 										: ""
@@ -207,7 +210,7 @@ export function Pricing() {
 												viewport={{ once: true }}
 												className="flex items-start gap-3"
 											>
-												<div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 flex-shrink-0 mt-0.5">
+												<div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 shrink-0 mt-0.5">
 													<Check
 														className="w-3 h-3 text-primary"
 														strokeWidth={3}
@@ -231,7 +234,11 @@ export function Pricing() {
 												? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20"
 												: "bg-muted text-foreground hover:bg-muted/80"
 										}`}
-										disabled
+										onClick={async () =>
+											await authClient.checkout({
+												slug: plan.slug,
+											})
+										}
 										size="lg"
 									>
 										{plan.cta}

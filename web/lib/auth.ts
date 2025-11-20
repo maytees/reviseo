@@ -1,3 +1,4 @@
+import { checkout, polar, portal } from "@polar-sh/better-auth";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { emailOTP } from "better-auth/plugins";
@@ -5,6 +6,7 @@ import OtpEmail from "@/lib/email/otp-email";
 import { prisma } from "./db";
 import DeleteAccountEmail from "./email/delete-account-email";
 import { env } from "./env";
+import { polarClient } from "./polar";
 import { resend } from "./resend";
 
 export const auth = betterAuth({
@@ -100,6 +102,27 @@ export const auth = betterAuth({
 					react: OtpEmail({ otp, email }),
 				});
 			},
+		}),
+		polar({
+			client: polarClient,
+			createCustomerOnSignUp: true,
+			use: [
+				checkout({
+					products: [
+						{
+							productId: env.POLAR_STARTER_PLAN_PRODUCT_ID,
+							slug: "starter", // Custom slug for easy reference in Checkout URL, e.g. /checkout/Reviseo
+						},
+						{
+							productId: env.POLAR_PROFESSIONAL_PLAN_PRODUCT_ID,
+							slug: "professional", // Custom slug for easy reference in Checkout URL, e.g. /checkout/Reviseo
+						},
+					],
+					successUrl: "/success?checkout_id={CHECKOUT_ID}",
+					authenticatedUsersOnly: true,
+				}),
+				portal(),
+			],
 		}),
 	],
 });

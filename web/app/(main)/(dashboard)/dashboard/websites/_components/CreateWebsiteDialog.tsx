@@ -64,7 +64,7 @@ const CreateWebsiteDialog = ({ className }: React.ComponentProps<"button">) => {
 				toast.success(result.message);
 				triggerConfetti();
 				form.reset();
-				router.push(`/dashboard/websites/${result.data.websiteId}`);
+				router.push(`/dashboard/websites/${result.data.websiteId}?tab=widget`);
 			} else if (result.status === "error") {
 				toast.error(result.message);
 			}
@@ -72,10 +72,10 @@ const CreateWebsiteDialog = ({ className }: React.ComponentProps<"button">) => {
 	}
 
 	useEffect(() => {
-		if(!isMounted) {
-			setIsMounted(true)
+		if (!isMounted) {
+			setIsMounted(true);
 		}
-	}, []) 
+	}, [isMounted]);
 
 	if (!isMounted) {
 		return null;

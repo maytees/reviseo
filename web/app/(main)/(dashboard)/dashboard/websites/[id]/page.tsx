@@ -4,8 +4,9 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
+import { Suspense } from "react";
 import VerifyInstallation from "@/app/(main)/(onboarding)/onboarding/_components/VerifyInstallation";
-import { requireUser } from "@/app/data/require-user";
+import { getUserData } from "@/app/data/user/get-user-data";
 import { getWebsiteByIdAndDevId } from "@/app/data/website/get-website-by-id-and-dev-id";
 import { Badge } from "@/components/ui/badge";
 
@@ -27,16 +28,11 @@ import {
 	HoverCardContent,
 	HoverCardTrigger,
 } from "@/components/ui/hover-card";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import DashboardFooter from "../../_components/DashboardFooter";
 import CopyProjectId from "../_components/CopyProjectId";
 import WebsiteDropdownMenu from "../_components/WebsiteDropdownMenu";
-import ClientInfo from "./_components/client/ClientInfo";
 import EditWebsiteDetailsDialog from "./_components/EditWebsiteDetailsDialog";
-import FeedbackTable from "./_components/feedback/FeedbackTable";
-import SettingsTab from "./_components/settings/SettingsTab";
-import WidgetTab from "./_components/widget/WidgetTab";
-
+import WebsiteTabs from "./_components/WebsiteTabs";
 
 const WebsitePage = async ({
 	params,
@@ -48,13 +44,14 @@ const WebsitePage = async ({
 		[key: string]: string | string[] | undefined;
 	}>;
 }) => {
-	await requireUser();
+	const userData = await getUserData();
 	const { id } = await params;
-	const openId = (await searchParams).open;
+	const searchParamsResolved = await searchParams;
+	const openId = searchParamsResolved.open;
 
 	const website = await getWebsiteByIdAndDevId(id);
 
-	if (!website) return notFound();
+	if (!website || !userData) return notFound();
 
 	return (
 		<HoverCard openDelay={100} closeDelay={0}>
@@ -113,30 +110,9 @@ const WebsitePage = async ({
 						className="z-40 object-cover w-full h-auto rounded"
 					/>
 				</HoverCardContent>
-				<Tabs defaultValue="feedback" className="mt-4">
-					<TabsList className="grid h-8 grid-cols-4">
-						<TabsTrigger value={"feedback"}>Feedback</TabsTrigger>
-						<TabsTrigger value={"client"}>Client</TabsTrigger>
-						<TabsTrigger value={"widget"}>Widget</TabsTrigger>
-						<TabsTrigger value={"settings"}>Settings</TabsTrigger>
-					</TabsList>
-					<TabsContent value="feedback">
-						<FeedbackTable website={website} open={openId} />
-					</TabsContent>
-					<TabsContent value="client">
-						<ClientInfo website={website} />
-					</TabsContent>
-					<TabsContent value="widget">
-						<WidgetTab
-							projectId={website.projectId}
-							widgetInstalled={website.widgetInstalled}
-							verifiedAt={website.verifiedAt}
-						/>
-					</TabsContent>
-					<TabsContent value="settings">
-					<SettingsTab website={website} />
-				</TabsContent>
-				</Tabs>
+				<Suspense fallback={<div className="mt-4">Loading...</div>}>
+					<WebsiteTabs website={website} openId={openId} userData={userData} />
+				</Suspense>
 				<div className="mt-auto">
 					<DashboardFooter />
 				</div>

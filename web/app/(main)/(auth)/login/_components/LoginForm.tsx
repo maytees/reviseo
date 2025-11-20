@@ -73,7 +73,7 @@ export function LoginForm() {
 		});
 	}
 	return (
-		<Card className="px-3 shadow-xl border-border py-7 bg-gradient-to-br from-card to-card/50 backdrop-blur-sm">
+		<Card className="px-3 shadow-xl border-border py-7 bg-linear-to-br from-card to-card/50 backdrop-blur-sm">
 			<CardHeader className="py-2 space-y-1">
 				<CardTitle className="text-2xl font-bold text-center sm:text-3xl font-caudex">
 					Welcome Back!

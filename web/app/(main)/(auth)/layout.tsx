@@ -1,4 +1,3 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
 import { Footer } from "@/components/landing/Footer";
 import { Navbar } from "@/components/landing/Navbar";
@@ -32,7 +31,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 			<div className="flex min-h-[calc(100vh-6rem)] mt-20 flex-col items-center justify-center relative z-10">
 				<div className="flex flex-col w-full max-w-md gap-6 px-4">
 					{children}
-					<div className="text-sm text-center text-balance text-muted-foreground font-inter">
+					{/* <div className="text-sm text-center text-balance text-muted-foreground font-inter">
 						By clicking continue, you agree to our{" "}
 						<Link
 							href="/terms"
@@ -48,7 +47,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 							Privacy Policy
 						</Link>
 						.
-					</div>
+					</div> */}
 				</div>
 			</div>
 			<Footer />

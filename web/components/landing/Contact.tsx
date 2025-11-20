@@ -25,6 +25,7 @@ export function Contact() {
 	}
 
 	return (
+		// biome-ignore lint/correctness/useUniqueElementIds: goon
 		<section
 			id="contact"
 			className="flex flex-col items-center justify-center w-full px-4 mt-48 sm:px-6 md:px-8"
@@ -64,7 +65,6 @@ export function Contact() {
 					Have a question? We'd love to hear from you
 				</motion.p>
 			</div>
-
 			<motion.div
 				initial={{ opacity: 0, y: 40 }}
 				whileInView={{ opacity: 1, y: 0 }}
@@ -91,7 +91,7 @@ export function Contact() {
 						whileInView={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.6 }}
 						viewport={{ once: true }}
-						className="relative p-6 border rounded-xl border-border bg-gradient-to-br from-card to-card/50 sm:p-8 backdrop-blur-sm"
+						className="relative p-6 border rounded-xl border-border bg-linear-to-br from-card to-card/50 sm:p-8 backdrop-blur-sm"
 					>
 						<form onSubmit={handleSubmit} className="space-y-6">
 							<div className="grid gap-6 sm:grid-cols-2">
@@ -108,6 +108,7 @@ export function Contact() {
 									>
 										Name
 									</label>
+									{/** biome-ignore lint/correctness/useUniqueElementIds: <goon> */}
 									<Input
 										id="name"
 										name="name"
@@ -131,6 +132,7 @@ export function Contact() {
 									>
 										Email
 									</label>
+									{/** biome-ignore lint/correctness/useUniqueElementIds: <goon> */}
 									<Input
 										id="email"
 										name="email"
@@ -155,6 +157,7 @@ export function Contact() {
 								>
 									Subject
 								</label>
+								{/** biome-ignore lint/correctness/useUniqueElementIds: <goon> */}
 								<Input
 									id="subject"
 									name="subject"
@@ -178,6 +181,7 @@ export function Contact() {
 								>
 									Message
 								</label>
+								{/** biome-ignore lint/correctness/useUniqueElementIds: goon */}
 								<Textarea
 									id="message"
 									name="message"
@@ -202,6 +206,9 @@ export function Contact() {
 					</motion.div>
 				</div>
 			</motion.div>
+			<p className="mt-4 text-sm text-muted-foreground">
+				Or send an email to <strong>help@reviseo.app</strong>
+			</p>
 		</section>
 	);
 }

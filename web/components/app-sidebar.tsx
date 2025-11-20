@@ -1,17 +1,13 @@
 "use client";
 
 import {
-	BookText,
 	CreditCard,
-	Gift,
 	Globe,
 	HeartHandshake,
 	Home,
-	Mail,
 	Moon,
 	Settings,
 	Sun,
-	User,
 	Zap,
 } from "lucide-react";
 import Image from "next/image";
@@ -31,6 +27,7 @@ import {
 	SidebarMenuButton,
 	SidebarMenuItem,
 } from "@/components/ui/sidebar";
+import { authClient } from "@/lib/auth-client";
 import { NavUser } from "./nav-user";
 
 const data = {
@@ -52,19 +49,19 @@ const data = {
 		},
 	],
 	resources: [
-		{
-			title: "Documentation",
-			url: "/docs",
-			icon: BookText,
-		},
+		// {
+		// 	title: "Documentation",
+		// 	url: "/docs",
+		// 	icon: BookText,
+		// },
 		{
 			title: "Support",
-			url: "/dashboard/support",
+			url: "/#contact",
 			icon: HeartHandshake,
 		},
 		{
 			title: "Changelog",
-			url: "/dashboard",
+			url: "/blog/changelog",
 			icon: Zap,
 		},
 	],
@@ -146,38 +143,22 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 					<SidebarGroupLabel>Miscellaneous</SidebarGroupLabel>
 					<SidebarGroupContent>
 						<SidebarMenu>
-							<SidebarMenuItem>
+							{/* <SidebarMenuItem>
 								<SidebarMenuButton tooltip={"Refer"} asChild>
 									<Link href="/account">
 										<Gift />
 										<span>Refer</span>
 									</Link>
 								</SidebarMenuButton>
-							</SidebarMenuItem>
-							<SidebarMenuItem>
-								<SidebarMenuButton tooltip={"Account"} asChild>
-									<Link href="/account">
-										<User />
-										<span>Account</span>
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
+							</SidebarMenuItem> */}
 
 							<SidebarMenuItem>
-								<SidebarMenuButton tooltip={"Billing"} asChild>
-									<Link href="/billing">
-										<CreditCard />
-										<span>Billing</span>
-									</Link>
-								</SidebarMenuButton>
-							</SidebarMenuItem>
-
-							<SidebarMenuItem>
-								<SidebarMenuButton tooltip={"Notifications"} asChild>
-									<Link href="/notifications">
-										<Mail />
-										<span>Notifications</span>
-									</Link>
+								<SidebarMenuButton
+									tooltip={"Billing"}
+									onClick={async () => await authClient.customer.portal()}
+								>
+									<CreditCard />
+									<span>Billing</span>
 								</SidebarMenuButton>
 							</SidebarMenuItem>
 

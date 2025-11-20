@@ -1,6 +1,6 @@
 import { ArrowUpRightIcon, UserIcon } from "lucide-react";
 import Link from "next/link";
-import { getUserData } from "@/app/data/user/get-user-data";
+import type { UserDataType } from "@/app/data/user/get-user-data";
 import type { WebsiteDataTypeNonNullable } from "@/app/data/website/get-website-by-id-and-dev-id";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
@@ -23,12 +23,13 @@ import InviteClientDialog from "../../../../_components/InviteClientDialog";
 import ClientDropdownMenu from "./ClientDropdownMenu";
 import InvitesCard from "./InvitesCard";
 
-const ClientInfo = async ({
+const ClientInfo = ({
 	website,
+	userData,
 }: {
 	website: WebsiteDataTypeNonNullable;
+	userData: UserDataType;
 }) => {
-	const userData = await getUserData();
 
 	return (
 		<div className="w-full h-full space-y-4">

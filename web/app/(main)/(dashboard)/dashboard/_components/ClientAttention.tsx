@@ -1,5 +1,6 @@
-import { Globe, Mail, PersonStanding } from "lucide-react";
+import { ArrowRight, Globe, PersonStanding } from "lucide-react";
 import moment from "moment";
+import Link from "next/link";
 import type { UserDataType } from "@/app/data/user/get-user-data";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,26 +23,28 @@ const ClientAttention = ({
 }: {
 	userData: NonNullable<UserDataType>;
 }) => {
-	// Get clients needing attention
+	// Get websites needing attention with their type
 	const attentionNeeded = userData.developerWebsites.flatMap((website) => {
-		const items = [];
+		const items: Array<{
+			id: string;
+			type: "pending_invite" | "no_feedback" | "not_invited";
+			since?: string;
+			website: typeof website;
+		}> = [];
 
 		// Check for pending invites
 		const pendingInvites = website.invites.filter(
 			(invite) => invite.status === "PENDING" && !invite.acceptedAt,
 		);
 
-		for (const invite of pendingInvites) {
-			const since = moment(invite.createdAt).fromNow();
+		if (pendingInvites.length > 0) {
+			const since = moment(pendingInvites[0].createdAt).fromNow();
 
 			items.push({
-				id: invite.id,
+				id: `${website.id}-pending-invite`,
 				type: "pending_invite",
-				email: invite.email,
-				websiteName: website.name,
-				websiteUrl: website.url,
 				since,
-				inviteId: invite.id,
+				website,
 			});
 		}
 
@@ -50,11 +53,7 @@ const ClientAttention = ({
 			items.push({
 				id: `${website.id}-no-feedback`,
 				type: "no_feedback",
-				clientName: website.client?.name,
-				email: website.client?.email,
-				websiteName: website.name,
-				websiteUrl: website.url,
-				websiteId: website.id,
+				website,
 			});
 		}
 
@@ -63,9 +62,7 @@ const ClientAttention = ({
 			items.push({
 				id: `${website.id}-not-invited`,
 				type: "not_invited",
-				websiteName: website.name,
-				websiteUrl: website.url,
-				websiteId: website.id,
+				website,
 			});
 		}
 
@@ -118,24 +115,25 @@ const ClientAttention = ({
 								className="gap-3.5 py-4 border bg-background/30 border-background/40 min-w-[260px] shrink-0"
 							>
 								<CardHeader className="px-4">
-									<CardTitle>{item.websiteName}</CardTitle>
-									<CardDescription>{item.websiteUrl}</CardDescription>
+									<CardTitle>{item.website.name}</CardTitle>
+									<CardDescription>{item.website.url}</CardDescription>
 								</CardHeader>
 								<CardContent className="px-4 space-y-4">
 									<div className="space-y-1">
 										<p className="px-0.5 text-sm text-muted-foreground">
 											{item.type === "pending_invite" &&
-												`Invited ${item.since} days ago, hasn't logged in`}
+												`Invited ${item.since}, hasn't logged in`}
 											{item.type === "no_feedback" &&
 												`No feedback submitted yet`}
 											{item.type === "not_invited" &&
 												`Client hasn't been invited yet`}
 										</p>
-										<Button size="sm" variant="outline" className="w-full ">
-											<Mail />
-											{item.type === "not_invited"
-												? "Send Invite"
-												: "Resend Invite"}
+
+										<Button size="sm" variant="outline" className="w-full" asChild>
+											<Link href={`/dashboard/websites/${item.website.id}?tab=client`}>
+												View Client
+												<ArrowRight />
+											</Link>
 										</Button>
 									</div>
 								</CardContent>

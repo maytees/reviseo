@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { headers } from "next/headers";
+import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
 import { isClient, isDeveloper } from "@/lib/utils";
@@ -26,5 +27,27 @@ export default async function LoginPage() {
 		}
 		return redirect("/dashboard");
 	}
-	return <LoginForm />;
+	return (
+		<div>
+			<LoginForm />
+
+			<div className="text-sm text-center text-balance text-muted-foreground font-inter">
+				By clicking continue, you agree to our{" "}
+				<Link
+					href="/terms"
+					className="font-semibold hover:text-primary hover:underline hover:cursor-pointer"
+				>
+					Terms of service
+				</Link>{" "}
+				and{" "}
+				<Link
+					href="/privacy"
+					className="font-semibold hover:text-primary hover:underline hover:cursor-pointer"
+				>
+					Privacy Policy
+				</Link>
+				.
+			</div>
+		</div>
+	);
 }
