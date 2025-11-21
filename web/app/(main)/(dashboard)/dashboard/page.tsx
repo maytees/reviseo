@@ -33,7 +33,7 @@ export default async function DashboardPage() {
 
 	// Aggregate all feedback from developer's websites
 	const allFeedback = userData.developerWebsites.flatMap(
-		(website) => website.feedback
+		(website) => website.feedback,
 	);
 
 	return (
