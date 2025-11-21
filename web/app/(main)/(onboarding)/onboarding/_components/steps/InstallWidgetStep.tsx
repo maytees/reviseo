@@ -44,20 +44,20 @@ export function InstallWidgetStep({
 			animate={{ opacity: 1, y: 0 }}
 			exit={{ opacity: 0, y: -20 }}
 			transition={{ duration: 0.3, ease: "easeOut" }}
-			className="py-4 space-y-6"
+			className="space-y-6 py-4"
 		>
 			<div className="space-y-1 text-center">
-				<h2 className="text-2xl font-bold sm:text-3xl font-caudex">
+				<h2 className="font-bold font-caudex text-2xl sm:text-3xl">
 					Install the widget
 				</h2>
-				<p className="text-base text-muted-foreground font-inter">
+				<p className="font-inter text-base text-muted-foreground">
 					Add this code snippet before the closing &lt;/head&gt; tag
 				</p>
 			</div>
 
-			<div className="max-w-2xl mx-auto space-y-4">
+			<div className="mx-auto max-w-2xl space-y-4">
 				<div className="relative">
-					<div className="p-4 overflow-x-auto font-mono text-sm border rounded-lg bg-background sm:text-base border-border">
+					<div className="overflow-x-auto rounded-lg border border-border bg-background p-4 font-mono text-sm sm:text-base">
 						<pre className="text-foreground">
 							<code>
 								{/* <span className="text-purple-400">{`<link`}</span>{" "}
@@ -93,29 +93,29 @@ export function InstallWidgetStep({
 						variant="outline"
 						size="sm"
 						onClick={handleCopy}
-						className="absolute text-sm top-2 right-2 bg-card border-border hover:bg-muted font-inter"
+						className="absolute top-2 right-2 border-border bg-card font-inter text-sm hover:bg-muted"
 					>
 						{copied ? (
 							<>
-								<Check className="w-3 h-3 mr-1" />
+								<Check className="mr-1 h-3 w-3" />
 								Copied
 							</>
 						) : (
 							<>
-								<Copy className="w-3 h-3 mr-1" />
+								<Copy className="mr-1 h-3 w-3" />
 								Copy
 							</>
 						)}
 					</Button>
 				</div>
-				<div className="p-3 border rounded-lg bg-accent/30 border-border">
-					<p className="text-sm text-muted-foreground font-inter">
-						<span className="font-medium text-foreground font-inter">Tip:</span>{" "}
+				<div className="rounded-lg border border-border bg-accent/30 p-3">
+					<p className="font-inter text-muted-foreground text-sm">
+						<span className="font-inter font-medium text-foreground">Tip:</span>{" "}
 						To learn how to import for your platform,{" "}
 						<Link
 							target="_blank"
 							href="/docs"
-							className="text-primary font-inter"
+							className="font-inter text-primary"
 						>
 							check our guides
 						</Link>
@@ -123,13 +123,13 @@ export function InstallWidgetStep({
 					</p>
 				</div>
 
-				<div className="p-4 border rounded-lg bg-accent/20 border-border">
+				<div className="rounded-lg border border-border bg-accent/20 p-4">
 					<div className="flex flex-col items-center justify-between gap-3 sm:flex-row">
 						<div className="text-center sm:text-left">
-							<p className="mb-1 font-medium text-foreground font-inter">
+							<p className="mb-1 font-inter font-medium text-foreground">
 								Ready to verify?
 							</p>
-							<p className="text-sm text-muted-foreground font-inter">
+							<p className="font-inter text-muted-foreground text-sm">
 								Make sure you've added the widget to your website
 							</p>
 						</div>
@@ -138,7 +138,7 @@ export function InstallWidgetStep({
 				</div>
 			</div>
 
-			<div className="flex justify-between max-w-2xl pt-2 mx-auto">
+			<div className="mx-auto flex max-w-2xl justify-between pt-2">
 				<Button variant="outline" onClick={onBack} className="font-inter">
 					<ChevronLeft /> Edit Website
 				</Button>
@@ -146,7 +146,7 @@ export function InstallWidgetStep({
 					<Button
 						variant="ghost"
 						onClick={onNext}
-						className="text-base font-inter"
+						className="font-inter text-base"
 					>
 						Skip
 					</Button>

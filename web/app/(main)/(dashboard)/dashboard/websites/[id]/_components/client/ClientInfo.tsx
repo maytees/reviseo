@@ -30,9 +30,8 @@ const ClientInfo = ({
 	website: WebsiteDataTypeNonNullable;
 	userData: UserDataType;
 }) => {
-
 	return (
-		<div className="w-full h-full space-y-4">
+		<div className="h-full w-full space-y-4">
 			<Card>
 				<CardHeader>
 					<CardTitle>Client</CardTitle>
@@ -40,7 +39,7 @@ const ClientInfo = ({
 				</CardHeader>
 				<CardContent>
 					{website.client ? (
-						<div className="flex flex-row items-center justify-between w-full">
+						<div className="flex w-full flex-row items-center justify-between">
 							<div className="flex flex-row items-center gap-2">
 								<div className="relative">
 									<Avatar className="size-10">
@@ -64,7 +63,7 @@ const ClientInfo = ({
 								</div>
 								<div>
 									<h3 className="font-bold">{website.client.name}</h3>
-									<p className="text-sm font-light text-muted-foreground">
+									<p className="font-light text-muted-foreground text-sm">
 										{website.client.email}
 									</p>
 								</div>

@@ -9,10 +9,10 @@ export default function ClientsPage() {
 	return (
 		<div className="flex flex-col gap-4">
 			<div className="flex items-center justify-between">
-				<h1 className="text-3xl font-bold font-caudex">Clients</h1>
+				<h1 className="font-bold font-caudex text-3xl">Clients</h1>
 			</div>
 			<div className="flex-1">
-				<p className="text-muted-foreground font-inter">
+				<p className="font-inter text-muted-foreground">
 					Manage your clients and send invite links.
 				</p>
 			</div>

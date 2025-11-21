@@ -306,7 +306,7 @@ export const CodeBlockHeader = ({
 }: CodeBlockHeaderProps) => (
 	<div
 		className={cn(
-			"flex flex-row justify-between items-center border-b bg-background p-1",
+			"flex flex-row items-center justify-between border-b bg-background p-1",
 			className,
 		)}
 		{...props}
@@ -367,7 +367,7 @@ export const CodeBlockFilename = ({
 			className="flex items-center gap-2 px-4 py-1.5 text-muted-foreground text-xs"
 			{...props}
 		>
-			{Icon && <Icon className="w-4 h-4 shrink-0" />}
+			{Icon && <Icon className="h-4 w-4 shrink-0" />}
 			<span className="flex-1 truncate">{children}</span>
 		</div>
 	);

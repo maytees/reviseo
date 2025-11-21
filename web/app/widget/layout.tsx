@@ -10,7 +10,7 @@ export default function WidgetLayout({
 }) {
 	return (
 		<html lang="en" className={inter.className}>
-			<body className="flex items-center justify-center w-screen h-screen overflow-hidden bg-transparent">
+			<body className="flex h-screen w-screen items-center justify-center overflow-hidden bg-transparent">
 				{children}
 			</body>
 		</html>

@@ -205,7 +205,7 @@ const InvitePage = ({
 	// Checking authentication
 	if (state === "checking_auth") {
 		return (
-			<Card className="w-full mx-auto">
+			<Card className="mx-auto w-full">
 				<CardHeader>
 					<CardTitle className="text-xl">Verifying Authentication</CardTitle>
 					<CardDescription>
@@ -215,7 +215,7 @@ const InvitePage = ({
 				<CardContent className="flex items-center justify-center">
 					<div className="flex flex-col items-center gap-4">
 						<Loader2 className="size-12 animate-spin text-primary" />
-						<p className="text-sm text-muted-foreground">
+						<p className="text-muted-foreground text-sm">
 							Checking your authentication status...
 						</p>
 					</div>
@@ -227,7 +227,7 @@ const InvitePage = ({
 	// Processing invitation
 	if (state === "processing") {
 		return (
-			<Card className="w-full mx-auto">
+			<Card className="mx-auto w-full">
 				<CardHeader>
 					<CardTitle className="text-xl">Processing Invitation</CardTitle>
 					<CardDescription>
@@ -237,7 +237,7 @@ const InvitePage = ({
 				<CardContent className="flex items-center justify-center">
 					<div className="flex flex-col items-center gap-4">
 						<Loader2 className="size-12 animate-spin text-primary" />
-						<p className="text-sm text-muted-foreground">
+						<p className="text-muted-foreground text-sm">
 							Accepting your invitation...
 						</p>
 					</div>
@@ -249,14 +249,14 @@ const InvitePage = ({
 	// Success state
 	if (state === "success") {
 		return (
-			<Card className="w-full mx-auto">
+			<Card className="mx-auto w-full">
 				<CardContent className="space-y-6">
 					<div className="flex flex-col items-center gap-4">
-						<div className="flex items-center justify-center rounded-full size-16 bg-emerald-500/10">
+						<div className="flex size-16 items-center justify-center rounded-full bg-emerald-500/10">
 							<CheckCircle className="size-8 text-emerald-500" />
 						</div>
 						<div className="text-center">
-							<p className="text-lg font-medium">{successMessage}</p>
+							<p className="font-medium text-lg">{successMessage}</p>
 						</div>
 					</div>
 					<Alert variant="success" appearance="light">
@@ -280,7 +280,7 @@ const InvitePage = ({
 	// Error states
 	if (state === "error" || state === "no_token") {
 		return (
-			<Card className="w-full mx-auto">
+			<Card className="mx-auto w-full">
 				<CardHeader>
 					<CardTitle className="flex items-center gap-2 text-xl">
 						<XCircle className="size-5 text-destructive" />
@@ -308,7 +308,7 @@ const InvitePage = ({
 
 	// Fallback
 	return (
-		<Card className="w-full mx-auto">
+		<Card className="mx-auto w-full">
 			<CardHeader>
 				<CardTitle className="text-xl">Processing...</CardTitle>
 				<CardDescription>Please wait</CardDescription>

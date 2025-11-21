@@ -97,21 +97,21 @@ const Navbar = ({
 	return (
 		<section
 			className={cn(
-				"py-4 px-4 max-w-7xl z-50 fixed mt-16 rounded-3xl backdrop-blur-sm shadow-[inset_0_4px_8px_0_rgba(0,0,0,0.3)] md:px-16 lg:px-20 xl:px-32 w-full transition-all duration-300",
+				"fixed z-50 mt-16 w-full max-w-7xl rounded-3xl px-4 py-4 shadow-[inset_0_4px_8px_0_rgba(0,0,0,0.3)] backdrop-blur-sm transition-all duration-300 md:px-16 lg:px-20 xl:px-32",
 				scrolled ? "bg-background/30" : "bg-background/70",
 				visible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0",
 			)}
 		>
 			{/* Desktop Menu */}
-			<nav className="items-center justify-between hidden w-full gap-2 lg:flex">
+			<nav className="hidden w-full items-center justify-between gap-2 lg:flex">
 				{/* Logo */}
 				<Link href={logo.url} className="flex items-center gap-1">
 					<Image src={logo.src} width={32} height={32} alt={logo.alt} />
-					<h1 className="text-4xl font-bold font-caudex">{logo.title}</h1>
+					<h1 className="font-bold font-caudex text-4xl">{logo.title}</h1>
 				</Link>
 
 				{/* Centered Navigation Links */}
-				<div className="absolute flex items-center transform -translate-x-1/2 left-1/2">
+				<div className="-translate-x-1/2 absolute left-1/2 flex transform items-center">
 					<NavigationMenu>
 						<NavigationMenuList>
 							{menu.map((item) => renderMenuItem(item))}
@@ -137,11 +137,11 @@ const Navbar = ({
 
 			{/* Mobile Menu */}
 			<div className="w-full lg:hidden">
-				<div className="flex items-center justify-between w-full">
+				<div className="flex w-full items-center justify-between">
 					{/* Logo */}
 					<Link href={logo.url} className="flex items-center gap-2">
 						<Image src={logo.src} width={32} height={32} alt={logo.alt} />
-						<h1 className="text-4xl font-bold font-caudex">{logo.title}</h1>
+						<h1 className="font-bold font-caudex text-4xl">{logo.title}</h1>
 					</Link>
 					<Sheet>
 						<SheetTrigger asChild>
@@ -166,7 +166,7 @@ const Navbar = ({
 								<Accordion
 									type="single"
 									collapsible
-									className="flex flex-col w-full gap-4"
+									className="flex w-full flex-col gap-4"
 								>
 									{menu.map((item) => renderMobileMenuItem(item))}
 								</Accordion>
@@ -192,7 +192,7 @@ const renderMenuItem = (item: MenuItem) => {
 		<NavigationMenuItem key={item.title}>
 			<NavigationMenuLink
 				href={item.url}
-				className="inline-flex items-center justify-center h-10 px-4 py-2 text-lg font-medium transition-colors rounded-md font-caudex hover:bg-muted hover:text-accent-foreground group w-max"
+				className="group inline-flex h-10 w-max items-center justify-center rounded-md px-4 py-2 font-caudex font-medium text-lg transition-colors hover:bg-muted hover:text-accent-foreground"
 			>
 				{item.title}
 			</NavigationMenuLink>
@@ -205,7 +205,7 @@ const renderMobileMenuItem = (item: MenuItem) => {
 		<Link
 			key={item.title}
 			href={item.url}
-			className="text-lg font-semibold hover:text-accent-foreground font-inter"
+			className="font-inter font-semibold text-lg hover:text-accent-foreground"
 		>
 			{item.title}
 		</Link>

@@ -80,9 +80,9 @@ export function ArticleTOC({
 	if (!headings.length) return null;
 
 	return (
-		<nav className="sticky hidden max-w-xs top-42 h-fit xl:block">
-			<div className="rounded-xl border border-border/50 bg-background/60 backdrop-blur supports-[backdrop-filter]:bg-background/40 p-4">
-				<h2 className="mb-2 text-sm font-bold tracking-wide uppercase text-muted-foreground">
+		<nav className="sticky top-42 hidden h-fit max-w-xs xl:block">
+			<div className="rounded-xl border border-border/50 bg-background/60 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/40">
+				<h2 className="mb-2 font-bold text-muted-foreground text-sm uppercase tracking-wide">
 					On this page
 				</h2>
 				<ul className="space-y-1 text-sm">
@@ -91,7 +91,7 @@ export function ArticleTOC({
 							<Link
 								href={`#${h.id}`}
 								onClick={(e) => onClick(e, h.id)}
-								className="block py-1 truncate transition-colors text-muted-foreground hover:text-foreground"
+								className="block truncate py-1 text-muted-foreground transition-colors hover:text-foreground"
 							>
 								{disableIndex ? (
 									h.text

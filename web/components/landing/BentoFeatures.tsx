@@ -37,15 +37,15 @@ export function BentoFeatures() {
 		// biome-ignore lint/correctness/useUniqueElementIds: goon
 		<section
 			id="features"
-			className="mt-48 w-full flex flex-col items-center justify-center px-4 sm:px-6 md:px-8"
+			className="mt-48 flex w-full flex-col items-center justify-center px-4 sm:px-6 md:px-8"
 		>
-			<div className="flex flex-col items-center justify-center gap-4 max-w-3xl">
+			<div className="flex max-w-3xl flex-col items-center justify-center gap-4">
 				<motion.h2
 					initial={{ opacity: 0, scale: 1.1, y: 100 }}
 					whileInView={{ opacity: 1, scale: 1, y: 0 }}
 					transition={{ type: "spring", duration: 1.2, bounce: 0.1 }}
 					viewport={{ once: true }}
-					className="text-3xl sm:text-4xl md:text-5xl text-center font-bold font-caudex"
+					className="text-center font-bold font-caudex text-3xl sm:text-4xl md:text-5xl"
 				>
 					Everything you need to make client feedback seamless
 				</motion.h2>
@@ -59,7 +59,7 @@ export function BentoFeatures() {
 						delay: 0.2,
 					}}
 					viewport={{ once: true }}
-					className="text-lg sm:text-xl md:text-2xl text-muted-foreground text-center font-inter"
+					className="text-center font-inter text-lg text-muted-foreground sm:text-xl md:text-2xl"
 				>
 					Powerful tools designed to make client collaboration effortless and
 					efficient.
@@ -70,7 +70,7 @@ export function BentoFeatures() {
 				initial="hidden"
 				whileInView="visible"
 				viewport={{ once: true, amount: 0.2 }}
-				className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-5 mt-16 sm:mt-20 w-full max-w-7xl auto-rows-[minmax(200px,auto)]"
+				className="mt-16 grid w-full max-w-7xl auto-rows-[minmax(200px,auto)] grid-cols-1 gap-4 sm:mt-20 sm:grid-cols-2 sm:gap-5 lg:grid-cols-3"
 			>
 				{/* Visual Annotations - Large */}
 				<motion.div

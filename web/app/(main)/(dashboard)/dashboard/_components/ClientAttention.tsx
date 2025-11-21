@@ -112,15 +112,15 @@ const ClientAttention = ({
 						{attentionNeeded.map((item) => (
 							<Card
 								key={item.id}
-								className="gap-3.5 py-4 border bg-background/30 border-background/40 min-w-[260px] shrink-0"
+								className="min-w-[260px] shrink-0 gap-3.5 border border-background/40 bg-background/30 py-4"
 							>
 								<CardHeader className="px-4">
 									<CardTitle>{item.website.name}</CardTitle>
 									<CardDescription>{item.website.url}</CardDescription>
 								</CardHeader>
-								<CardContent className="px-4 space-y-4">
+								<CardContent className="space-y-4 px-4">
 									<div className="space-y-1">
-										<p className="px-0.5 text-sm text-muted-foreground">
+										<p className="px-0.5 text-muted-foreground text-sm">
 											{item.type === "pending_invite" &&
 												`Invited ${item.since}, hasn't logged in`}
 											{item.type === "no_feedback" &&
@@ -129,8 +129,15 @@ const ClientAttention = ({
 												`Client hasn't been invited yet`}
 										</p>
 
-										<Button size="sm" variant="outline" className="w-full" asChild>
-											<Link href={`/dashboard/websites/${item.website.id}?tab=client`}>
+										<Button
+											size="sm"
+											variant="outline"
+											className="w-full"
+											asChild
+										>
+											<Link
+												href={`/dashboard/websites/${item.website.id}?tab=client`}
+											>
 												View Client
 												<ArrowRight />
 											</Link>

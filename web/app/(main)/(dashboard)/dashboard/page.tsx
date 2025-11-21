@@ -40,63 +40,63 @@ export default async function DashboardPage() {
 		<div className="flex flex-col gap-10">
 			<div className="flex flex-col gap-0.5">
 				<div className="flex items-center justify-between">
-					<h1 className="text-3xl font-bold font-caudex">
+					<h1 className="font-bold font-caudex text-3xl">
 						Welcome, {userData.name}
 					</h1>
 				</div>
 				<div className="flex-1">
-					<p className="text-sm text-muted-foreground">
+					<p className="text-muted-foreground text-sm">
 						Manage client feedback across all your websites.
 					</p>
 				</div>
 			</div>
 
-			<div className="flex flex-row justify-between w-full gap-2">
-				<div className="flex flex-col w-full gap-5 xl:w-4/6 ">
-					<div className="flex flex-row w-full gap-2">
-						<Card className="w-1/3 gap-1 h-34">
-							<CardHeader className="flex gap-1.5 flex-col items-start justify-between space-y-0">
-								<div className="p-1.5 rounded-sm bg-green-300/20">
-									<Globe className="text-green-300 rounded-sm size-4" />
+			<div className="flex w-full flex-row justify-between gap-2">
+				<div className="flex w-full flex-col gap-5 xl:w-4/6">
+					<div className="flex w-full flex-row gap-2">
+						<Card className="h-34 w-1/3 gap-1">
+							<CardHeader className="flex flex-col items-start justify-between gap-1.5 space-y-0">
+								<div className="rounded-sm bg-green-300/20 p-1.5">
+									<Globe className="size-4 rounded-sm text-green-300" />
 								</div>
-								<CardTitle className="text-base font-semibold font-caudex text-muted-foreground">
+								<CardTitle className="font-caudex font-semibold text-base text-muted-foreground">
 									Websites
 								</CardTitle>
 							</CardHeader>
 							<CardContent>
-								<div className="text-3xl font-bold">
+								<div className="font-bold text-3xl">
 									{userData.developerWebsites.length || "N/A"}
 								</div>
 							</CardContent>
 						</Card>
-						<Card className="w-1/3 gap-1 h-34">
-							<CardHeader className="flex gap-1.5 flex-col items-start justify-between space-y-0">
-								<div className="p-1.5 rounded-sm bg-blue-300/20">
-									<PersonStanding className="text-blue-500 size-4" />
+						<Card className="h-34 w-1/3 gap-1">
+							<CardHeader className="flex flex-col items-start justify-between gap-1.5 space-y-0">
+								<div className="rounded-sm bg-blue-300/20 p-1.5">
+									<PersonStanding className="size-4 text-blue-500" />
 								</div>
-								<CardTitle className="text-base font-semibold font-caudex text-muted-foreground">
+								<CardTitle className="font-caudex font-semibold text-base text-muted-foreground">
 									Clients
 								</CardTitle>
 							</CardHeader>
 							<CardContent>
-								<div className="text-3xl font-bold">
+								<div className="font-bold text-3xl">
 									{userData.developerWebsites.reduce((acc, website) => {
 										return acc + (website.clientId ? 1 : 0);
 									}, 0) || "N/A"}
 								</div>
 							</CardContent>
 						</Card>
-						<Card className="w-1/3 gap-1 h-34">
-							<CardHeader className="flex gap-1.5 flex-col items-start justify-between space-y-0">
-								<div className="p-1.5 rounded-sm bg-amber-300/20">
+						<Card className="h-34 w-1/3 gap-1">
+							<CardHeader className="flex flex-col items-start justify-between gap-1.5 space-y-0">
+								<div className="rounded-sm bg-amber-300/20 p-1.5">
 									<MessageCircle className="size-4 text-amber-500" />
 								</div>
-								<CardTitle className="text-base font-semibold font-caudex text-muted-foreground">
+								<CardTitle className="font-caudex font-semibold text-base text-muted-foreground">
 									Feedback
 								</CardTitle>
 							</CardHeader>
 							<CardContent>
-								<div className="text-3xl font-bold">
+								<div className="font-bold text-3xl">
 									{allFeedback.length || "0"}
 								</div>
 							</CardContent>
@@ -105,14 +105,14 @@ export default async function DashboardPage() {
 					<WebsitesOverview userData={userData} />
 					<RecentSubmissions feedbacks={allFeedback} />
 				</div>
-				<div className="flex-col hidden w-2/6 h-full gap-5 xl:flex">
+				<div className="hidden h-full w-2/6 flex-col gap-5 xl:flex">
 					<Card>
 						<CardHeader>
 							<CardTitle>Quick Actions</CardTitle>
 							<CardDescription>Common tasks and shortcuts</CardDescription>
 						</CardHeader>
 						<CardContent className="flex flex-col gap-1.5">
-							<CreateWebsiteDialog className="justify-start w-full" />
+							<CreateWebsiteDialog className="w-full justify-start" />
 							<InviteClientDialog userData={userData}>
 								<Button
 									size={"sm"}

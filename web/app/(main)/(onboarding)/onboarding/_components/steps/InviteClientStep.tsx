@@ -43,26 +43,26 @@ export function InviteClientStep({
 			animate={{ opacity: 1, y: 0 }}
 			exit={{ opacity: 0, y: -20 }}
 			transition={{ duration: 0.3, ease: "easeOut" }}
-			className="py-4 space-y-6"
+			className="space-y-6 py-4"
 		>
 			<div className="space-y-1 text-center">
-				<h2 className="text-2xl font-bold sm:text-3xl font-caudex">
+				<h2 className="font-bold font-caudex text-2xl sm:text-3xl">
 					Invite your first client
 				</h2>
-				<p className="text-base text-muted-foreground font-inter">
+				<p className="font-inter text-base text-muted-foreground">
 					Send them a secure invite link to start giving feedback
 				</p>
 			</div>
 
 			<form
 				onSubmit={handleSubmit(onSubmit)}
-				className="max-w-2xl mx-auto space-y-5"
+				className="mx-auto max-w-2xl space-y-5"
 			>
 				<div className="grid gap-4 sm:grid-cols-2">
 					<div className="space-y-2">
 						<Label
 							htmlFor={clientNameId}
-							className="text-base font-medium font-inter"
+							className="font-inter font-medium text-base"
 						>
 							Client Name
 						</Label>
@@ -79,7 +79,7 @@ export function InviteClientStep({
 						{errors.clientName && (
 							<p
 								id={`${clientNameId}-error`}
-								className="text-sm text-destructive font-inter"
+								className="font-inter text-destructive text-sm"
 							>
 								{errors.clientName.message}
 							</p>
@@ -89,7 +89,7 @@ export function InviteClientStep({
 					<div className="space-y-2">
 						<Label
 							htmlFor={clientEmailId}
-							className="text-base font-medium font-inter"
+							className="font-inter font-medium text-base"
 						>
 							Client Email
 						</Label>
@@ -109,14 +109,14 @@ export function InviteClientStep({
 						{errors.clientEmail ? (
 							<p
 								id={`${clientEmailId}-error`}
-								className="text-sm text-destructive font-inter"
+								className="font-inter text-destructive text-sm"
 							>
 								{errors.clientEmail.message}
 							</p>
 						) : (
 							<p
 								id={`${clientEmailId}-helper`}
-								className="text-sm text-muted-foreground font-inter"
+								className="font-inter text-muted-foreground text-sm"
 							>
 								We'll send them an invite link
 							</p>

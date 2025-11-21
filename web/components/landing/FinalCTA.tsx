@@ -9,7 +9,7 @@ import Noise from "./Noise";
 
 export function FinalCTA() {
 	return (
-		<section className="relative flex flex-col items-center justify-center w-full px-4 mt-48 sm:px-6 md:px-8">
+		<section className="relative mt-48 flex w-full flex-col items-center justify-center px-4 sm:px-6 md:px-8">
 			<motion.div
 				initial={{ opacity: 0, y: 40 }}
 				whileInView={{ opacity: 1, y: 0 }}
@@ -17,21 +17,21 @@ export function FinalCTA() {
 				viewport={{ once: true, amount: 0.2 }}
 				className="w-full max-w-5xl"
 			>
-				<Card className="relative p-12 overflow-hidden shadow-2xl bg-gradient-to-br from-card to-card/50 sm:p-16 md:p-20 backdrop-blur-sm">
+				<Card className="relative overflow-hidden bg-gradient-to-br from-card to-card/50 p-12 shadow-2xl backdrop-blur-sm sm:p-16 md:p-20">
 					{/* Bottom Radial Gradient */}
 					<motion.div
 						initial={{ opacity: 0, scale: 0.8 }}
 						whileInView={{ opacity: 0.4, scale: 1 }}
 						transition={{ duration: 1.5, ease: "easeOut" }}
 						viewport={{ once: true }}
-						className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full max-w-full h-[350px] pointer-events-none blur-3xl -z-10"
+						className="-translate-x-1/2 -z-10 pointer-events-none absolute bottom-0 left-1/2 h-[350px] w-full max-w-full blur-3xl"
 						style={{
 							background:
 								"radial-gradient(ellipse at bottom, var(--accent), var(--primary), transparent 70%)",
 						}}
 					/>
 					{/* Noise Texture */}
-					<div className="absolute inset-0 w-full h-full pointer-events-none opacity-80">
+					<div className="pointer-events-none absolute inset-0 h-full w-full opacity-80">
 						<Noise
 							patternSize={150}
 							patternScaleX={1}
@@ -47,7 +47,7 @@ export function FinalCTA() {
 						whileInView={{ opacity: 0.2 }}
 						transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
 						viewport={{ once: true }}
-						className="absolute inset-0 pointer-events-none bg-gradient-to-tr from-primary/20 via-transparent to-accent/20"
+						className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-accent/20"
 					/>
 
 					<div className="relative z-10 flex flex-col items-center justify-between gap-2 sm:gap-4">
@@ -57,7 +57,7 @@ export function FinalCTA() {
 							whileInView={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.6, delay: 0.2 }}
 							viewport={{ once: true }}
-							className="text-2xl font-bold text-center sm:text-3xl md:text-4xl lg:text-5xl font-caudex"
+							className="text-center font-bold font-caudex text-2xl sm:text-3xl md:text-4xl lg:text-5xl"
 						>
 							What are you waiting for?
 						</motion.h2>
@@ -68,7 +68,7 @@ export function FinalCTA() {
 							whileInView={{ opacity: 1, y: 0 }}
 							transition={{ duration: 0.6, delay: 0.3 }}
 							viewport={{ once: true }}
-							className="max-w-lg text-sm text-center sm:text-base md:text-lg lg:text-xl text-muted-foreground font-inter"
+							className="max-w-lg text-center font-inter text-muted-foreground text-sm sm:text-base md:text-lg lg:text-xl"
 						>
 							Start saving time today with Reviseo. Make your clients happy with
 							feedback done right.
@@ -93,7 +93,7 @@ export function FinalCTA() {
 								</Link> */}
 								<Link href="/waitlist">
 									Join Waitlist
-									<ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
+									<ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
 								</Link>
 							</Button>
 						</motion.div>

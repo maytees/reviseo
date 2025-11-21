@@ -19,8 +19,8 @@ export function OnboardingStepper({
 	currentStep,
 }: OnboardingStepperProps) {
 	return (
-		<div className="w-full flex justify-center mb-20 max-w-xl mx-auto">
-			<div className="flex items-center justify-between  max-w-2xl w-full">
+		<div className="mx-auto mb-20 flex w-full max-w-xl justify-center">
+			<div className="flex w-full max-w-2xl items-center justify-between">
 				{steps.map((step, index) => {
 					const isCompleted = index < currentStep;
 					const isActive = index === currentStep;
@@ -28,7 +28,7 @@ export function OnboardingStepper({
 
 					return (
 						<div key={step.label} className="flex items-center">
-							<div className="flex flex-col items-center relative">
+							<div className="relative flex flex-col items-center">
 								{/* Step Circle */}
 								<motion.div
 									initial={false}
@@ -46,7 +46,7 @@ export function OnboardingStepper({
 									}}
 									transition={{ duration: 0.4, ease: "easeOut" }}
 									className={cn(
-										"size-10 rounded-full border-2 flex items-center justify-center relative z-10",
+										"relative z-10 flex size-10 items-center justify-center rounded-full border-2",
 										"transition-all duration-400",
 									)}
 								>
@@ -56,12 +56,12 @@ export function OnboardingStepper({
 											animate={{ scale: 1, opacity: 1 }}
 											transition={{ duration: 0.3, ease: "easeOut" }}
 										>
-											<Check className="w-4 h-4 text-white" />
+											<Check className="h-4 w-4 text-white" />
 										</motion.div>
 									) : (
 										<span
 											className={cn(
-												"text-lg  font-medium font-caudex",
+												"font-caudex font-medium text-lg",
 												isActive
 													? "text-primary-foreground"
 													: "text-muted-foreground",
@@ -73,10 +73,10 @@ export function OnboardingStepper({
 								</motion.div>
 
 								{/* Step Label */}
-								<div className="absolute top-10 text-center w-20 mt-5">
+								<div className="absolute top-10 mt-5 w-20 text-center">
 									<p
 										className={cn(
-											"text-base font-medium transition-colors duration-300 font-inter",
+											"font-inter font-medium text-base transition-colors duration-300",
 											isActive || isCompleted
 												? "text-foreground"
 												: "text-muted-foreground",
@@ -89,7 +89,7 @@ export function OnboardingStepper({
 
 							{/* Connecting Line */}
 							{!isLast && (
-								<div className="flex-1 h-[px] mx-1 sm:mx-2 relative bg-border">
+								<div className="relative mx-1 h-[px] flex-1 bg-border sm:mx-2">
 									<motion.div
 										initial={{ width: "0%" }}
 										animate={{

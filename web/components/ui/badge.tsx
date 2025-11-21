@@ -1,11 +1,11 @@
-import { cn } from "@/lib/utils";
 import { cva, type VariantProps } from "class-variance-authority";
 import { Slot as SlotPrimitive } from "radix-ui";
 import type * as React from "react";
+import { cn } from "@/lib/utils";
 
 export interface BadgeProps
 	extends React.HTMLAttributes<HTMLDivElement>,
-	VariantProps<typeof badgeVariants> {
+		VariantProps<typeof badgeVariants> {
 	asChild?: boolean;
 	dotClassName?: string;
 	disabled?: boolean;
@@ -13,7 +13,7 @@ export interface BadgeProps
 
 export interface BadgeButtonProps
 	extends React.ButtonHTMLAttributes<HTMLDivElement>,
-	VariantProps<typeof badgeButtonVariants> {
+		VariantProps<typeof badgeButtonVariants> {
 	asChild?: boolean;
 }
 
@@ -43,7 +43,8 @@ const badgeVariants = cva(
 				warning:
 					"bg-[var(--color-warning-accent,var(--color-yellow-500))] text-[var(--color-warning-foreground,var(--color-white))]",
 				info: "bg-[var(--color-info-accent,var(--color-violet-500))] text-[var(--color-info-foreground,var(--color-white))]",
-				info2: "bg-[var(--color-info2-accent,var(--color-blue-500))] text-[var(--color-info2-foreground,var(--color-white))]",
+				info2:
+					"bg-[var(--color-info2-accent,var(--color-blue-500))] text-[var(--color-info2-foreground,var(--color-white))]",
 				outline:
 					"bg-transparent border border-border text-secondary-foreground",
 				destructive: "bg-destructive text-destructive-foreground",

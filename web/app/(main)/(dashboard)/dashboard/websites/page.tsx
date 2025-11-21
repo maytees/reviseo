@@ -1,4 +1,3 @@
-import type { Metadata } from "next";
 import {
 	BookOpen,
 	CalendarPlus,
@@ -10,6 +9,7 @@ import {
 	PersonStanding,
 } from "lucide-react";
 import moment from "moment";
+import type { Metadata } from "next";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { getUserData } from "@/app/data/user/get-user-data";
@@ -48,17 +48,17 @@ export default async function WebsitesPage() {
 	if (!userData) return notFound();
 
 	return (
-		<div className="flex flex-col min-h-full">
+		<div className="flex min-h-full flex-col">
 			<div className="flex-1 space-y-4">
 				<div className="flex flex-row items-center justify-between">
 					<div className="flex flex-col gap-0.5">
 						<div className="flex items-center justify-between">
-							<h1 className="text-3xl font-bold font-caudex">
+							<h1 className="font-bold font-caudex text-3xl">
 								Your Websites ({userData?.developerWebsites.length})
 							</h1>
 						</div>
 						<div className="flex-1">
-							<p className="text-sm text-muted-foreground">
+							<p className="text-muted-foreground text-sm">
 								View and manage your websites.
 							</p>
 						</div>
@@ -91,14 +91,14 @@ export default async function WebsitesPage() {
 					<ItemGroup className="gap-2">
 						{userData.developerWebsites.map((site) => (
 							<Item
-								className="flex-col items-start w-full lg:flex-row md:items-center"
+								className="w-full flex-col items-start md:items-center lg:flex-row"
 								variant="outline"
 								size={"sm"}
 								key={site.id}
 							>
 								{/* Mobile: Image at top */}
 								<ItemHeader className="w-full lg:hidden">
-									<ItemMedia variant={"siteImage"} className="w-full group">
+									<ItemMedia variant={"siteImage"} className="group w-full">
 										<SiteLinkMedia
 											url={site.url}
 											screenshotKey={site.screenshotKey}
@@ -110,7 +110,7 @@ export default async function WebsitesPage() {
 								{/* Desktop: Image on left */}
 								<ItemMedia
 									variant={"siteImage"}
-									className="hidden lg:block group"
+									className="group hidden lg:block"
 								>
 									<SiteLinkMedia
 										app_url={env.BETTER_AUTH_URL}
@@ -120,49 +120,49 @@ export default async function WebsitesPage() {
 									/>
 								</ItemMedia>
 								<ItemContent className="w-full">
-									<ItemTitle className="text-2xl font-bold font-caudex">
+									<ItemTitle className="font-bold font-caudex text-2xl">
 										{site.name}
 									</ItemTitle>
-									<div className="grid grid-cols-3 mt-1 space-x-4 xl:max-w-96 gap-y-2">
+									<div className="mt-1 grid grid-cols-3 gap-y-2 space-x-4 xl:max-w-96">
 										<div className="flex flex-row items-center gap-1">
-											<Globe className="shrink-0 text-green-400 size-3" />
-											<span className="text-sm font-normal truncate text-muted-foreground">
+											<Globe className="size-3 shrink-0 text-green-400" />
+											<span className="truncate font-normal text-muted-foreground text-sm">
 												{getDomain(site.url)}
 											</span>
 										</div>
 										<div className="flex flex-row items-center gap-1">
-											<PersonStanding className="shrink-0 text-blue-400 size-3" />
-											<span className="text-xs font-normal truncate text-muted-foreground">
+											<PersonStanding className="size-3 shrink-0 text-blue-400" />
+											<span className="truncate font-normal text-muted-foreground text-xs">
 												{site.client?.name ?? "No Client"}
 											</span>
 										</div>
 										<div className="flex flex-row items-center gap-1">
-											<MessageCircle className="shrink-0 size-3 text-amber-400" />
-											<span className="text-xs font-normal text-muted-foreground">
+											<MessageCircle className="size-3 shrink-0 text-amber-400" />
+											<span className="font-normal text-muted-foreground text-xs">
 												{site.feedback.length}
 											</span>
 										</div>
 										<div className="flex flex-row items-center gap-1">
 											{site.widgetInstalled ? (
-												<CircleCheck className="text-indigo-400 shrink-0 size-3" />
+												<CircleCheck className="size-3 shrink-0 text-indigo-400" />
 											) : (
-												<CircleX className="shrink-0 size-3 text-destructive" />
+												<CircleX className="size-3 shrink-0 text-destructive" />
 											)}
-											<span className="text-xs font-normal text-muted-foreground">
+											<span className="font-normal text-muted-foreground text-xs">
 												{site.widgetInstalled
 													? "Widget Installed"
 													: "Widget not Installed"}
 											</span>
 										</div>
 										<div className="flex flex-row items-center gap-1">
-											<CalendarPlus className="shrink-0 text-teal-400 size-3" />
-											<span className="text-xs font-normal text-muted-foreground">
+											<CalendarPlus className="size-3 shrink-0 text-teal-400" />
+											<span className="font-normal text-muted-foreground text-xs">
 												{moment(site.createdAt).format("MMM Do YY")}
 											</span>
 										</div>
 									</div>
 								</ItemContent>
-								<ItemActions className="w-full mt-2 lg:w-auto md:mt-0">
+								<ItemActions className="mt-2 w-full md:mt-0 lg:w-auto">
 									<Button
 										asChild
 										variant={"dashed"}

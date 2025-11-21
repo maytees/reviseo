@@ -22,7 +22,7 @@ const MacAppMock = React.forwardRef<HTMLDivElement, MacAppMockProps>(
 						skewY: 0,
 					}}
 					className={cn(
-						"absolute mr-4 inset-0 rounded-lg border shadow-xl -z-10 translate-x-4 translate-y-4 opacity-40",
+						"-z-10 absolute inset-0 mr-4 translate-x-4 translate-y-4 rounded-lg border opacity-40 shadow-xl",
 						dark ? "border-zinc-700 bg-zinc-800" : "border-border bg-card",
 					)}
 					animate={{
@@ -41,7 +41,7 @@ const MacAppMock = React.forwardRef<HTMLDivElement, MacAppMockProps>(
 						skewY: 0,
 					}}
 					className={cn(
-						"relative m-4 rounded-lg border shadow-3xl overflow-hidden",
+						"relative m-4 overflow-hidden rounded-lg border shadow-3xl",
 						dark ? "border-zinc-700 bg-zinc-800" : "border-border bg-card",
 						className,
 					)}
@@ -85,7 +85,7 @@ const MacAppMockHeader = React.forwardRef<
 				backgroundColor: dark ? "rgba(24, 24, 27, 0.5)" : "rgba(0, 0, 0, 0.03)",
 			}}
 			className={cn(
-				"flex items-center gap-2 px-4 py-3 border-b",
+				"flex items-center gap-2 border-b px-4 py-3",
 				dark ? "border-zinc-700" : "border-border",
 				className,
 			)}
@@ -106,21 +106,21 @@ const MacAppMockHeader = React.forwardRef<
 			<div className="flex items-center gap-2">
 				<motion.div
 					initial={{ scale: 1 }}
-					className="w-3 h-3 rounded-full cursor-pointer bg-red-500"
+					className="h-3 w-3 cursor-pointer rounded-full bg-red-500"
 					whileHover={{ scale: 1.2 }}
 					animate={{ scale: isHovered ? 1.1 : 1 }}
 					transition={{ duration: 0.2 }}
 				/>
 				<motion.div
 					initial={{ scale: 1 }}
-					className="w-3 h-3 rounded-full cursor-pointer bg-yellow-500"
+					className="h-3 w-3 cursor-pointer rounded-full bg-yellow-500"
 					whileHover={{ scale: 1.2 }}
 					animate={{ scale: isHovered ? 1.1 : 1 }}
 					transition={{ duration: 0.2 }}
 				/>
 				<motion.div
 					initial={{ scale: 1 }}
-					className="w-3 h-3 rounded-full cursor-pointer bg-green-500"
+					className="h-3 w-3 cursor-pointer rounded-full bg-green-500"
 					whileHover={{ scale: 1.2 }}
 					animate={{ scale: isHovered ? 1.1 : 1 }}
 					transition={{ duration: 0.2 }}
@@ -144,7 +144,7 @@ const MacAppMockTitle = React.forwardRef<HTMLDivElement, MacAppMockTitleProps>(
 				color: dark ? "rgb(228, 228, 231)" : "currentColor",
 			}}
 			className={cn(
-				"flex-1 text-center text-sm font-medium cursor-default",
+				"flex-1 cursor-default text-center font-medium text-sm",
 				dark ? "text-zinc-200" : "text-foreground",
 				className,
 			)}

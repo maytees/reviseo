@@ -65,13 +65,13 @@ const defaultItems: SortableItem[] = [
 const getTypeIcon = (type: SortableItem["type"]) => {
 	switch (type) {
 		case "image":
-			return <ImageIcon className="w-4 h-4" />;
+			return <ImageIcon className="h-4 w-4" />;
 		case "document":
-			return <FileTextIcon className="w-4 h-4" />;
+			return <FileTextIcon className="h-4 w-4" />;
 		case "audio":
-			return <MusicIcon className="w-4 h-4" />;
+			return <MusicIcon className="h-4 w-4" />;
 		case "video":
-			return <VideoIcon className="w-4 h-4" />;
+			return <VideoIcon className="h-4 w-4" />;
 	}
 };
 
@@ -105,7 +105,7 @@ export default function SortableDefault() {
 	const getItemValue = (item: SortableItem) => item.id;
 
 	return (
-		<div className="w-full max-w-4xl p-6 mx-auto space-y-8">
+		<div className="mx-auto w-full max-w-4xl space-y-8 p-6">
 			<Sortable
 				value={items}
 				onValueChange={handleValueChange}
@@ -116,20 +116,20 @@ export default function SortableDefault() {
 				{items.map((item) => (
 					<SortableItem key={item.id} value={item.id}>
 						<div
-							className="flex items-center gap-3 p-3 transition-colors border rounded-lg cursor-pointer bg-background border-border hover:bg-accent/50"
+							className="flex cursor-pointer items-center gap-3 rounded-lg border border-border bg-background p-3 transition-colors hover:bg-accent/50"
 							// onClick={() => console.log('🔴 ITEM CLICKED:', item.id)}
 						>
 							<SortableItemHandle className="text-muted-foreground hover:text-foreground">
-								<GripVertical className="w-4 h-4" />
+								<GripVertical className="h-4 w-4" />
 							</SortableItemHandle>
 
 							<div className="flex items-center gap-2 text-muted-foreground">
 								{getTypeIcon(item.type)}
 							</div>
 
-							<div className="flex-1 min-w-0">
-								<h4 className="text-sm font-medium truncate">{item.title}</h4>
-								<p className="text-xs truncate text-muted-foreground">
+							<div className="min-w-0 flex-1">
+								<h4 className="truncate font-medium text-sm">{item.title}</h4>
+								<p className="truncate text-muted-foreground text-xs">
 									{item.description}
 								</p>
 							</div>
@@ -138,7 +138,7 @@ export default function SortableDefault() {
 								<Badge variant={getTypeColor(item.type)} appearance="outline">
 									{item.type}
 								</Badge>
-								<span className="text-xs text-muted-foreground">
+								<span className="text-muted-foreground text-xs">
 									{item.size}
 								</span>
 							</div>

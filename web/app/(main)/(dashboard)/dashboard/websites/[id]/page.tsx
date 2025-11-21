@@ -55,11 +55,11 @@ const WebsitePage = async ({
 
 	return (
 		<HoverCard openDelay={100} closeDelay={0}>
-			<div className="flex flex-col gap-0.5 h-full">
+			<div className="flex h-full flex-col gap-0.5">
 				<div className="flex flex-row items-center justify-between">
 					<div className="flex items-center gap-4">
-						<h1 className="text-3xl font-bold font-caudex">{website.name}</h1>
-						<div className="flex flex-row items-center ">
+						<h1 className="font-bold font-caudex text-3xl">{website.name}</h1>
+						<div className="flex flex-row items-center">
 							<EditWebsiteDetailsDialog website={website} />
 							<CopyProjectId projectId={website.projectId} />
 						</div>
@@ -68,7 +68,7 @@ const WebsitePage = async ({
 						<Badge
 							variant={"outline"}
 							size={"sm"}
-							className="text-xs text-muted-foreground"
+							className="text-muted-foreground text-xs"
 						>
 							{moment(website.verifiedAt).fromNow()
 								? moment(website.verifiedAt).fromNow()
@@ -84,19 +84,19 @@ const WebsitePage = async ({
 						<WebsiteDropdownMenu website={website} />
 					</div>
 				</div>
-				<div className=" w-fit">
+				<div className="w-fit">
 					<HoverCardTrigger asChild>
 						<Link
 							href={website.url}
-							className="flex items-center text-sm w-fit peer-hover:underline hover:underline text-muted-foreground"
+							className="flex w-fit items-center text-muted-foreground text-sm hover:underline peer-hover:underline"
 							target="_blank"
 						>
 							{website.url}
-							<ExternalLink className="ml-1 peer-hover:underline underline size-2.5" />
+							<ExternalLink className="ml-1 size-2.5 underline peer-hover:underline" />
 						</Link>
 					</HoverCardTrigger>
 				</div>
-				<HoverCardContent align="start" className="p-1 border border-border">
+				<HoverCardContent align="start" className="border border-border p-1">
 					<Image
 						src={
 							website.screenshotKey
@@ -107,7 +107,7 @@ const WebsitePage = async ({
 						width={1920}
 						height={1080}
 						unoptimized
-						className="z-40 object-cover w-full h-auto rounded"
+						className="z-40 h-auto w-full rounded object-cover"
 					/>
 				</HoverCardContent>
 				<Suspense fallback={<div className="mt-4">Loading...</div>}>

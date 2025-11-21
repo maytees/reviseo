@@ -26,43 +26,43 @@ export default function OtpEmail({ otp, email }: OtpEmailProps) {
 			<Tailwind>
 				<Head />
 				<Preview>Your verification code for Reviseo</Preview>
-				<Body className="bg-[#f9fafb] font-sans py-[40px]">
-					<Container className="mx-auto px-[20px] max-w-[600px]">
-						<Section className="bg-[#ffffff] rounded-[8px] px-[32px] py-[40px] border border-solid border-[#e5e7eb]">
+				<Body className="bg-[#f9fafb] py-[40px] font-sans">
+					<Container className="mx-auto max-w-[600px] px-[20px]">
+						<Section className="rounded-[8px] border border-[#e5e7eb] border-solid bg-[#ffffff] px-[32px] py-[40px]">
 							{/* Header */}
 							<Row>
 								<Column className="p-1">
 									<Img
 										src="https://reviseo.app/logo.png"
 										alt="Reviseo"
-										className="size-10 h-auto mb-[12px]"
+										className="mb-[12px] size-10 h-auto"
 									/>
 								</Column>
 							</Row>
 
 							{/* Main Content */}
 							<Section>
-								<Text className="text-[#111827] text-[24px] font-bold mb-[8px] leading-[32px]">
+								<Text className="mb-[8px] font-bold text-[#111827] text-[24px] leading-[32px]">
 									Verify Your Email
 								</Text>
 
-								<Text className="text-[#374151] text-[16px] mb-[24px] leading-[24px]">
+								<Text className="mb-[24px] text-[#374151] text-[16px] leading-[24px]">
 									Hi there! Enter this verification code to sign in to your
 									account:
 								</Text>
 
 								{/* OTP Code Box */}
-								<Section className="bg-[#f9fafb] rounded-[8px] p-[24px] mb-[24px] border border-solid border-[#e5e7eb] text-center">
-									<CodeInline className="font-mono text-[#111827] text-[32px] font-bold tracking-[0.5em]">
+								<Section className="mb-[24px] rounded-[8px] border border-[#e5e7eb] border-solid bg-[#f9fafb] p-[24px] text-center">
+									<CodeInline className="font-bold font-mono text-[#111827] text-[32px] tracking-[0.5em]">
 										{otp}
 									</CodeInline>
 								</Section>
 
-								<Text className="text-[#6b7280] text-[14px] mb-[8px] leading-[20px]">
+								<Text className="mb-[8px] text-[#6b7280] text-[14px] leading-[20px]">
 									<strong>Email:</strong> {email}
 								</Text>
 
-								<Text className="text-[#6b7280] text-[12px] mb-[24px] leading-[18px]">
+								<Text className="mb-[24px] text-[#6b7280] text-[12px] leading-[18px]">
 									This code expires in 10 minutes. If you didn't request this,
 									please ignore this email.
 								</Text>
@@ -72,7 +72,7 @@ export default function OtpEmail({ otp, email }: OtpEmailProps) {
 
 							{/* Footer */}
 							<Section>
-								<Text className="text-[#6b7280] text-[14px] leading-[20px] mb-[16px]">
+								<Text className="mb-[16px] text-[#6b7280] text-[14px] leading-[20px]">
 									Visual feedback for web freelancers.
 								</Text>
 
@@ -91,7 +91,7 @@ export default function OtpEmail({ otp, email }: OtpEmailProps) {
 									</Column>
 								</Row>
 
-								<Text className="text-[#9ca3af] text-[12px] leading-[16px] mt-0">
+								<Text className="mt-0 text-[#9ca3af] text-[12px] leading-[16px]">
 									© 2025 Reviseo. All rights reserved.
 								</Text>
 

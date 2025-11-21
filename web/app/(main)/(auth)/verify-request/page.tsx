@@ -12,18 +12,18 @@ export default function VerifyRequestRoute() {
 		<Suspense>
 			<VerifyRequest />
 
-			<div className="text-sm text-center text-balance text-muted-foreground font-inter">
+			<div className="text-balance text-center font-inter text-muted-foreground text-sm">
 				By clicking continue, you agree to our{" "}
 				<Link
 					href="/terms"
-					className="font-semibold hover:text-primary hover:underline hover:cursor-pointer"
+					className="font-semibold hover:cursor-pointer hover:text-primary hover:underline"
 				>
 					Terms of service
 				</Link>{" "}
 				and{" "}
 				<Link
 					href="/privacy"
-					className="font-semibold hover:text-primary hover:underline hover:cursor-pointer"
+					className="font-semibold hover:cursor-pointer hover:text-primary hover:underline"
 				>
 					Privacy Policy
 				</Link>

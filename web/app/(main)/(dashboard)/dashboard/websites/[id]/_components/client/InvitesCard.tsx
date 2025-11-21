@@ -127,17 +127,17 @@ const InvitesCard = ({ website }: InvitesCardProps) => {
 								return (
 									<div
 										key={invite.id}
-										className="flex flex-col gap-3 p-4 border rounded-lg bg-card/30"
+										className="flex flex-col gap-3 rounded-lg border bg-card/30 p-4"
 									>
 										{/* Email and Status Row */}
 										<div className="flex items-start justify-between gap-2">
-											<div className="flex items-center flex-1 min-w-0 gap-2">
-												<MailIcon className="size-4 text-muted-foreground shrink-0" />
-												<span className="text-sm font-medium truncate">
+											<div className="flex min-w-0 flex-1 items-center gap-2">
+												<MailIcon className="size-4 shrink-0 text-muted-foreground" />
+												<span className="truncate font-medium text-sm">
 													{invite.email}
 												</span>
 											</div>
-											<div className="flex items-center gap-2 shrink-0">
+											<div className="flex shrink-0 items-center gap-2">
 												<Badge
 													variant={INVITE_STATUS_BADGE_MAP[invite.status]}
 													appearance="outline"
@@ -191,7 +191,7 @@ const InvitesCard = ({ website }: InvitesCardProps) => {
 										</div>
 
 										{/* Dates Row */}
-										<div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
+										<div className="flex flex-wrap gap-4 text-muted-foreground text-xs">
 											<div className="flex items-center gap-1.5">
 												<MailPlus className="size-3" />
 												<span>

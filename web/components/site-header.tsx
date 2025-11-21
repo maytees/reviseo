@@ -1,4 +1,6 @@
 "use client";
+import { usePathname } from "next/navigation";
+import React from "react";
 import {
 	Breadcrumb,
 	BreadcrumbItem,
@@ -9,15 +11,17 @@ import {
 } from "@/components/ui/breadcrumb";
 import { Separator } from "@/components/ui/separator";
 import { SidebarTrigger } from "@/components/ui/sidebar";
-import { usePathname } from "next/navigation";
-import React from "react";
 
 export function SiteHeader() {
 	const pathname = usePathname();
 
 	const getBreadcrumbs = (path: string) => {
 		const segments = path.split("/").filter(Boolean);
-		const breadcrumbs = [] as { label: string; href: string; isLast: boolean }[];
+		const breadcrumbs = [] as {
+			label: string;
+			href: string;
+			isLast: boolean;
+		}[];
 
 		// Base: Dashboard
 		if (segments[0] === "dashboard") {
@@ -90,7 +94,7 @@ export function SiteHeader() {
 	const breadcrumbs = getBreadcrumbs(pathname);
 
 	return (
-		<header className="flex items-center h-16 gap-2 px-4 shrink-0">
+		<header className="flex h-16 shrink-0 items-center gap-2 px-4">
 			<SidebarTrigger className="-ml-1" />
 			<Separator
 				orientation="vertical"

@@ -16,7 +16,7 @@ export const StickyScroll = ({
 	contentClassName?: string;
 }) => {
 	return (
-		<div className="flex items-center flex-col gap-12 lg:gap-32 rounded-md p-4 lg:p-0">
+		<div className="flex flex-col items-center gap-12 rounded-md p-4 lg:gap-32 lg:p-0">
 			{content.map((item, index) => (
 				<motion.div
 					key={item.title + index}
@@ -29,26 +29,26 @@ export const StickyScroll = ({
 					}}
 					viewport={{ once: true, amount: 0.3 }}
 					className={cn(
-						"flex flex-col justify-between w-full lg:px-32 items-center",
+						"flex w-full flex-col items-center justify-between lg:px-32",
 						item.reverse
-							? "lg:flex-row-reverse lg:space-x-reverse lg:space-x-10"
+							? "lg:flex-row-reverse lg:space-x-10 lg:space-x-reverse"
 							: "lg:flex-row lg:space-x-10",
 					)}
 				>
-					<div className="w-full lg:w-1/2 px-4  flex justify-center">
-						<div className="max-w-2xl flex flex-col gap-3 w-full items-center lg:items-start">
-							<h2 className="text-2xl lg:text-4xl text-center lg:text-left font-bold font-caudex">
+					<div className="flex w-full justify-center px-4 lg:w-1/2">
+						<div className="flex w-full max-w-2xl flex-col items-center gap-3 lg:items-start">
+							<h2 className="text-center font-bold font-caudex text-2xl lg:text-left lg:text-4xl">
 								{item.title}
 							</h2>
-							<p className="text-base lg:text-lg max-w-sm text-center lg:text-left text-muted-foreground font-inter">
+							<p className="max-w-sm text-center font-inter text-base text-muted-foreground lg:text-left lg:text-lg">
 								{item.description}
 							</p>
 						</div>
 					</div>
-					<div className="w-full lg:w-1/2 mt-8 lg:mt-0 flex items-center justify-center">
+					<div className="mt-8 flex w-full items-center justify-center lg:mt-0 lg:w-1/2">
 						<div
 							className={cn(
-								"w-full h-[60vh] rounded-md overflow-hidden",
+								"h-[60vh] w-full overflow-hidden rounded-md",
 								contentClassName,
 							)}
 						>

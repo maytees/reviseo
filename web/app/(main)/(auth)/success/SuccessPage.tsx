@@ -30,11 +30,11 @@ export const SuccessPage = () => {
 	return (
 		<Card className="w-full max-w-md">
 			<CardHeader className="flex flex-col items-center gap-2 text-center">
-				<div className="flex items-center justify-center text-green-600 bg-green-100 rounded-full size-12 dark:bg-green-900/30 dark:text-green-400">
+				<div className="flex size-12 items-center justify-center rounded-full bg-green-100 text-green-600 dark:bg-green-900/30 dark:text-green-400">
 					<CheckCircle className="size-6" />
 				</div>
 				<div className="space-y-1">
-					<h1 className="text-2xl font-bold tracking-tight">
+					<h1 className="font-bold text-2xl tracking-tight">
 						Payment successful
 					</h1>
 					<p className="text-muted-foreground">
@@ -47,7 +47,7 @@ export const SuccessPage = () => {
 			<CardContent className="grid gap-6">
 				<div className="space-y-4 text-sm">
 					<div className="flex items-start gap-3">
-						<Mail className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+						<Mail className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
 						{isPending ? (
 							<p className="text-muted-foreground">
 								A receipt has been sent to
@@ -63,7 +63,7 @@ export const SuccessPage = () => {
 						)}
 					</div>
 					<div className="flex items-start gap-3">
-						<ShieldCheck className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+						<ShieldCheck className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
 						<p className="text-muted-foreground">
 							Payments are processed securely. Your subscription will renew
 							automatically.
@@ -87,10 +87,10 @@ export const SuccessPage = () => {
 					<ReceiptTextIcon />
 					Billing Portal
 				</Button>
-				<div className="mt-2 text-xs text-center">
+				<div className="mt-2 text-center text-xs">
 					<Link
 						href="/#contact"
-						className="underline text-muted-foreground hover:text-foreground underline-offset-4"
+						className="text-muted-foreground underline underline-offset-4 hover:text-foreground"
 					>
 						Need help? Contact Support
 					</Link>

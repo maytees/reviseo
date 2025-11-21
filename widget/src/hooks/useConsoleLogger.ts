@@ -1,6 +1,25 @@
 import { useEffect, useRef } from "preact/hooks";
 
-export type LogType = "log" | "error" | "warn" | "info" | "debug" | "trace" | "table" | "dir" | "dirxml" | "group" | "groupCollapsed" | "groupEnd" | "count" | "countReset" | "time" | "timeLog" | "timeEnd" | "assert" | "clear";
+export type LogType =
+	| "log"
+	| "error"
+	| "warn"
+	| "info"
+	| "debug"
+	| "trace"
+	| "table"
+	| "dir"
+	| "dirxml"
+	| "group"
+	| "groupCollapsed"
+	| "groupEnd"
+	| "count"
+	| "countReset"
+	| "time"
+	| "timeLog"
+	| "timeEnd"
+	| "assert"
+	| "clear";
 
 export interface LogEntry {
 	type: LogType;

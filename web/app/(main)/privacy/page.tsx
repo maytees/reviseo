@@ -9,20 +9,20 @@ export const metadata: Metadata = {
 
 export default function PrivacyPage() {
 	return (
-		<div className="relative w-full min-h-screen overflow-x-hidden">
-			<div className="sticky z-50 flex items-center justify-center w-full px-2 pt-6 sm:px-4 md:px-6 top-4">
+		<div className="relative min-h-screen w-full overflow-x-hidden">
+			<div className="sticky top-4 z-50 flex w-full items-center justify-center px-2 pt-6 sm:px-4 md:px-6">
 				<Navbar />
 			</div>
 
-			<article className="max-w-4xl px-4 py-24 mx-auto mt-32 sm:px-6 md:px-8">
-				<h1 className="text-4xl font-bold sm:text-5xl md:text-6xl font-caudex">
+			<article className="mx-auto mt-32 max-w-4xl px-4 py-24 sm:px-6 md:px-8">
+				<h1 className="font-bold font-caudex text-4xl sm:text-5xl md:text-6xl">
 					Privacy Policy
 				</h1>
-				<p className="mt-4 text-sm text-muted-foreground">
+				<p className="mt-4 text-muted-foreground text-sm">
 					<strong>Last updated:</strong> October 29, 2025
 				</p>
 
-				<div className="mt-12 space-y-8 prose prose-neutral dark:prose-invert max-w-none">
+				<div className="prose prose-neutral dark:prose-invert mt-12 max-w-none space-y-8">
 					<p className="text-lg leading-relaxed">
 						Reviseo ("we," "our," or "us") provides tools that help web
 						developers collect feedback from their clients. This Privacy Policy
@@ -38,13 +38,13 @@ export default function PrivacyPage() {
 					</p>
 
 					<section>
-						<h2 className="text-2xl font-bold sm:text-3xl font-caudex">
+						<h2 className="font-bold font-caudex text-2xl sm:text-3xl">
 							1. Information We Collect
 						</h2>
 						<p className="leading-relaxed">
 							We collect the following types of information:
 						</p>
-						<ul className="space-y-2 list-disc list-inside">
+						<ul className="list-inside list-disc space-y-2">
 							<li>
 								<strong>Account Information:</strong> When you sign up, we
 								collect your name and email address. You can sign in using
@@ -83,11 +83,11 @@ export default function PrivacyPage() {
 					</section>
 
 					<section>
-						<h2 className="text-2xl font-bold sm:text-3xl font-caudex">
+						<h2 className="font-bold font-caudex text-2xl sm:text-3xl">
 							2. How We Use Your Information
 						</h2>
 						<p className="leading-relaxed">We use your information to:</p>
-						<ul className="space-y-2 list-disc list-inside">
+						<ul className="list-inside list-disc space-y-2">
 							<li>Provide and improve the Reviseo service</li>
 							<li>Process payments and manage subscriptions</li>
 							<li>Authenticate users and manage sessions</li>
@@ -97,14 +97,14 @@ export default function PrivacyPage() {
 					</section>
 
 					<section>
-						<h2 className="text-2xl font-bold sm:text-3xl font-caudex">
+						<h2 className="font-bold font-caudex text-2xl sm:text-3xl">
 							3. Data Sharing
 						</h2>
 						<p className="leading-relaxed">
 							We share information only with trusted third parties necessary to
 							operate Reviseo:
 						</p>
-						<ul className="space-y-2 list-disc list-inside">
+						<ul className="list-inside list-disc space-y-2">
 							<li>
 								<strong>BetterAuth</strong> (authentication)
 							</li>
@@ -121,7 +121,7 @@ export default function PrivacyPage() {
 					</section>
 
 					<section>
-						<h2 className="text-2xl font-bold sm:text-3xl font-caudex">
+						<h2 className="font-bold font-caudex text-2xl sm:text-3xl">
 							4. Data Retention and Deletion
 						</h2>
 						<p className="leading-relaxed">
@@ -132,7 +132,7 @@ export default function PrivacyPage() {
 					</section>
 
 					<section>
-						<h2 className="text-2xl font-bold sm:text-3xl font-caudex">
+						<h2 className="font-bold font-caudex text-2xl sm:text-3xl">
 							5. International Users
 						</h2>
 						<p className="leading-relaxed">
@@ -143,7 +143,7 @@ export default function PrivacyPage() {
 					</section>
 
 					<section>
-						<h2 className="text-2xl font-bold sm:text-3xl font-caudex">
+						<h2 className="font-bold font-caudex text-2xl sm:text-3xl">
 							6. Children's Privacy
 						</h2>
 						<p className="leading-relaxed">
@@ -153,11 +153,11 @@ export default function PrivacyPage() {
 					</section>
 
 					<section>
-						<h2 className="text-2xl font-bold sm:text-3xl font-caudex">
+						<h2 className="font-bold font-caudex text-2xl sm:text-3xl">
 							7. Your Rights
 						</h2>
 						<p className="leading-relaxed">You can:</p>
-						<ul className="space-y-2 list-disc list-inside">
+						<ul className="list-inside list-disc space-y-2">
 							<li>Access or delete your personal data</li>
 							<li>Opt out of marketing emails</li>
 							<li>Contact us for privacy-related requests</li>
@@ -171,7 +171,7 @@ export default function PrivacyPage() {
 					</section>
 
 					<section>
-						<h2 className="text-2xl font-bold sm:text-3xl font-caudex">
+						<h2 className="font-bold font-caudex text-2xl sm:text-3xl">
 							8. Changes to This Policy
 						</h2>
 						<p className="leading-relaxed">

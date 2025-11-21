@@ -21,13 +21,13 @@ import { Marquee, MarqueeContent, MarqueeFade } from "../ui/shadcn-io/marquee";
 
 const UsedWith = () => {
 	return (
-		<section className="mt-42 w-full flex flex-col items-center justify-center px-4 sm:px-6 md:px-8 gap-8">
-			<div className="flex flex-col items-center justify-center gap-1 sm:gap-4 w-full">
+		<section className="mt-42 flex w-full flex-col items-center justify-center gap-8 px-4 sm:px-6 md:px-8">
+			<div className="flex w-full flex-col items-center justify-center gap-1 sm:gap-4">
 				<motion.h2
 					initial={{ opacity: 0, scale: 1.1, y: 100 }}
 					whileInView={{ opacity: 1, scale: 1, y: 0 }}
 					transition={{ type: "spring", duration: 1.2, bounce: 0.1 }}
-					className="text-2xl sm:text-3xl md:text-4xl text-center font-bold font-caudex"
+					className="text-center font-bold font-caudex text-2xl sm:text-3xl md:text-4xl"
 					viewport={{ once: true }}
 				>
 					Works with your favorite platforms
@@ -42,7 +42,7 @@ const UsedWith = () => {
 						bounce: 0.1,
 						delay: 0.2,
 					}}
-					className="text-base sm:text-lg md:text-xl text-muted-foreground text-center font-inter px-2"
+					className="px-2 text-center font-inter text-base text-muted-foreground sm:text-lg md:text-xl"
 				>
 					Embeddable on any platform with a simple script tag
 				</motion.p>
@@ -51,7 +51,7 @@ const UsedWith = () => {
 				initial={{ opacity: 0, scale: 0.5, y: 100 }}
 				whileInView={{ opacity: 1, scale: 1, y: 0 }}
 				transition={{ type: "spring", duration: 1.2, bounce: 0.1, delay: 0.5 }}
-				className="flex size-full items-center justify-center   rounded-lg p-4 w-full"
+				className="flex size-full w-full items-center justify-center rounded-lg p-4"
 				viewport={{ once: true }}
 			>
 				<Marquee>
@@ -84,11 +84,11 @@ const UsedWith = () => {
 							{ name: "Nuxt", Icon: SiNuxtdotjs, color: "text-[#00DC82]" },
 						].map(({ name, Icon, color }) => (
 							<div
-								className="flex flex-col items-center justify-center h-32 w-32 px-4 gap-2"
+								className="flex h-32 w-32 flex-col items-center justify-center gap-2 px-4"
 								key={name}
 							>
-								<Icon className={`w-10 h-10 ${color}`} />
-								<span className="text-lg font-inter font-semibold">{name}</span>
+								<Icon className={`h-10 w-10 ${color}`} />
+								<span className="font-inter font-semibold text-lg">{name}</span>
 							</div>
 						))}
 					</MarqueeContent>

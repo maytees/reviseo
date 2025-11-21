@@ -21,42 +21,42 @@ export function WelcomeStep({
 			animate={{ opacity: 1, y: 0 }}
 			exit={{ opacity: 0, y: -20 }}
 			transition={{ duration: 0.3, ease: "easeOut" }}
-			className="py-4 space-y-6 text-center"
+			className="space-y-6 py-4 text-center"
 		>
 			<motion.div
 				initial={{ scale: 0 }}
 				animate={{ scale: 1 }}
 				transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
-				className="flex items-center justify-center w-16 h-16 mx-auto rounded-full bg-primary/10"
+				className="mx-auto flex h-16 w-16 items-center justify-center rounded-full bg-primary/10"
 			>
-				<Sparkles className="w-8 h-8 text-primary" />
+				<Sparkles className="h-8 w-8 text-primary" />
 			</motion.div>
 
-			<div className="max-w-2xl mx-auto space-y-2">
-				<h2 className="text-3xl font-bold sm:text-4xl font-caudex">
+			<div className="mx-auto max-w-2xl space-y-2">
+				<h2 className="font-bold font-caudex text-3xl sm:text-4xl">
 					{userName
 						? `Welcome to Reviseo, ${userName.at(0)?.toUpperCase()}${userName.substring(1)}!`
 						: "Welcome to Reviseo!"}
 				</h2>
-				<p className="text-base sm:text-lg text-muted-foreground font-inter">
+				<p className="font-inter text-base text-muted-foreground sm:text-lg">
 					Let's get you set up in 3 quick steps
 				</p>
 			</div>
 
-			<div className="grid max-w-3xl grid-cols-1 gap-4 pt-2 mx-auto sm:grid-cols-3">
+			<div className="mx-auto grid max-w-3xl grid-cols-1 gap-4 pt-2 sm:grid-cols-3">
 				<motion.div
 					initial={{ opacity: 0, y: 10 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ delay: 0.3 }}
-					className="flex flex-col items-center gap-2 p-4 border rounded-lg bg-card/50 border-border/50"
+					className="flex flex-col items-center gap-2 rounded-lg border border-border/50 bg-card/50 p-4"
 				>
-					<div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/20">
-						<span className="text-base font-bold text-primary font-inter">
+					<div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20">
+						<span className="font-bold font-inter text-base text-primary">
 							1
 						</span>
 					</div>
-					<p className="text-base font-medium font-caudex">Create Website</p>
-					<p className="text-sm text-center text-muted-foreground font-inter">
+					<p className="font-caudex font-medium text-base">Create Website</p>
+					<p className="text-center font-inter text-muted-foreground text-sm">
 						Add your site details
 					</p>
 				</motion.div>
@@ -65,15 +65,15 @@ export function WelcomeStep({
 					initial={{ opacity: 0, y: 10 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ delay: 0.4 }}
-					className="flex flex-col items-center gap-2 p-4 border rounded-lg bg-card/50 border-border/50"
+					className="flex flex-col items-center gap-2 rounded-lg border border-border/50 bg-card/50 p-4"
 				>
-					<div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/20">
-						<span className="text-base font-bold text-primary font-inter">
+					<div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20">
+						<span className="font-bold font-inter text-base text-primary">
 							2
 						</span>
 					</div>
-					<p className="text-base font-medium font-caudex">Install Widget</p>
-					<p className="text-sm text-center text-muted-foreground font-inter">
+					<p className="font-caudex font-medium text-base">Install Widget</p>
+					<p className="text-center font-inter text-muted-foreground text-sm">
 						One line of code
 					</p>
 				</motion.div>
@@ -82,21 +82,21 @@ export function WelcomeStep({
 					initial={{ opacity: 0, y: 10 }}
 					animate={{ opacity: 1, y: 0 }}
 					transition={{ delay: 0.5 }}
-					className="flex flex-col items-center gap-2 p-4 border rounded-lg bg-card/50 border-border/50"
+					className="flex flex-col items-center gap-2 rounded-lg border border-border/50 bg-card/50 p-4"
 				>
-					<div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/20">
-						<span className="text-base font-bold text-primary font-inter">
+					<div className="flex h-8 w-8 items-center justify-center rounded-full bg-primary/20">
+						<span className="font-bold font-inter text-base text-primary">
 							3
 						</span>
 					</div>
-					<p className="text-base font-medium font-caudex">Invite Client</p>
-					<p className="text-sm text-center text-muted-foreground font-inter">
+					<p className="font-caudex font-medium text-base">Invite Client</p>
+					<p className="text-center font-inter text-muted-foreground text-sm">
 						Send invite link
 					</p>
 				</motion.div>
 			</div>
 
-			<div className="pt-4 space-x-2">
+			<div className="space-x-2 pt-4">
 				<Button onClick={handleComplete} variant={"outline"}>
 					Skip Onboarding
 				</Button>

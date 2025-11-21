@@ -56,16 +56,16 @@ const RecentSubmissions = async ({
 							.map((feedback) => (
 								<div
 									key={feedback.id}
-									className="flex flex-col w-full p-2 border rounded-sm lg:flex-row lg:items-center lg:justify-between bg-background/30 shadow-2xs border-background/40"
+									className="flex w-full flex-col rounded-sm border border-background/40 bg-background/30 p-2 shadow-2xs lg:flex-row lg:items-center lg:justify-between"
 								>
-									<div className="flex flex-col w-full space-y-2 lg:flex-row lg:space-y-0 lg:space-x-2 lg:w-auto">
+									<div className="flex w-full flex-col space-y-2 lg:w-auto lg:flex-row lg:space-x-2 lg:space-y-0">
 										<ScreenshotPreview
 											app_url={env.BETTER_AUTH_URL}
 											screenshotKey={feedback.screenshotKey}
 										/>
 										<div className="flex flex-col items-start justify-around gap-1">
 											<div className="flex flex-row items-center gap-1">
-												<p className="text-lg font-semibold lg:text-base">
+												<p className="font-semibold text-lg lg:text-base">
 													{feedback.title}
 												</p>
 												<Badge variant={"outline"} size={"sm"}>
@@ -76,8 +76,8 @@ const RecentSubmissions = async ({
 												<Tooltip>
 													<TooltipTrigger>
 														<div className="flex flex-row items-center gap-1">
-															<Globe className="text-green-400 size-2.5" />
-															<span className="text-sm truncate text-muted-foreground lg:text-xs">
+															<Globe className="size-2.5 text-green-400" />
+															<span className="truncate text-muted-foreground text-sm lg:text-xs">
 																{feedback.website.name}
 															</span>
 														</div>
@@ -87,8 +87,8 @@ const RecentSubmissions = async ({
 												<Tooltip>
 													<TooltipTrigger>
 														<div className="flex flex-row items-center gap-1">
-															<PersonStanding className="text-blue-400 size-2.5" />
-															<span className="text-sm truncate text-muted-foreground lg:text-xs">
+															<PersonStanding className="size-2.5 text-blue-400" />
+															<span className="truncate text-muted-foreground text-sm lg:text-xs">
 																{feedback.author?.name}
 															</span>
 														</div>
@@ -100,7 +100,7 @@ const RecentSubmissions = async ({
 											</div>
 										</div>
 									</div>
-									<div className="flex flex-row flex-wrap items-center w-full gap-2 mt-2 lg:flex-nowrap lg:justify-end lg:w-auto lg:mt-0">
+									<div className="mt-2 flex w-full flex-row flex-wrap items-center gap-2 lg:mt-0 lg:w-auto lg:flex-nowrap lg:justify-end">
 										<Tooltip>
 											<TooltipTrigger>
 												<Badge

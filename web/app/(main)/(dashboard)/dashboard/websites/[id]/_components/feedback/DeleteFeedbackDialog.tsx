@@ -54,11 +54,11 @@ export default function DeleteFeedbackDialog({
 			<DialogContent>
 				<div className="flex flex-col items-center gap-2">
 					<div
-						className="flex items-center justify-center border rounded-full border-destructive/80 size-9 shrink-0"
+						className="flex size-9 shrink-0 items-center justify-center rounded-full border border-destructive/80"
 						aria-hidden="true"
 					>
 						<CircleAlertIcon
-							className="opacity-80 text-destructive"
+							className="text-destructive opacity-80"
 							size={16}
 						/>
 					</div>

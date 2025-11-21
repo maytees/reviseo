@@ -5,7 +5,7 @@ import { env } from "@/lib/env";
 import { S3 } from "@/lib/s3client";
 
 export async function GET(
-	request: Request,
+	_request: Request,
 	{ params }: { params: Promise<{ key: string }> },
 ) {
 	await requireUser();

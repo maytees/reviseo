@@ -297,6 +297,7 @@ function Kanban<T>({
 			isColumn,
 			setColumns,
 			onMove,
+			onDragEnd,
 		],
 	);
 
@@ -354,7 +355,7 @@ function KanbanBoard({ children, className }: KanbanBoardProps) {
 		<SortableContext items={columnIds} strategy={rectSortingStrategy}>
 			<div
 				data-slot="kanban-board"
-				className={cn("grid auto-rows-fr sm:grid-cols-3 gap-4", className)}
+				className={cn("grid auto-rows-fr gap-4 sm:grid-cols-3", className)}
 			>
 				{children}
 			</div>
@@ -608,7 +609,7 @@ function KanbanOverlay({ children, className }: KanbanOverlayProps) {
 		} else {
 			setDimensions(null);
 		}
-	}, [activeId]);
+	}, [activeId, isColumn]);
 
 	const style = {
 		width: dimensions?.width,

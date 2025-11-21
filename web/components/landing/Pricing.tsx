@@ -75,15 +75,15 @@ export function Pricing() {
 		// biome-ignore lint/correctness/useUniqueElementIds: goon
 		<section
 			id="pricing"
-			className="flex flex-col items-center justify-center w-full px-4 mt-48 sm:px-6 md:px-8"
+			className="mt-48 flex w-full flex-col items-center justify-center px-4 sm:px-6 md:px-8"
 		>
-			<div className="flex flex-col items-center justify-center max-w-3xl gap-4">
+			<div className="flex max-w-3xl flex-col items-center justify-center gap-4">
 				<motion.h2
 					initial={{ opacity: 0, scale: 1.1, y: 100 }}
 					whileInView={{ opacity: 1, scale: 1, y: 0 }}
 					transition={{ type: "spring", duration: 1.2, bounce: 0.1 }}
 					viewport={{ once: true }}
-					className="text-3xl font-bold text-center sm:text-4xl md:text-5xl font-caudex"
+					className="text-center font-bold font-caudex text-3xl sm:text-4xl md:text-5xl"
 				>
 					Simple, transparent pricing
 				</motion.h2>
@@ -97,7 +97,7 @@ export function Pricing() {
 						delay: 0.2,
 					}}
 					viewport={{ once: true }}
-					className="text-lg text-center sm:text-xl md:text-2xl text-muted-foreground font-inter"
+					className="text-center font-inter text-lg text-muted-foreground sm:text-xl md:text-2xl"
 				>
 					Start free, scale as you grow. No hidden fees, cancel anytime.
 				</motion.p>
@@ -108,7 +108,7 @@ export function Pricing() {
 				initial="hidden"
 				whileInView="visible"
 				viewport={{ once: true, amount: 0.2 }}
-				className="flex flex-col items-stretch justify-center w-full max-w-5xl gap-0 mt-16 md:flex-row sm:mt-20"
+				className="mt-16 flex w-full max-w-5xl flex-col items-stretch justify-center gap-0 sm:mt-20 md:flex-row"
 			>
 				{plans.map((plan, index) => {
 					const Icon = plan.icon;
@@ -117,11 +117,11 @@ export function Pricing() {
 							key={plan.name}
 							variants={itemVariants}
 							className={`relative ${
-								plan.highlighted ? "md:w-[55%] md:scale-105 z-10" : "md:w-[45%]"
+								plan.highlighted ? "z-10 md:w-[55%] md:scale-105" : "md:w-[45%]"
 							} w-full`}
 						>
 							<Card
-								className={`h-full relative border-border bg-linear-to-br from-card to-card/50 p-6 sm:p-8 overflow-hidden transition-all duration-300 ${
+								className={`relative h-full overflow-hidden border-border bg-linear-to-br from-card to-card/50 p-6 transition-all duration-300 sm:p-8 ${
 									plan.highlighted
 										? "border-primary/50 shadow-lg shadow-primary/10"
 										: ""
@@ -137,7 +137,7 @@ export function Pricing() {
 										delay: index * 0.1,
 									}}
 									viewport={{ once: true }}
-									className="absolute -top-20 left-1/2 -translate-x-1/2 w-[400px] h-[400px] pointer-events-none blur-3xl"
+									className="-top-20 -translate-x-1/2 pointer-events-none absolute left-1/2 h-[400px] w-[400px] blur-3xl"
 									style={{
 										background: plan.highlighted
 											? "radial-gradient(circle, var(--primary), var(--accent), transparent 70%)"
@@ -145,7 +145,7 @@ export function Pricing() {
 									}}
 								/>
 
-								<div className="relative z-10 flex flex-col h-full">
+								<div className="relative z-10 flex h-full flex-col">
 									{/* Badge */}
 									{plan.badge && (
 										<motion.div
@@ -157,7 +157,7 @@ export function Pricing() {
 												stiffness: 200,
 											}}
 											viewport={{ once: true }}
-											className="absolute px-3 py-1 text-xs font-medium rounded-full -top-2 -right-2 bg-primary text-primary-foreground"
+											className="-top-2 -right-2 absolute rounded-full bg-primary px-3 py-1 font-medium text-primary-foreground text-xs"
 										>
 											{plan.badge}
 										</motion.div>
@@ -173,31 +173,31 @@ export function Pricing() {
 											stiffness: 200,
 										}}
 										viewport={{ once: true }}
-										className="mb-4 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary w-fit"
+										className="mb-4 inline-flex w-fit items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 font-medium text-primary text-xs"
 									>
-										<Icon className="w-4 h-4" />
+										<Icon className="h-4 w-4" />
 										{plan.name}
 									</motion.div>
 
 									{/* Price */}
 									<div className="mb-4">
 										<div className="flex items-baseline gap-1">
-											<span className="text-4xl font-bold sm:text-5xl font-caudex text-foreground">
+											<span className="font-bold font-caudex text-4xl text-foreground sm:text-5xl">
 												{plan.price}
 											</span>
 											{plan.period && (
-												<span className="text-lg text-muted-foreground font-inter">
+												<span className="font-inter text-lg text-muted-foreground">
 													{plan.period}
 												</span>
 											)}
 										</div>
-										<p className="mt-2 text-sm sm:text-base text-muted-foreground font-inter">
+										<p className="mt-2 font-inter text-muted-foreground text-sm sm:text-base">
 											{plan.description}
 										</p>
 									</div>
 
 									{/* Feaetures */}
-									<ul className="flex-1 mb-6 space-y-3">
+									<ul className="mb-6 flex-1 space-y-3">
 										{plan.features.map((feature) => (
 											<motion.li
 												key={feature}
@@ -210,13 +210,13 @@ export function Pricing() {
 												viewport={{ once: true }}
 												className="flex items-start gap-3"
 											>
-												<div className="flex h-5 w-5 items-center justify-center rounded-full bg-primary/10 shrink-0 mt-0.5">
+												<div className="mt-0.5 flex h-5 w-5 shrink-0 items-center justify-center rounded-full bg-primary/10">
 													<Check
-														className="w-3 h-3 text-primary"
+														className="h-3 w-3 text-primary"
 														strokeWidth={3}
 													/>
 												</div>
-												<span className="text-sm sm:text-base text-foreground font-inter">
+												<span className="font-inter text-foreground text-sm sm:text-base">
 													{feature}
 												</span>
 											</motion.li>
@@ -231,7 +231,7 @@ export function Pricing() {
 									<Button
 										className={`w-full font-medium transition-all duration-300 ${
 											plan.highlighted
-												? "bg-primary text-primary-foreground hover:bg-primary/90 shadow-lg shadow-primary/20"
+												? "bg-primary text-primary-foreground shadow-lg shadow-primary/20 hover:bg-primary/90"
 												: "bg-muted text-foreground hover:bg-muted/80"
 										}`}
 										onClick={async () =>

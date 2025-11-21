@@ -1,11 +1,5 @@
 "use client";
-import {
-	XCircle,
-	Home,
-	Mail,
-	Clock,
-	HelpCircle,
-} from "lucide-react";
+import { Clock, HelpCircle, Home, Mail, XCircle } from "lucide-react";
 import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import {
@@ -22,15 +16,16 @@ export const CancelPage = () => {
 	return (
 		<Card className="w-full max-w-md">
 			<CardHeader className="flex flex-col items-center gap-2 text-center">
-				<div className="flex items-center justify-center text-red-600 bg-red-100 rounded-full size-12 dark:bg-red-900/30 dark:text-red-400">
+				<div className="flex size-12 items-center justify-center rounded-full bg-red-100 text-red-600 dark:bg-red-900/30 dark:text-red-400">
 					<XCircle className="size-6" />
 				</div>
 				<div className="space-y-1">
-					<h1 className="text-2xl font-bold tracking-tight">
+					<h1 className="font-bold text-2xl tracking-tight">
 						Subscription Cancelled
 					</h1>
 					<p className="text-muted-foreground">
-						We're sorry to see you go. Your subscription has been successfully cancelled.
+						We're sorry to see you go. Your subscription has been successfully
+						cancelled.
 					</p>
 				</div>
 			</CardHeader>
@@ -38,13 +33,14 @@ export const CancelPage = () => {
 			<CardContent className="grid gap-6">
 				<div className="space-y-4 text-sm">
 					<div className="flex items-start gap-3">
-						<Clock className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+						<Clock className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
 						<p className="text-muted-foreground">
-							You will continue to have access to your plan features until the end of your current billing period.
+							You will continue to have access to your plan features until the
+							end of your current billing period.
 						</p>
 					</div>
 					<div className="flex items-start gap-3">
-						<Mail className="text-muted-foreground mt-0.5 size-4 shrink-0" />
+						<Mail className="mt-0.5 size-4 shrink-0 text-muted-foreground" />
 						{isPending ? (
 							<p className="text-muted-foreground">
 								A confirmation email has been sent.
@@ -69,10 +65,10 @@ export const CancelPage = () => {
 						Return to Home
 					</Link>
 				</Button>
-				<div className="mt-2 text-xs text-center">
+				<div className="mt-2 text-center text-xs">
 					<Link
 						href="/#contact"
-						className="inline-flex items-center gap-1 underline text-muted-foreground hover:text-foreground underline-offset-4"
+						className="inline-flex items-center gap-1 text-muted-foreground underline underline-offset-4 hover:text-foreground"
 					>
 						<HelpCircle className="size-3" />
 						Need help? Contact Support

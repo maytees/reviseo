@@ -71,7 +71,7 @@ export function DataTable<_, TValue>({
 	return (
 		<div className="w-full">
 			<div className="flex w-full flex-items-center">
-				<div className="relative flex items-center py-4 w-fit">
+				<div className="relative flex w-fit items-center py-4">
 					<Input
 						placeholder="Filter by title..."
 						value={(table.getColumn("title")?.getFilterValue() as string) ?? ""}
@@ -80,7 +80,7 @@ export function DataTable<_, TValue>({
 						}
 						className="min-w-sm"
 					/>
-					<Search className="absolute size-3.5 right-3 text-muted-foreground" />
+					<Search className="absolute right-3 size-3.5 text-muted-foreground" />
 				</div>
 				<DropdownMenu>
 					<DropdownMenuTrigger asChild>
@@ -110,7 +110,7 @@ export function DataTable<_, TValue>({
 					</DropdownMenuContent>
 				</DropdownMenu>
 			</div>
-			<div className="border rounded-md">
+			<div className="rounded-md border">
 				<Table>
 					<TableHeader>
 						{table.getHeaderGroups().map((headerGroup) => (
@@ -164,7 +164,7 @@ export function DataTable<_, TValue>({
 					</TableBody>
 				</Table>
 			</div>
-			<div className="flex items-center justify-end py-4 space-x-2">
+			<div className="flex items-center justify-end space-x-2 py-4">
 				<Button
 					variant="outline"
 					size="sm"

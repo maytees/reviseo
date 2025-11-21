@@ -158,7 +158,7 @@ const InviteClientDialog = ({
 				)}
 			</DialogTrigger>
 			<DialogContent className="max-w-lg gap-0 p-0">
-				<div className="px-6 pt-6 pb-6 space-y-6">
+				<div className="space-y-6 px-6 pt-6 pb-6">
 					<DialogHeader>
 						<DialogTitle>
 							{step === 1 ? "Select Website" : "Invite Client"}
@@ -193,7 +193,7 @@ const InviteClientDialog = ({
 														!hasClient &&
 															"has-data-[state=checked]:border-primary/50",
 														hasClient &&
-															"opacity-60 cursor-not-allowed bg-muted/30",
+															"cursor-not-allowed bg-muted/30 opacity-60",
 													)}
 												>
 													<RadioGroupItem
@@ -203,7 +203,7 @@ const InviteClientDialog = ({
 														className="order-1 after:absolute after:inset-0"
 														disabled={hasClient}
 													/>
-													<div className="flex items-start gap-3 grow">
+													<div className="flex grow items-start gap-3">
 														{website.screenshotKey ? (
 															<Image
 																src={`/api/s3/screenshot/${website.screenshotKey}`}
@@ -211,14 +211,14 @@ const InviteClientDialog = ({
 																width={1920}
 																height={1080}
 																unoptimized
-																className="object-cover w-32 h-auto rounded aspect-video shrink-0 size-8"
+																className="aspect-video size-8 h-auto w-32 shrink-0 rounded object-cover"
 															/>
 														) : (
-															<div className="flex items-center justify-center rounded shrink-0 size-8 bg-muted">
+															<div className="flex size-8 shrink-0 items-center justify-center rounded bg-muted">
 																<GlobeIcon className="size-4 text-muted-foreground" />
 															</div>
 														)}
-														<div className="grid gap-2 grow">
+														<div className="grid grow gap-2">
 															<Label
 																htmlFor={radioId}
 																className={cn(
@@ -227,14 +227,14 @@ const InviteClientDialog = ({
 															>
 																{website.name}{" "}
 																{hasClient && (
-																	<span className="text-xs leading-[inherit] font-normal text-muted-foreground">
+																	<span className="font-normal text-muted-foreground text-xs leading-[inherit]">
 																		(Has client)
 																	</span>
 																)}
 															</Label>
 															<p
 																id={`${radioId}-description`}
-																className="text-xs text-muted-foreground"
+																className="text-muted-foreground text-xs"
 															>
 																{hasClient
 																	? `Client: ${website.client?.name || website.client?.email || "Unknown"}`
@@ -261,11 +261,11 @@ const InviteClientDialog = ({
 
 					{/* Step 2: Client Details Form */}
 					{step === 2 && (
-						<form onSubmit={handleSubmit(onSubmit)} className="space-y-5 ">
+						<form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
 							{/* Selected Website Info */}
 							{selectedWebsite && (
 								<Alert variant="warning" size={"sm"} appearance={"light"}>
-									<Mail className="font-bold size-5" />
+									<Mail className="size-5 font-bold" />
 									<AlertDescription>
 										Inviting client to:{" "}
 										<span className="font-semibold">
@@ -279,7 +279,7 @@ const InviteClientDialog = ({
 								<div>
 									<Label
 										htmlFor={clientNameId}
-										className="text-base font-medium text-muted-foreground"
+										className="font-medium text-base text-muted-foreground"
 									>
 										Client Name
 									</Label>
@@ -296,7 +296,7 @@ const InviteClientDialog = ({
 									{errors.clientName && (
 										<p
 											id={`${clientNameId}-error`}
-											className="text-sm text-destructive"
+											className="text-destructive text-sm"
 										>
 											{errors.clientName.message}
 										</p>
@@ -310,7 +310,7 @@ const InviteClientDialog = ({
 								<div className="space-y-2">
 									<Label
 										htmlFor={clientEmailId}
-										className="text-base font-medium text-muted-foreground"
+										className="font-medium text-base text-muted-foreground"
 									>
 										Client Email
 									</Label>
@@ -331,14 +331,14 @@ const InviteClientDialog = ({
 									{errors.clientEmail ? (
 										<p
 											id={`${clientEmailId}-error`}
-											className="text-sm text-destructive"
+											className="text-destructive text-sm"
 										>
 											{errors.clientEmail.message}
 										</p>
 									) : (
 										<p
 											id={`${clientEmailId}-helper`}
-											className="text-sm text-muted-foreground"
+											className="text-muted-foreground text-sm"
 										>
 											We'll send them an invite link
 										</p>

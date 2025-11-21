@@ -52,11 +52,11 @@ export const columns: ColumnDef<Feedback>[] = [
 			return (
 				<Button
 					variant="foreground"
-					className="p-0 py-0 "
+					className="p-0 py-0"
 					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 				>
 					Title
-					<ArrowUpDown className="w-4 h-4 ml-2" />
+					<ArrowUpDown className="ml-2 h-4 w-4" />
 				</Button>
 			);
 		},
@@ -70,12 +70,12 @@ export const columns: ColumnDef<Feedback>[] = [
 		header: ({ column }) => {
 			return (
 				<Button
-					className="p-0 py-0 "
+					className="p-0 py-0"
 					variant="foreground"
 					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 				>
 					Author
-					<ArrowUpDown className="w-4 h-4 ml-2" />
+					<ArrowUpDown className="ml-2 h-4 w-4" />
 				</Button>
 			);
 		},
@@ -93,7 +93,7 @@ export const columns: ColumnDef<Feedback>[] = [
 			return (
 				<div className="flex flex-col">
 					<span className="font-medium">{author.name}</span>
-					<span className="text-xs text-muted-foreground">{author.email}</span>
+					<span className="text-muted-foreground text-xs">{author.email}</span>
 				</div>
 			);
 		},
@@ -103,12 +103,12 @@ export const columns: ColumnDef<Feedback>[] = [
 		header: ({ column }) => {
 			return (
 				<Button
-					className="p-0 py-0 "
+					className="p-0 py-0"
 					variant="foreground"
 					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 				>
 					Status
-					<ArrowUpDown className="w-4 h-4 ml-2" />
+					<ArrowUpDown className="ml-2 h-4 w-4" />
 				</Button>
 			);
 		},
@@ -148,12 +148,12 @@ export const columns: ColumnDef<Feedback>[] = [
 		header: ({ column }) => {
 			return (
 				<Button
-					className="p-0 py-0 "
+					className="p-0 py-0"
 					variant="foreground"
 					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 				>
 					Type
-					<ArrowUpDown className="w-4 h-4 ml-2" />
+					<ArrowUpDown className="ml-2 h-4 w-4" />
 				</Button>
 			);
 		},
@@ -184,12 +184,12 @@ export const columns: ColumnDef<Feedback>[] = [
 		header: ({ column }) => {
 			return (
 				<Button
-					className="p-0 py-0 "
+					className="p-0 py-0"
 					variant="foreground"
 					onClick={() => column.toggleSorting(column.getIsSorted() === "asc")}
 				>
 					Priority
-					<ArrowUpDown className="w-4 h-4 ml-2" />
+					<ArrowUpDown className="ml-2 h-4 w-4" />
 				</Button>
 			);
 		},
@@ -279,9 +279,9 @@ export const columns: ColumnDef<Feedback>[] = [
 				<div onClick={(e) => e.stopPropagation()}>
 					<DropdownMenu>
 						<DropdownMenuTrigger asChild>
-							<Button variant="ghost" className="w-8 h-8 p-0">
+							<Button variant="ghost" className="h-8 w-8 p-0">
 								<span className="sr-only">Open menu</span>
-								<MoreHorizontal className="w-4 h-4" />
+								<MoreHorizontal className="h-4 w-4" />
 							</Button>
 						</DropdownMenuTrigger>
 						<DropdownMenuContent>

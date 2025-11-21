@@ -11,7 +11,17 @@
 		}
 	},
 	"files": {
-		"ignoreUnknown": false
+		"ignoreUnknown": false,
+		"includes": [
+			"**",
+			"!widget/dist",
+			"!widget/node_modules",
+			"!example",
+			"!web/.next",
+			"!web/.vscode",
+			"!web/node_modules",
+			"!web/public/cdn"
+		]
 	},
 	"formatter": {
 		"enabled": true,

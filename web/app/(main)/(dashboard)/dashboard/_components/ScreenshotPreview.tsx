@@ -30,7 +30,7 @@ const ScreenshotPreview = ({
 				width={1920}
 				height={1080}
 				className={cn(
-					"z-40 object-cover w-full h-auto transition-all ease-in-out rounded hover:cursor-nesw-resize aspect-video lg:w-20 duration-400 hover:opacity-80",
+					"z-40 aspect-video h-auto w-full rounded object-cover transition-all duration-400 ease-in-out hover:cursor-nesw-resize hover:opacity-80 lg:w-20",
 					className,
 				)}
 			/>

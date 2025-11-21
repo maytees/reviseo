@@ -114,37 +114,37 @@ const FeedbackNotificationEmail = (props: FeedbackNotificationEmailProps) => {
 			<Tailwind>
 				<Head />
 				<Preview>{websiteName} - New Feedback Submitted</Preview>
-				<Body className="bg-[#f9fafb] font-sans py-[40px]">
-					<Container className="mx-auto px-[20px] max-w-[600px]">
-						<Section className="bg-[#ffffff] rounded-[8px] px-[32px] py-[40px] border border-solid border-[#e5e7eb]">
+				<Body className="bg-[#f9fafb] py-[40px] font-sans">
+					<Container className="mx-auto max-w-[600px] px-[20px]">
+						<Section className="rounded-[8px] border border-[#e5e7eb] border-solid bg-[#ffffff] px-[32px] py-[40px]">
 							{/* Header */}
 							<Row>
 								<Column className="p-1">
 									<Img
 										src="https://reviseo.app/logo.png"
 										alt="Reviseo"
-										className="size-10 h-auto mb-[12px]"
+										className="mb-[12px] size-10 h-auto"
 									/>
 								</Column>
 							</Row>
 
 							{/* Main Content */}
 							<Section>
-								<Text className="text-[#111827] text-[24px] font-bold mb-[8px] leading-[32px]">
+								<Text className="mb-[8px] font-bold text-[#111827] text-[24px] leading-[32px]">
 									Hey {developerName}! 👋
 								</Text>
 
-								<Text className="text-[#374151] text-[16px] mb-[24px] leading-[24px]">
+								<Text className="mb-[24px] text-[#374151] text-[16px] leading-[24px]">
 									A client just submitted feedback for{" "}
 									<strong>{websiteName}</strong>. Time to make some magic
 									happen! ✨
 								</Text>
 
 								{/* Feedback Card */}
-								<Section className="bg-[#f9fafb] rounded-[8px] p-[24px] py-4 mb-[32px] border border-solid border-[#e5e7eb]">
+								<Section className="mb-[32px] rounded-[8px] border border-[#e5e7eb] border-solid bg-[#f9fafb] p-[24px] py-4">
 									<Row className="mb-[12px]">
 										<Column>
-											<Text className="text-[#111827] truncate max-w-sm text-[18px] font-bold mb-[8px] leading-[24px]">
+											<Text className="mb-[8px] max-w-sm truncate font-bold text-[#111827] text-[18px] leading-[24px]">
 												{getTypeIcon(feedbackType)} {feedbackTitle}
 											</Text>
 										</Column>
@@ -152,7 +152,7 @@ const FeedbackNotificationEmail = (props: FeedbackNotificationEmailProps) => {
 
 									<Row className="mb-[12px]">
 										<Column className="w-[50%] pr-[8px]">
-											<Text className="text-[#6b7280] text-[14px] mb-[8px] leading-[20px]">
+											<Text className="mb-[8px] text-[#6b7280] text-[14px] leading-[20px]">
 												Type
 											</Text>
 											<div style={getTypeBadgeStyles(feedbackType)}>
@@ -166,7 +166,7 @@ const FeedbackNotificationEmail = (props: FeedbackNotificationEmailProps) => {
 											</div>
 										</Column>
 										<Column className="w-[50%] pl-[8px]">
-											<Text className="text-[#6b7280] text-[14px] mb-[8px] leading-[20px]">
+											<Text className="mb-[8px] text-[#6b7280] text-[14px] leading-[20px]">
 												Priority
 											</Text>
 											<div style={getPriorityBadgeStyles(priority)}>
@@ -183,12 +183,12 @@ const FeedbackNotificationEmail = (props: FeedbackNotificationEmailProps) => {
 
 									<Row>
 										<Column>
-											<Text className="text-[#6b7280] text-[14px] mb-[4px] leading-[20px]">
+											<Text className="mb-[4px] text-[#6b7280] text-[14px] leading-[20px]">
 												Page
 											</Text>
 											<Link
 												href={pageUrl}
-												className="text-[#9c40ff] text-[14px] font-mono leading-[20px]"
+												className="font-mono text-[#9c40ff] text-[14px] leading-[20px]"
 											>
 												{pageUrl}
 											</Link>
@@ -197,7 +197,7 @@ const FeedbackNotificationEmail = (props: FeedbackNotificationEmailProps) => {
 
 									<Row>
 										<Column>
-											<Text className="text-[#6b7280] text-[14px] mb-[4px] leading-[20px]">
+											<Text className="mb-[4px] text-[#6b7280] text-[14px] leading-[20px]">
 												Description
 											</Text>
 											<Text className="text-[#374151] text-[14px] leading-[20px]">
@@ -221,7 +221,7 @@ const FeedbackNotificationEmail = (props: FeedbackNotificationEmailProps) => {
 										<Column className="pr-[8px]">
 											<Button
 												href={feedbackUrl}
-												className="bg-[#9c40ff] text-[#ffffff] px-[24px] py-[12px] rounded-[6px] text-[14px] font-medium no-underline text-center box-border w-full"
+												className="box-border w-full rounded-[6px] bg-[#9c40ff] px-[24px] py-[12px] text-center font-medium text-[#ffffff] text-[14px] no-underline"
 											>
 												View Feedback
 											</Button>
@@ -229,7 +229,7 @@ const FeedbackNotificationEmail = (props: FeedbackNotificationEmailProps) => {
 										<Column className="pl-[8px]">
 											<Button
 												href={allFeedbackUrl}
-												className="bg-[#ffffff] text-[#9c40ff] px-[24px] py-[12px] rounded-[6px] text-[14px] font-medium no-underline text-center border border-solid border-[#9c40ff] box-border w-full"
+												className="box-border w-full rounded-[6px] border border-[#9c40ff] border-solid bg-[#ffffff] px-[24px] py-[12px] text-center font-medium text-[#9c40ff] text-[14px] no-underline"
 											>
 												All Feedback
 											</Button>
@@ -237,7 +237,7 @@ const FeedbackNotificationEmail = (props: FeedbackNotificationEmailProps) => {
 									</Row>
 								</Section>
 
-								<Text className="text-[#6b7280] text-[14px] leading-[20px] mb-[24px]">
+								<Text className="mb-[24px] text-[#6b7280] text-[14px] leading-[20px]">
 									Need to check other projects? Head to your{" "}
 									<Link
 										href={dashboardUrl}
@@ -253,7 +253,7 @@ const FeedbackNotificationEmail = (props: FeedbackNotificationEmailProps) => {
 
 							{/* Footer */}
 							<Section>
-								<Text className="text-[#6b7280] text-[14px] leading-[20px] mb-[16px]">
+								<Text className="mb-[16px] text-[#6b7280] text-[14px] leading-[20px]">
 									Visual feedback for web freelancers.
 								</Text>
 
@@ -272,7 +272,7 @@ const FeedbackNotificationEmail = (props: FeedbackNotificationEmailProps) => {
 									</Column>
 								</Row>
 
-								<Text className="text-[#9ca3af] text-[12px] leading-[16px] mt-0">
+								<Text className="mt-0 text-[#9ca3af] text-[12px] leading-[16px]">
 									© 2025 Reviseo. All rights reserved.
 								</Text>
 

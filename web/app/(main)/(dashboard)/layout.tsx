@@ -26,9 +26,9 @@ export default async function DashboardLayout({
 			<AppSidebar variant="inset" collapsible="icon" />
 			<SidebarInset>
 				<SiteHeader />
-				<div className="flex flex-col flex-1">
+				<div className="flex flex-1 flex-col">
 					<div className="@container/main flex flex-1 flex-col gap-4 p-4 pt-0">
-						<div className="flex flex-col h-full gap-4">{children}</div>
+						<div className="flex h-full flex-col gap-4">{children}</div>
 					</div>
 				</div>
 			</SidebarInset>

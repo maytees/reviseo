@@ -295,7 +295,7 @@ const ReviseoModal = () => {
 				<Dialog modal={false} open={open} onOpenChange={setOpen}>
 					<DialogContent
 						onEscapeKeyDown={(e) => e.preventDefault()}
-						className="overflow-y-scroll bg-card transition-all ease-in-out duration-500"
+						className="overflow-y-scroll bg-card transition-all duration-500 ease-in-out"
 						variant={"fullscreen"}
 					>
 						<DialogTitle>Submit Feedback</DialogTitle>
@@ -304,28 +304,28 @@ const ReviseoModal = () => {
 							changed, then provide details about your feedback.
 						</DialogDescription>
 						{/* Mobile Stepper - Only visible on small screens */}
-						<div className="flex items-center gap-2 mt-3 md:hidden">
+						<div className="mt-3 flex items-center gap-2 md:hidden">
 							<div
-								className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${step === "canvas" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+								className={`flex h-8 w-8 items-center justify-center rounded-full font-medium text-sm ${step === "canvas" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
 							>
 								1
 							</div>
 							<ChevronRightIcon className="size-4 text-muted-foreground" />
 							<div
-								className={`flex items-center justify-center w-8 h-8 rounded-full text-sm font-medium ${step === "form" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+								className={`flex h-8 w-8 items-center justify-center rounded-full font-medium text-sm ${step === "form" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
 							>
 								2
 							</div>
-							<span className="ml-2 text-sm font-medium">
+							<span className="ml-2 font-medium text-sm">
 								{step === "canvas" ? "Annotate" : "Details"}
 							</span>
 						</div>
 
 						{/* Main Content Layout */}
-						<div className="flex flex-col h-full gap-3 mt-3 md:flex-row">
+						<div className="mt-3 flex h-full flex-col gap-3 md:flex-row">
 							{/* Canvas - Always visible on desktop, conditional on mobile */}
 							<div
-								className={`flex-1 min-h-0 border border-border rounded-2xl ${step === "form" ? "hidden md:flex" : "flex"}`}
+								className={`min-h-0 flex-1 rounded-2xl border border-border ${step === "form" ? "hidden md:flex" : "flex"}`}
 							>
 								<ExCanvas
 									initialData={initialData}
@@ -343,15 +343,15 @@ const ReviseoModal = () => {
 
 							{/* Form - Side panel on desktop, full screen on mobile */}
 							<Card
-								className={`flex flex-col md:max-w-xs md:min-w-sm ${step === "canvas" ? "hidden md:flex" : "flex flex-1 overflow-y-scroll"} min-h-0`}
+								className={`flex flex-col md:min-w-sm md:max-w-xs ${step === "canvas" ? "hidden md:flex" : "flex flex-1 overflow-y-scroll"} min-h-0`}
 							>
-								<CardContent className="flex flex-col flex-1 min-h-0 overflow-y-scroll md:overflow-visible">
+								<CardContent className="flex min-h-0 flex-1 flex-col overflow-y-scroll md:overflow-visible">
 									<form
-										className="flex flex-col h-full"
+										className="flex h-full flex-col"
 										onSubmit={form.handleSubmit(onSubmit)}
 										id={formId}
 									>
-										<FieldGroup className="flex flex-col flex-1 min-h-0 gap-4">
+										<FieldGroup className="flex min-h-0 flex-1 flex-col gap-4">
 											<Controller
 												name="title"
 												control={form.control}
@@ -359,7 +359,7 @@ const ReviseoModal = () => {
 													<Field data-invalid={fieldState.invalid}>
 														<div className="flex items-center justify-between">
 															<FieldLabel htmlFor={titleId}>Title</FieldLabel>
-															<span className="text-xs text-muted-foreground">
+															<span className="text-muted-foreground text-xs">
 																{titleValue?.length || 0}/800
 															</span>
 														</div>
@@ -382,14 +382,14 @@ const ReviseoModal = () => {
 												control={form.control}
 												render={({ field, fieldState }) => (
 													<Field
-														className="flex flex-col flex-1 min-h-0"
+														className="flex min-h-0 flex-1 flex-col"
 														data-invalid={fieldState.invalid}
 													>
 														<div className="flex items-center justify-between">
 															<FieldLabel htmlFor={descriptionId}>
 																Details (optional)
 															</FieldLabel>
-															<span className="text-xs text-muted-foreground">
+															<span className="text-muted-foreground text-xs">
 																{descriptionValue?.length || 0}/6000
 															</span>
 														</div>
@@ -495,7 +495,7 @@ const ReviseoModal = () => {
 												/>
 											</div>
 										</FieldGroup>
-										<div className="flex flex-col gap-2 mt-4">
+										<div className="mt-4 flex flex-col gap-2">
 											{/* Mobile: Back button when on form step */}
 											{step === "form" && (
 												<Button
@@ -539,7 +539,7 @@ const ReviseoModal = () => {
 							<Button
 								disabled={loading || isPending}
 								onClick={() => setStep("form")}
-								className="w-full mt-3 md:hidden"
+								className="mt-3 w-full md:hidden"
 								size="lg"
 							>
 								Continue to Details
@@ -547,42 +547,42 @@ const ReviseoModal = () => {
 							</Button>
 						)}
 
-						<DialogFooter className="flex-col gap-3 pt-4 sm:flex-row sm:justify-between sm:items-center border-border">
+						<DialogFooter className="flex-col gap-3 border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
 							{/* Screenshot Metadata */}
 							<div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
-								<div className="flex items-center gap-1.5 min-w-fit">
+								<div className="flex min-w-fit items-center gap-1.5">
 									<ClockIcon className="size-3.5 text-muted-foreground" />
-									<span className="text-xs text-muted-foreground">
+									<span className="text-muted-foreground text-xs">
 										{formatDate(screenshotMetadata.timestamp)} at{" "}
 										{formatTime(screenshotMetadata.timestamp)}
 									</span>
 								</div>
-								<div className="flex items-center gap-1.5 max-w-3xs">
+								<div className="flex max-w-3xs items-center gap-1.5">
 									<GlobeIcon className="size-3.5 text-muted-foreground" />
 									{screenshotMetadata.url ? (
 										<span
-											className="text-xs truncate text-muted-foreground "
+											className="truncate text-muted-foreground text-xs"
 											title={screenshotMetadata.url}
 										>
 											{getUrlPath(screenshotMetadata.url)}
 										</span>
 									) : (
-										<span className="text-xs truncate text-muted-foreground">
+										<span className="truncate text-muted-foreground text-xs">
 											No URL Data
 										</span>
 									)}
 								</div>
-								<div className="flex items-center gap-1.5 max-w-3xs">
+								<div className="flex max-w-3xs items-center gap-1.5">
 									<Grid2X2 className="size-3.5 text-muted-foreground" />
 									{screenshotMetadata.viewport ? (
 										<span
-											className="text-xs truncate text-muted-foreground "
+											className="truncate text-muted-foreground text-xs"
 											title={screenshotMetadata.viewport}
 										>
 											{getUrlPath(screenshotMetadata.viewport)}
 										</span>
 									) : (
-										<span className="text-xs truncate text-muted-foreground">
+										<span className="truncate text-muted-foreground text-xs">
 											No Viewport Data
 										</span>
 									)}
@@ -597,7 +597,7 @@ const ReviseoModal = () => {
 									width={16}
 									height={16}
 								/>
-								<span className="text-xs text-muted-foreground">
+								<span className="text-muted-foreground text-xs">
 									Powered by{" "}
 									<Link
 										href="https://reviseo.app"

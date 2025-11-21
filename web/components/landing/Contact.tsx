@@ -28,17 +28,17 @@ export function Contact() {
 		// biome-ignore lint/correctness/useUniqueElementIds: goon
 		<section
 			id="contact"
-			className="flex flex-col items-center justify-center w-full px-4 mt-48 sm:px-6 md:px-8"
+			className="mt-48 flex w-full flex-col items-center justify-center px-4 sm:px-6 md:px-8"
 		>
-			<div className="flex flex-col items-center justify-center max-w-3xl gap-4">
+			<div className="flex max-w-3xl flex-col items-center justify-center gap-4">
 				<motion.div
 					initial={{ scale: 0 }}
 					whileInView={{ scale: 1 }}
 					transition={{ type: "spring", duration: 0.6, bounce: 0.3 }}
 					viewport={{ once: true }}
-					className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary"
+					className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 font-medium text-primary text-xs"
 				>
-					<Mail className="w-4 h-4" />
+					<Mail className="h-4 w-4" />
 					Contact
 				</motion.div>
 				<motion.h2
@@ -46,7 +46,7 @@ export function Contact() {
 					whileInView={{ opacity: 1, scale: 1, y: 0 }}
 					transition={{ type: "spring", duration: 1.2, bounce: 0.1 }}
 					viewport={{ once: true }}
-					className="text-3xl font-bold text-center sm:text-4xl md:text-5xl font-caudex"
+					className="text-center font-bold font-caudex text-3xl sm:text-4xl md:text-5xl"
 				>
 					Get in touch
 				</motion.h2>
@@ -60,7 +60,7 @@ export function Contact() {
 						delay: 0.2,
 					}}
 					viewport={{ once: true }}
-					className="text-lg text-center sm:text-xl md:text-2xl text-muted-foreground font-inter"
+					className="text-center font-inter text-lg text-muted-foreground sm:text-xl md:text-2xl"
 				>
 					Have a question? We'd love to hear from you
 				</motion.p>
@@ -70,7 +70,7 @@ export function Contact() {
 				whileInView={{ opacity: 1, y: 0 }}
 				transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
 				viewport={{ once: true, amount: 0.2 }}
-				className="w-full max-w-3xl mt-16 sm:mt-20"
+				className="mt-16 w-full max-w-3xl sm:mt-20"
 			>
 				<div className="relative">
 					{/* Background Gradient */}
@@ -79,7 +79,7 @@ export function Contact() {
 						whileInView={{ opacity: 0.1, scale: 1 }}
 						transition={{ duration: 1.2, ease: "easeOut" }}
 						viewport={{ once: true }}
-						className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none blur-3xl -z-10"
+						className="-translate-x-1/2 -translate-y-1/2 -z-10 pointer-events-none absolute top-1/2 left-1/2 h-[600px] w-[600px] blur-3xl"
 						style={{
 							background:
 								"radial-gradient(circle, var(--primary), var(--accent), transparent 70%)",
@@ -91,7 +91,7 @@ export function Contact() {
 						whileInView={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.6 }}
 						viewport={{ once: true }}
-						className="relative p-6 border rounded-xl border-border bg-linear-to-br from-card to-card/50 sm:p-8 backdrop-blur-sm"
+						className="relative rounded-xl border border-border bg-linear-to-br from-card to-card/50 p-6 backdrop-blur-sm sm:p-8"
 					>
 						<form onSubmit={handleSubmit} className="space-y-6">
 							<div className="grid gap-6 sm:grid-cols-2">
@@ -104,7 +104,7 @@ export function Contact() {
 								>
 									<label
 										htmlFor="name"
-										className="text-sm font-medium text-foreground font-inter"
+										className="font-inter font-medium text-foreground text-sm"
 									>
 										Name
 									</label>
@@ -128,7 +128,7 @@ export function Contact() {
 								>
 									<label
 										htmlFor="email"
-										className="text-sm font-medium text-foreground font-inter"
+										className="font-inter font-medium text-foreground text-sm"
 									>
 										Email
 									</label>
@@ -153,7 +153,7 @@ export function Contact() {
 							>
 								<label
 									htmlFor="subject"
-									className="text-sm font-medium text-foreground font-inter"
+									className="font-inter font-medium text-foreground text-sm"
 								>
 									Subject
 								</label>
@@ -177,7 +177,7 @@ export function Contact() {
 							>
 								<label
 									htmlFor="message"
-									className="text-sm font-medium text-foreground font-inter"
+									className="font-inter font-medium text-foreground text-sm"
 								>
 									Message
 								</label>
@@ -187,7 +187,7 @@ export function Contact() {
 									name="message"
 									placeholder="Tell us more about your inquiry..."
 									required
-									className="min-h-[150px] bg-background/50 resize-none"
+									className="min-h-[150px] resize-none bg-background/50"
 								/>
 							</motion.div>
 
@@ -199,14 +199,14 @@ export function Contact() {
 							>
 								<Button type="submit" size="lg" className="w-full sm:w-auto">
 									Send Message
-									<Send className="w-4 h-4 ml-2" />
+									<Send className="ml-2 h-4 w-4" />
 								</Button>
 							</motion.div>
 						</form>
 					</motion.div>
 				</div>
 			</motion.div>
-			<p className="mt-4 text-sm text-muted-foreground">
+			<p className="mt-4 text-muted-foreground text-sm">
 				Or send an email to <strong>help@reviseo.app</strong>
 			</p>
 		</section>

@@ -224,7 +224,7 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
 									readOnly
 									className="cursor-not-allowed bg-muted"
 								/>
-								<p className="text-xs text-muted-foreground">
+								<p className="text-muted-foreground text-xs">
 									Email cannot be changed.
 								</p>
 							</Field>

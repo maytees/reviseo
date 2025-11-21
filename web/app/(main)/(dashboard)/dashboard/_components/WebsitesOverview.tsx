@@ -62,7 +62,7 @@ const WebsitesOverview = ({ userData }: { userData: UserDataType }) => {
 						{websites.map((website) => (
 							<div
 								key={website.id}
-								className="flex items-center gap-3 transition-colors rounded-lg"
+								className="flex items-center gap-3 rounded-lg transition-colors"
 							>
 								<SiteLinkMedia
 									url={website.url}
@@ -71,13 +71,13 @@ const WebsitesOverview = ({ userData }: { userData: UserDataType }) => {
 									app_url={env.BETTER_AUTH_URL}
 									size="small"
 								/>
-								<div className="flex-1 min-w-0">
-									<h3 className="font-semibold truncate font-caudex">
+								<div className="min-w-0 flex-1">
+									<h3 className="truncate font-caudex font-semibold">
 										{website.name}
 									</h3>
-									<div className="flex items-center gap-1.5 mt-0.5">
-										<Globe className="shrink-0 text-green-400 size-3" />
-										<p className="text-sm truncate text-muted-foreground">
+									<div className="mt-0.5 flex items-center gap-1.5">
+										<Globe className="size-3 shrink-0 text-green-400" />
+										<p className="truncate text-muted-foreground text-sm">
 											{getDomain(website.url)}
 										</p>
 									</div>

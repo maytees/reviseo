@@ -16,10 +16,11 @@ import type {
 } from "@excalidraw/excalidraw/types";
 import { useTheme } from "next-themes";
 import {
-	type Dispatch, type RefObject,
+	type Dispatch,
+	type RefObject,
 	type SetStateAction,
 	useEffect,
-	useState
+	useState,
 } from "react";
 import {
 	Empty,
@@ -165,7 +166,7 @@ const ExCanvas = ({
 	return (
 		<>
 			{pending || imageLoading || !imageUrl ? (
-				<Empty className="flex flex-col items-center justify-center w-full h-full">
+				<Empty className="flex h-full w-full flex-col items-center justify-center">
 					<EmptyHeader>
 						<EmptyMedia variant="icon">
 							<Spinner />
@@ -177,7 +178,10 @@ const ExCanvas = ({
 					</EmptyHeader>
 				</Empty>
 			) : (
-				<div className="overflow-hidden rounded-lg" style={{ width: "100%", height: "100%" }}>
+				<div
+					className="overflow-hidden rounded-lg"
+					style={{ width: "100%", height: "100%" }}
+				>
 					{/* <button
 						className="custom-button"
 						type="button"

@@ -8,10 +8,10 @@ export default function OnboardingLayout({
 	children: ReactNode;
 }) {
 	return (
-		<div className="relative w-full min-h-screen overflow-hidden">
+		<div className="relative min-h-screen w-full overflow-hidden">
 			{/* Background Gradient */}
 			<div
-				className="absolute top-[40vh] opacity-30 left-1/2 -translate-x-1/2 w-full h-[1000px] pointer-events-none -z-50 blur-3xl "
+				className="-translate-x-1/2 -z-50 pointer-events-none absolute top-[40vh] left-1/2 h-[1000px] w-full opacity-30 blur-3xl"
 				style={{
 					background:
 						"radial-gradient(circle, var(--secondary), transparent 80%)",
@@ -19,7 +19,7 @@ export default function OnboardingLayout({
 			/>
 
 			{/* Navbar */}
-			<div className="sticky z-50 flex items-center justify-center w-full px-2 pt-6 sm:px-4 md:px-6 top-4">
+			<div className="sticky top-4 z-50 flex w-full items-center justify-center px-2 pt-6 sm:px-4 md:px-6">
 				<Navbar />
 			</div>
 

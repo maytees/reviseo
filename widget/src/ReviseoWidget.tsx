@@ -242,7 +242,9 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 					break;
 
 				case "OPEN_FORM": {
-					const modal = document.getElementById("reviseo-modal") as HTMLIFrameElement;
+					const modal = document.getElementById(
+						"reviseo-modal",
+					) as HTMLIFrameElement;
 					if (modal) {
 						modal.style.display = "block";
 						// Tell modal to show and capture screenshot

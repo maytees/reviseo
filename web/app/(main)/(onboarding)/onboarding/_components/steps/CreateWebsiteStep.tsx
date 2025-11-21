@@ -70,15 +70,15 @@ export function CreateWebsiteStep({
 			animate={{ opacity: 1, y: 0 }}
 			exit={{ opacity: 0, y: -20 }}
 			transition={{ duration: 0.3, ease: "easeOut" }}
-			className="py-4 space-y-6"
+			className="space-y-6 py-4"
 		>
 			<div className="space-y-1 text-center">
-				<h2 className="text-2xl font-bold sm:text-4xl font-caudex">
+				<h2 className="font-bold font-caudex text-2xl sm:text-4xl">
 					{hasExistingWebsites
 						? "Select or create a website"
 						: "Create your first website"}
 				</h2>
-				<p className="text-base text-muted-foreground font-inter">
+				<p className="font-inter text-base text-muted-foreground">
 					{hasExistingWebsites
 						? "Choose an existing website or add a new one"
 						: "Add the website where you want to collect client feedback"}
@@ -86,13 +86,13 @@ export function CreateWebsiteStep({
 			</div>
 
 			{hasExistingWebsites && (
-				<div className="max-w-2xl mx-auto">
-					<div className="p-4 border rounded-lg bg-accent/20 border-border">
-						<Label className="block mb-3 text-base font-medium font-inter">
+				<div className="mx-auto max-w-2xl">
+					<div className="rounded-lg border border-border bg-accent/20 p-4">
+						<Label className="mb-3 block font-inter font-medium text-base">
 							Select Existing Website
 						</Label>
 						<Select onValueChange={handleExistingWebsiteSelect}>
-							<SelectTrigger className="w-full h-11 font-inter">
+							<SelectTrigger className="h-11 w-full font-inter">
 								<SelectValue placeholder="Choose a website..." />
 							</SelectTrigger>
 							<SelectContent>
@@ -104,7 +104,7 @@ export function CreateWebsiteStep({
 									>
 										<div className="flex flex-col items-start">
 											<span className="font-medium">{website.name}</span>
-											<span className="text-xs text-muted-foreground">
+											<span className="text-muted-foreground text-xs">
 												{website.url}
 											</span>
 										</div>
@@ -116,10 +116,10 @@ export function CreateWebsiteStep({
 
 					<div className="relative my-6">
 						<div className="absolute inset-0 flex items-center">
-							<span className="w-full border-t border-border" />
+							<span className="w-full border-border border-t" />
 						</div>
 						<div className="relative flex justify-center text-xs uppercase">
-							<span className="px-2 bg-background text-muted-foreground font-inter">
+							<span className="bg-background px-2 font-inter text-muted-foreground">
 								Or create new
 							</span>
 						</div>
@@ -129,13 +129,13 @@ export function CreateWebsiteStep({
 
 			<form
 				onSubmit={handleSubmit(onNext)}
-				className="max-w-2xl mx-auto space-y-5"
+				className="mx-auto max-w-2xl space-y-5"
 			>
 				<div className="grid gap-4 sm:grid-cols-2">
 					<div className="space-y-2">
 						<Label
 							htmlFor={websiteNameId}
-							className="text-base font-medium font-inter"
+							className="font-inter font-medium text-base"
 						>
 							Website Name
 						</Label>
@@ -155,14 +155,14 @@ export function CreateWebsiteStep({
 						{errors.websiteName ? (
 							<p
 								id={`${websiteNameId}-error`}
-								className="text-sm text-destructive font-inter"
+								className="font-inter text-destructive text-sm"
 							>
 								{errors.websiteName.message}
 							</p>
 						) : (
 							<p
 								id={`${websiteNameId}-helper`}
-								className="text-sm text-muted-foreground font-inter"
+								className="font-inter text-muted-foreground text-sm"
 							>
 								A friendly name for your client&apos;s website
 							</p>
@@ -172,7 +172,7 @@ export function CreateWebsiteStep({
 					<div className="space-y-2">
 						<Label
 							htmlFor={websiteUrlId}
-							className="text-base font-medium font-inter"
+							className="font-inter font-medium text-base"
 						>
 							Website URL
 						</Label>
@@ -193,14 +193,14 @@ export function CreateWebsiteStep({
 						{errors.websiteUrl ? (
 							<p
 								id={`${websiteUrlId}-error`}
-								className="text-sm text-destructive font-inter"
+								className="font-inter text-destructive text-sm"
 							>
 								{errors.websiteUrl.message}
 							</p>
 						) : (
 							<p
 								id={`${websiteUrlId}-helper`}
-								className="text-sm text-muted-foreground font-inter"
+								className="font-inter text-muted-foreground text-sm"
 							>
 								Where the widget will be installed
 							</p>

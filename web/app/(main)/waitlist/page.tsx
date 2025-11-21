@@ -125,7 +125,7 @@ const WaitlistPage = () => {
 	}
 
 	return (
-		<div className="relative w-full min-h-screen overflow-x-hidden min-h-scren">
+		<div className="relative min-h-screen min-h-scren w-full overflow-x-hidden">
 			<Spotlight />
 			<ShootingStars
 				starColor="#9E00FF"
@@ -173,7 +173,7 @@ const WaitlistPage = () => {
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				transition={{ duration: 1, ease: "easeIn" }}
-				className="absolute w-[100dvw] h-[100vh] mask-contain mask-alpha -z-50 [mask-image:linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)]"
+				className="mask-contain mask-alpha -z-50 absolute h-[100vh] w-[100dvw] [mask-image:linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)]"
 			>
 				<Noise
 					patternSize={250}
@@ -188,14 +188,14 @@ const WaitlistPage = () => {
 				initial={{ opacity: 0, x: -200 }}
 				animate={{ opacity: 0.3, x: 0 }}
 				transition={{ duration: 1.2, ease: "easeOut" }}
-				className="absolute max-w-screen -top-10 -left-56 w-[700px] h-[700px] pointer-events-none -z-30 blur-3xl"
+				className="-top-10 -left-56 -z-30 pointer-events-none absolute h-[700px] w-[700px] max-w-screen blur-3xl"
 				style={{
 					background:
 						"radial-gradient(circle, oklch(0.5053 0.2350 286.8637), transparent 70%)",
 				}}
 			/>
 			<div
-				className="fixed inset-0 w-full h-full pointer-events-none -z-50 "
+				className="-z-50 pointer-events-none fixed inset-0 h-full w-full"
 				style={{
 					backgroundImage: `radial-gradient(circle, #562a2a 1px, transparent 1px)`,
 					backgroundSize: "32px 32px",
@@ -205,10 +205,10 @@ const WaitlistPage = () => {
 				<Navbar />
 			</div> */}
 
-			<div className="z-40 flex flex-col items-center justify-start w-full pb-42 my-18">
+			<div className="z-40 my-18 flex w-full flex-col items-center justify-start pb-42">
 				<Link
 					href={"/"}
-					className="z-40 flex flex-row items-center gap-1 mb-56"
+					className="z-40 mb-56 flex flex-row items-center gap-1"
 				>
 					<Image
 						src={"/logo.svg"}
@@ -216,21 +216,21 @@ const WaitlistPage = () => {
 						width={28}
 						height={28}
 					/>
-					<h1 className="text-3xl font-extrabold font-caudex">Reviseo</h1>
+					<h1 className="font-caudex font-extrabold text-3xl">Reviseo</h1>
 				</Link>
 				<Link href={"/blog/release"}>
 					<Badge
 						size={"lg"}
 						variant={"info"}
 						appearance={"outline"}
-						className="gap-2 p-3 mb-5 group hover:cursor-pointer"
+						className="group mb-5 gap-2 p-3 hover:cursor-pointer"
 					>
 						<Rocket />
 						Launching December 2025
-						<ChevronRight className="group-hover:translate-x-0.5 transition-transform duration-100 ease-in-out" />
+						<ChevronRight className="transition-transform duration-100 ease-in-out group-hover:translate-x-0.5" />
 					</Badge>
 				</Link>
-				<h1 className="flex flex-row flex-wrap items-center justify-center space-x-5 font-extrabold text-center text-8xl md:text-6xl">
+				<h1 className="flex flex-row flex-wrap items-center justify-center space-x-5 text-center font-extrabold text-8xl md:text-6xl">
 					<LineShadowText
 						shadowColor={theme === "dark" ? "white" : "black"}
 						className="italic"
@@ -250,7 +250,7 @@ const WaitlistPage = () => {
 						Waitlist
 					</LineShadowText>
 				</h1>
-				<span className="max-w-md mt-1 font-medium text-center text-muted-foreground">
+				<span className="mt-1 max-w-md text-center font-medium text-muted-foreground">
 					Are your eady to declutter your inbox from endless nonsense from
 					clients. Enter your email to be the first to know when Reviseo
 					launches.
@@ -262,7 +262,7 @@ const WaitlistPage = () => {
 						size="md"
 						close
 						onClose={handleDismissAlert}
-						className="z-40 max-w-md mt-6"
+						className="z-40 mt-6 max-w-md"
 					>
 						<AlertIcon>
 							<Mail />

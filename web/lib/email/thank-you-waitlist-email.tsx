@@ -20,38 +20,38 @@ export default function ThankYouWaitlistEmail() {
 			<Tailwind>
 				<Head />
 				<Preview>Thank you for joining the Reviseo waitlist!</Preview>
-				<Body className="bg-[#f9fafb] font-sans py-[40px]">
-					<Container className="mx-auto px-[20px] max-w-[600px]">
-						<Section className="bg-[#ffffff] rounded-[8px] px-[32px] py-[40px] border border-solid border-[#e5e7eb]">
+				<Body className="bg-[#f9fafb] py-[40px] font-sans">
+					<Container className="mx-auto max-w-[600px] px-[20px]">
+						<Section className="rounded-[8px] border border-[#e5e7eb] border-solid bg-[#ffffff] px-[32px] py-[40px]">
 							{/* Header */}
 							<Row>
 								<Column className="p-1">
 									<Img
 										src="https://reviseo.app/logo.png"
 										alt="Reviseo"
-										className="size-10 h-auto mb-[12px]"
+										className="mb-[12px] size-10 h-auto"
 									/>
 								</Column>
 							</Row>
 
 							{/* Main Content */}
 							<Section>
-								<Text className="text-[#111827] text-[24px] font-bold mb-[8px] leading-[32px]">
+								<Text className="mb-[8px] font-bold text-[#111827] text-[24px] leading-[32px]">
 									Hey! 👋
 								</Text>
 
-								<Text className="text-[#374151] text-[16px] mb-[24px] leading-[24px]">
+								<Text className="mb-[24px] text-[#374151] text-[16px] leading-[24px]">
 									Thanks for signing up! You're now on the Reviseo waitlist, and
 									we couldn't be more excited to have you.
 								</Text>
 
-								<Text className="text-[#374151] text-[16px] mb-[24px] leading-[24px]">
+								<Text className="mb-[24px] text-[#374151] text-[16px] leading-[24px]">
 									We're working hard to launch something you'll actually want to
 									use. No more email threads trying to decode "make it more
 									modern."
 								</Text>
 
-								<Text className="text-[#374151] text-[16px] mb-[24px] leading-[24px]">
+								<Text className="mb-[24px] text-[#374151] text-[16px] leading-[24px]">
 									Curious what we're up to? Head to our{" "}
 									<Link
 										href="https://reviseo.app/blog"
@@ -67,7 +67,7 @@ export default function ThankYouWaitlistEmail() {
 
 							{/* Footer */}
 							<Section>
-								<Text className="text-[#6b7280] text-[14px] leading-[20px] mb-[16px]">
+								<Text className="mb-[16px] text-[#6b7280] text-[14px] leading-[20px]">
 									Visual feedback for web freelancers.
 								</Text>
 
@@ -86,7 +86,7 @@ export default function ThankYouWaitlistEmail() {
 									</Column>
 								</Row>
 
-								<Text className="text-[#9ca3af] text-[12px] leading-[16px] mt-0">
+								<Text className="mt-0 text-[#9ca3af] text-[12px] leading-[16px]">
 									© 2025 Reviseo. All rights reserved.
 								</Text>
 

@@ -60,12 +60,12 @@ export default function NotificationsSection({
 			<CardContent>
 				<div className="flex items-center justify-between">
 					<div className="flex items-center gap-3">
-						<div className="p-2 rounded-md bg-muted">
+						<div className="rounded-md bg-muted p-2">
 							<Bell className="size-4 text-muted-foreground" />
 						</div>
 						<div>
-							<p className="text-sm font-medium">Email Notifications</p>
-							<p className="text-sm text-muted-foreground">
+							<p className="font-medium text-sm">Email Notifications</p>
+							<p className="text-muted-foreground text-sm">
 								Receive emails when new feedback is submitted
 							</p>
 						</div>

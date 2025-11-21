@@ -179,7 +179,7 @@ const FeedbackTable = ({
 	}, [modalOpen]);
 
 	return (
-		<div className="w-full h-full">
+		<div className="h-full w-full">
 			<DataTable
 				columns={columns}
 				data={website.feedback}
@@ -205,10 +205,10 @@ const FeedbackTable = ({
 								use
 							</DialogDescription>
 						</DialogHeader>
-						<div className="flex flex-row items-center justify-between w-full my-2">
+						<div className="my-2 flex w-full flex-row items-center justify-between">
 							<div>
-								<h2 className="text-lg font-semibold">Annotated Image</h2>
-								<p className="text-xs text-muted-foreground">
+								<h2 className="font-semibold text-lg">Annotated Image</h2>
+								<p className="text-muted-foreground text-xs">
 									Click on image to expand
 								</p>
 							</div>
@@ -229,7 +229,7 @@ const FeedbackTable = ({
 							</Tooltip>
 						</div>
 
-						<div className="p-3 border rounded-sm bg-card/30 border-card">
+						<div className="rounded-sm border border-card bg-card/30 p-3">
 							<ScreenshotPreview
 								app_url=""
 								className="rounded-sm lg:w-full"
@@ -240,8 +240,8 @@ const FeedbackTable = ({
 
 						<div className="flex flex-row items-center justify-between">
 							<div>
-								<h2 className="mt-5 text-lg font-semibold">Title</h2>
-								<div className="mt-1 text-xs text-muted-foreground">
+								<h2 className="mt-5 font-semibold text-lg">Title</h2>
+								<div className="mt-1 text-muted-foreground text-xs">
 									<p className="font-mono">{selectedFeedback.title}</p>
 								</div>
 							</div>
@@ -360,8 +360,8 @@ const FeedbackTable = ({
 
 						<div className="my-4" />
 
-						<h2 className="text-lg font-semibold">Description</h2>
-						<div className="mt-1 text-xs text-muted-foreground">
+						<h2 className="font-semibold text-lg">Description</h2>
+						<div className="mt-1 text-muted-foreground text-xs">
 							<p className="font-mono">
 								{selectedFeedback.description || "No description provided"}
 							</p>
@@ -369,8 +369,8 @@ const FeedbackTable = ({
 
 						<div className="my-4" />
 
-						<h2 className="mb-2 text-lg font-semibold">Extra Info</h2>
-						<p className="mb-4 font-mono text-xs text-muted-foreground">
+						<h2 className="mb-2 font-semibold text-lg">Extra Info</h2>
+						<p className="mb-4 font-mono text-muted-foreground text-xs">
 							Additional technical details and metadata about this feedback
 						</p>
 
@@ -378,11 +378,11 @@ const FeedbackTable = ({
 							{/* Author Information */}
 							{selectedFeedback.author && (
 								<div className="flex flex-col gap-2 md:col-span-2">
-									<h3 className="flex items-center gap-2 text-sm font-medium">
+									<h3 className="flex items-center gap-2 font-medium text-sm">
 										<PersonStanding className="size-4" />
 										Submitted By
 									</h3>
-									<div className="flex items-center gap-3 p-3 border rounded-md bg-card/30">
+									<div className="flex items-center gap-3 rounded-md border bg-card/30 p-3">
 										<Avatar className="size-10">
 											<AvatarImage
 												src={selectedFeedback.author.image || undefined}
@@ -397,10 +397,10 @@ const FeedbackTable = ({
 											</AvatarFallback>
 										</Avatar>
 										<div className="flex flex-col">
-											<span className="text-sm font-medium">
+											<span className="font-medium text-sm">
 												{selectedFeedback.author.name}
 											</span>
-											<span className="text-xs text-muted-foreground">
+											<span className="text-muted-foreground text-xs">
 												{selectedFeedback.author.email}
 											</span>
 										</div>
@@ -410,16 +410,16 @@ const FeedbackTable = ({
 
 							{/* Page URL */}
 							<div className="flex flex-col gap-2 md:col-span-2">
-								<h3 className="flex items-center gap-2 text-sm font-medium">
+								<h3 className="flex items-center gap-2 font-medium text-sm">
 									<Globe className="size-4" />
 									Page URL
 								</h3>
-								<div className="p-3 border rounded-md bg-card/30">
+								<div className="rounded-md border bg-card/30 p-3">
 									<Link
 										href={selectedFeedback.pageUrl}
 										target="_blank"
 										rel="noopener noreferrer"
-										className="text-xs break-all text-primary hover:underline"
+										className="break-all text-primary text-xs hover:underline"
 									>
 										{selectedFeedback.pageUrl}
 									</Link>
@@ -428,11 +428,11 @@ const FeedbackTable = ({
 
 							{/* Browser Information */}
 							<div className="flex flex-col gap-2">
-								<h3 className="flex items-center gap-2 text-sm font-medium">
+								<h3 className="flex items-center gap-2 font-medium text-sm">
 									<Globe className="size-4" />
 									Browser
 								</h3>
-								<div className="p-3 border rounded-md bg-card/30">
+								<div className="rounded-md border bg-card/30 p-3">
 									<div className="flex items-center gap-2">
 										{(() => {
 											const browserIcon = getBrowserIcon(
@@ -441,7 +441,7 @@ const FeedbackTable = ({
 											if (browserIcon) {
 												const BrowserIconComponent = browserIcon.icon;
 												return (
-													<div className="flex items-center justify-center border rounded-full size-8 bg-background border-border">
+													<div className="flex size-8 items-center justify-center rounded-full border border-border bg-background">
 														<span style={{ color: browserIcon.color }}>
 															<BrowserIconComponent size={16} />
 														</span>
@@ -449,12 +449,12 @@ const FeedbackTable = ({
 												);
 											}
 											return (
-												<div className="flex items-center justify-center border rounded-full size-8 bg-background border-border">
+												<div className="flex size-8 items-center justify-center rounded-full border border-border bg-background">
 													<Globe className="size-4 text-muted-foreground" />
 												</div>
 											);
 										})()}
-										<span className="text-xs text-muted-foreground">
+										<span className="text-muted-foreground text-xs">
 											{selectedFeedback.browser ||
 												"Browser information not available"}{" "}
 											{selectedFeedback.browserVersion &&
@@ -466,18 +466,18 @@ const FeedbackTable = ({
 
 							{/* Operating System */}
 							<div className="flex flex-col gap-2">
-								<h3 className="flex items-center gap-2 text-sm font-medium">
+								<h3 className="flex items-center gap-2 font-medium text-sm">
 									<Monitor className="size-4" />
 									Operating System
 								</h3>
-								<div className="p-3 border rounded-md bg-card/30">
+								<div className="rounded-md border bg-card/30 p-3">
 									<div className="flex items-center gap-2">
 										{(() => {
 											const osIcon = getOSIcon(selectedFeedback.os);
 											if (osIcon) {
 												const OSIconComponent = osIcon.icon;
 												return (
-													<div className="flex items-center justify-center border rounded-full size-8 bg-background border-border">
+													<div className="flex size-8 items-center justify-center rounded-full border border-border bg-background">
 														<span style={{ color: osIcon.color }}>
 															<OSIconComponent size={16} />
 														</span>
@@ -485,12 +485,12 @@ const FeedbackTable = ({
 												);
 											}
 											return (
-												<div className="flex items-center justify-center border rounded-full size-8 bg-background border-border">
+												<div className="flex size-8 items-center justify-center rounded-full border border-border bg-background">
 													<Monitor className="size-4 text-muted-foreground" />
 												</div>
 											);
 										})()}
-										<span className="text-xs text-muted-foreground">
+										<span className="text-muted-foreground text-xs">
 											{selectedFeedback.os ||
 												"Operating system information not available"}
 										</span>
@@ -500,11 +500,11 @@ const FeedbackTable = ({
 
 							{/* Device Type */}
 							<div className="flex flex-col gap-2">
-								<h3 className="flex items-center gap-2 text-sm font-medium">
+								<h3 className="flex items-center gap-2 font-medium text-sm">
 									<Smartphone className="size-4" />
 									Device Type
 								</h3>
-								<div className="p-3 border rounded-md bg-card/30">
+								<div className="rounded-md border bg-card/30 p-3">
 									<div className="flex items-center gap-2">
 										{(() => {
 											const device = selectedFeedback.device?.toLowerCase();
@@ -550,12 +550,12 @@ const FeedbackTable = ({
 											}
 
 											return (
-												<div className="flex items-center justify-center border rounded-full size-8 bg-background border-border">
+												<div className="flex size-8 items-center justify-center rounded-full border border-border bg-background">
 													<DeviceIcon className={`size-4 ${colorClass}`} />
 												</div>
 											);
 										})()}
-										<span className="text-xs text-muted-foreground">
+										<span className="text-muted-foreground text-xs">
 											{selectedFeedback.device || "Unknown device"}
 										</span>
 									</div>
@@ -564,14 +564,14 @@ const FeedbackTable = ({
 
 							{/* Viewport */}
 							<div className="flex flex-col gap-2">
-								<h3 className="flex items-center gap-2 text-sm font-medium">
+								<h3 className="flex items-center gap-2 font-medium text-sm">
 									<Maximize className="size-4" />
 									Viewport Size
 								</h3>
-								<div className="p-3 border rounded-md bg-card/30">
+								<div className="rounded-md border bg-card/30 p-3">
 									<div className="flex items-center gap-2">
 										<Maximize className="size-4 text-muted-foreground" />
-										<span className="text-xs text-muted-foreground">
+										<span className="text-muted-foreground text-xs">
 											{selectedFeedback.viewport ||
 												"Viewport size not available"}
 										</span>
@@ -581,11 +581,11 @@ const FeedbackTable = ({
 
 							{/* Timestamps */}
 							<div className="flex flex-col gap-2 md:col-span-2">
-								<h3 className="flex items-center gap-2 text-sm font-medium">
+								<h3 className="flex items-center gap-2 font-medium text-sm">
 									<Clock className="size-4" />
 									Timestamps
 								</h3>
-								<div className="p-3 space-y-3 border rounded-md bg-card/30">
+								<div className="space-y-3 rounded-md border bg-card/30 p-3">
 									{/* <div className="flex items-center justify-between">
 										<div className="flex items-center gap-2">
 											<CalendarPlus className="text-green-600 size-4" />
@@ -602,12 +602,12 @@ const FeedbackTable = ({
 									{selectedFeedback.timestamp && (
 										<div className="flex items-center justify-between">
 											<div className="flex items-center gap-2">
-												<Camera className="text-blue-600 size-4" />
-												<span className="text-xs font-medium text-muted-foreground">
+												<Camera className="size-4 text-blue-600" />
+												<span className="font-medium text-muted-foreground text-xs">
 													Captured:
 												</span>
 											</div>
-											<span className="text-xs text-muted-foreground">
+											<span className="text-muted-foreground text-xs">
 												{moment(selectedFeedback.timestamp).format(
 													"MMM Do YYYY, h:mm:ss a",
 												)}
@@ -617,11 +617,11 @@ const FeedbackTable = ({
 									<div className="flex items-center justify-between">
 										<div className="flex items-center gap-2">
 											<CalendarClock className="size-4 text-amber-600" />
-											<span className="text-xs font-medium text-muted-foreground">
+											<span className="font-medium text-muted-foreground text-xs">
 												Updated:
 											</span>
 										</div>
-										<span className="text-xs text-muted-foreground">
+										<span className="text-muted-foreground text-xs">
 											{moment(selectedFeedback.updatedAt).format(
 												"MMM Do YYYY, h:mm:ss a",
 											)}
@@ -632,12 +632,12 @@ const FeedbackTable = ({
 
 							{/* Feedback ID */}
 							<div className="flex flex-col gap-2 md:col-span-2">
-								<h3 className="flex items-center gap-2 text-sm font-medium">
+								<h3 className="flex items-center gap-2 font-medium text-sm">
 									<Hash className="size-4" />
 									Feedback ID
 								</h3>
-								<div className="p-3 border rounded-md bg-card/30">
-									<code className="text-xs text-muted-foreground">
+								<div className="rounded-md border bg-card/30 p-3">
+									<code className="text-muted-foreground text-xs">
 										{selectedFeedback.id}
 									</code>
 								</div>
@@ -652,24 +652,24 @@ const FeedbackTable = ({
 								Hang tight while we present what your client needs done.
 							</DialogDescription>
 						</DialogHeader>
-						<div className="flex flex-row items-center justify-between w-full my-2">
+						<div className="my-2 flex w-full flex-row items-center justify-between">
 							<div>
-								<h2 className="text-lg font-semibold">Annotated Image</h2>
-								<p className="text-xs text-muted-foreground">
+								<h2 className="font-semibold text-lg">Annotated Image</h2>
+								<p className="text-muted-foreground text-xs">
 									Click on image to expand
 								</p>
 							</div>
 						</div>
 
-						<div className="p-3 border rounded-sm bg-card/30 border-card">
-							<Skeleton className="w-full h-[400px] rounded-sm" />
+						<div className="rounded-sm border border-card bg-card/30 p-3">
+							<Skeleton className="h-[400px] w-full rounded-sm" />
 						</div>
 
 						<div className="flex flex-row items-center justify-between">
 							<div className="flex-1">
-								<h2 className="mt-5 text-lg font-semibold">Title</h2>
+								<h2 className="mt-5 font-semibold text-lg">Title</h2>
 								<div className="mt-1">
-									<Skeleton className="w-3/4 h-4" />
+									<Skeleton className="h-4 w-3/4" />
 								</div>
 							</div>
 						</div>

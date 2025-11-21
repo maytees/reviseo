@@ -73,12 +73,12 @@ export function LoginForm() {
 		});
 	}
 	return (
-		<Card className="px-3 shadow-xl border-border py-7 bg-linear-to-br from-card to-card/50 backdrop-blur-sm">
-			<CardHeader className="py-2 space-y-1">
-				<CardTitle className="text-2xl font-bold text-center sm:text-3xl font-caudex">
+		<Card className="border-border bg-linear-to-br from-card to-card/50 px-3 py-7 shadow-xl backdrop-blur-sm">
+			<CardHeader className="space-y-1 py-2">
+				<CardTitle className="text-center font-bold font-caudex text-2xl sm:text-3xl">
 					Welcome Back!
 				</CardTitle>
-				<CardDescription className="text-base text-center sm:text-lg font-inter">
+				<CardDescription className="text-center font-inter text-base sm:text-lg">
 					Sign in to access your dashboard
 				</CardDescription>
 			</CardHeader>
@@ -87,7 +87,7 @@ export function LoginForm() {
 				<Button
 					disabled={githubPending || isSuccess}
 					onClick={signInWithGithub}
-					className="w-full h-11 font-inter"
+					className="h-11 w-full font-inter"
 					variant="outline"
 					size="lg"
 				>
@@ -108,7 +108,7 @@ export function LoginForm() {
 					<div className="grid gap-2.5">
 						<Label
 							htmlFor={emailId}
-							className="text-base font-medium font-inter"
+							className="font-inter font-medium text-base"
 						>
 							Email
 						</Label>

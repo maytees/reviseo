@@ -90,7 +90,7 @@ const CreateWebsiteDialog = ({ className }: React.ComponentProps<"button">) => {
 					</Button>
 				</DialogTrigger>
 				<DialogContent>
-					<DialogTitle className="text-xl font-bold">Add Website</DialogTitle>
+					<DialogTitle className="font-bold text-xl">Add Website</DialogTitle>
 					<DialogDescription>
 						Enter information about your client's website.
 					</DialogDescription>

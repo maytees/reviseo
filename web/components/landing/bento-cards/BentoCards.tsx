@@ -41,12 +41,12 @@ export function ExcalidrawBentoCard() {
 			whileInView={{ opacity: 1, y: 0 }}
 			transition={{ duration: 0.5 }}
 			viewport={{ once: true }}
-			className="h-full "
+			className="h-full"
 		>
-			<Card className="relative h-full p-4 transition-all duration-300 group border-border bg-gradient-to-br from-card to-card/50 hover:shadow-lg sm:p-6 md:p-8">
+			<Card className="group relative h-full border-border bg-gradient-to-br from-card to-card/50 p-4 transition-all duration-300 hover:shadow-lg sm:p-6 md:p-8">
 				{/* Background Pattern */}
 				<div className="absolute inset-0 opacity-5">
-					<svg className="w-full h-full" xmlns="http://www.w3.org/2000/svg">
+					<svg className="h-full w-full" xmlns="http://www.w3.org/2000/svg">
 						<title>Grid Pattern</title>
 						<defs>
 							<pattern
@@ -67,7 +67,7 @@ export function ExcalidrawBentoCard() {
 					</svg>
 				</div>
 
-				<div className="relative flex flex-col h-full">
+				<div className="relative flex h-full flex-col">
 					{/* Header */}
 					<div className="mb-4 sm:mb-6">
 						<motion.div
@@ -75,23 +75,23 @@ export function ExcalidrawBentoCard() {
 							whileInView={{ scale: 1 }}
 							transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
 							viewport={{ once: true }}
-							className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary sm:mb-4 sm:px-3 sm:py-1.5 sm:text-sm"
+							className="mb-3 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 font-medium text-primary text-xs sm:mb-4 sm:px-3 sm:py-1.5 sm:text-sm"
 						>
-							<Pencil className="w-3 h-3 sm:h-4 sm:w-4" />
+							<Pencil className="h-3 w-3 sm:h-4 sm:w-4" />
 							Powered by Excalidraw
 						</motion.div>
 
-						<h3 className="mb-1.5 text-balance text-xl font-bold text-foreground sm:mb-2 sm:text-2xl md:text-3xl font-caudex">
+						<h3 className="mb-1.5 text-balance font-bold font-caudex text-foreground text-xl sm:mb-2 sm:text-2xl md:text-3xl">
 							Annotate with Ease
 						</h3>
-						<p className="text-sm text-pretty text-muted-foreground sm:text-base md:text-lg font-inter">
+						<p className="text-pretty font-inter text-muted-foreground text-sm sm:text-base md:text-lg">
 							Draw, sketch, and highlight directly on feedback using the proven
 							Excalidraw canvas trusted by hundreds of thousands of people.
 						</p>
 					</div>
 
 					{/* Visual Demo Area */}
-					<div className="relative flex-1 mb-4 sm:mb-6">
+					<div className="relative mb-4 flex-1 sm:mb-6">
 						<motion.div
 							initial={{ opacity: 0 }}
 							whileInView={{ opacity: 1 }}
@@ -114,13 +114,13 @@ export function ExcalidrawBentoCard() {
 								}}
 								viewport={{ once: true }}
 							>
-								<SiExcalidraw className="w-[100px] h-[100px] sm:w-[150px] sm:h-[150px] text-[#6965db]" />
+								<SiExcalidraw className="h-[100px] w-[100px] text-[#6965db] sm:h-[150px] sm:w-[150px]" />
 							</motion.div>
 						</motion.div>
 					</div>
 
 					{/* Features List */}
-					<div className="grid gap-2 mb-4 sm:mb-6 sm:grid-cols-2 sm:gap-3">
+					<div className="mb-4 grid gap-2 sm:mb-6 sm:grid-cols-2 sm:gap-3">
 						{[
 							"Easy to use",
 							"Handrawn aesthetic",
@@ -135,10 +135,10 @@ export function ExcalidrawBentoCard() {
 								viewport={{ once: true }}
 								className="flex items-center gap-2"
 							>
-								<div className="flex items-center justify-center w-4 h-4 rounded-full bg-primary/10 sm:h-5 sm:w-5">
+								<div className="flex h-4 w-4 items-center justify-center rounded-full bg-primary/10 sm:h-5 sm:w-5">
 									<Check className="h-2.5 w-2.5 text-primary sm:h-3 sm:w-3" />
 								</div>
-								<span className="text-sm text-foreground sm:text-base font-inter">
+								<span className="font-inter text-foreground text-sm sm:text-base">
 									{feature}
 								</span>
 							</motion.div>
@@ -149,10 +149,10 @@ export function ExcalidrawBentoCard() {
 					<Link href="/blog/why-excalidraw">
 						<motion.button
 							whileHover={{ x: 4 }}
-							className="inline-flex items-center gap-2 text-xs font-medium transition-colors group/btn text-primary hover:text-primary/80 sm:text-sm"
+							className="group/btn inline-flex items-center gap-2 font-medium text-primary text-xs transition-colors hover:text-primary/80 sm:text-sm"
 						>
 							Learn more
-							<ArrowRight className="w-3 h-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
+							<ArrowRight className="h-3 w-3 transition-transform group-hover/btn:translate-x-1 sm:h-4 sm:w-4" />
 						</motion.button>
 					</Link>
 				</div>
@@ -169,42 +169,42 @@ export function QuickInstallCard() {
 			viewport={{ once: true }}
 			className="h-full"
 		>
-			<Card className="relative h-full p-4 overflow-hidden group border-border bg-gradient-to-br from-card to-card/50 sm:p-6">
+			<Card className="group relative h-full overflow-hidden border-border bg-gradient-to-br from-card to-card/50 p-4 sm:p-6">
 				{/* Background Gradient */}
 				<motion.div
 					initial={{ opacity: 0, scale: 0.8 }}
 					whileInView={{ opacity: 0.15, scale: 1 }}
 					transition={{ duration: 1.2, ease: "easeOut" }}
 					viewport={{ once: true }}
-					className="absolute -top-0 left-20 w-[500px] h-[500px] pointer-events-none blur-3xl"
+					className="-top-0 pointer-events-none absolute left-20 h-[500px] w-[500px] blur-3xl"
 					style={{
 						background:
 							"radial-gradient(circle, var(--primary), transparent 70%)",
 					}}
 				/>
 
-				<div className="relative z-10 flex flex-col justify-between h-full gap-2">
+				<div className="relative z-10 flex h-full flex-col justify-between gap-2">
 					<div>
 						<motion.div
 							initial={{ scale: 0 }}
 							whileInView={{ scale: 1 }}
 							transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
 							viewport={{ once: true }}
-							className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary sm:px-3 sm:py-1.5"
+							className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 font-medium text-primary text-xs sm:px-3 sm:py-1.5"
 						>
-							<Download className="w-3 h-3 sm:h-4 sm:w-4" />
+							<Download className="h-3 w-3 sm:h-4 sm:w-4" />
 							Simple integration
 						</motion.div>
-						<h4 className="text-lg font-semibold font-caudex">
+						<h4 className="font-caudex font-semibold text-lg">
 							Get started instantly
 						</h4>
-						<p className="mt-1 text-base text-muted-foreground font-inter">
+						<p className="mt-1 font-inter text-base text-muted-foreground">
 							Add a simple script tag or use our React, Vue, or Vanilla
 							components.
 						</p>
 					</div>
 					<div className="mt-auto space-y-2">
-						<div className="rounded-md border border-border bg-muted/30 p-2.5 text-xs sm:text-sm font-mono">
+						<div className="rounded-md border border-border bg-muted/30 p-2.5 font-mono text-xs sm:text-sm">
 							<div className="text-muted-foreground">
 								&lt;script src=&quot;reviseo.js&quot;&gt;&lt;/script&gt;
 							</div>
@@ -266,44 +266,44 @@ export function OrbitingCirclesCard() {
 			viewport={{ once: true }}
 			className="h-full"
 		>
-			<Card className="relative h-full p-4 overflow-hidden border-border bg-gradient-to-br from-card to-card/50 sm:p-6">
+			<Card className="relative h-full overflow-hidden border-border bg-gradient-to-br from-card to-card/50 p-4 sm:p-6">
 				{/* Background Gradient */}
 				<motion.div
 					initial={{ opacity: 0, scale: 0.8 }}
 					whileInView={{ opacity: 0.15, scale: 1 }}
 					transition={{ duration: 1.2, ease: "easeOut" }}
 					viewport={{ once: true }}
-					className="absolute top-20 right-20 md:top-50 md:right-82 w-[500px] h-[500px] lg:w-[800px] lg:h-[800px] pointer-events-none blur-3xl"
+					className="pointer-events-none absolute top-20 right-20 h-[500px] w-[500px] blur-3xl md:top-50 md:right-82 lg:h-[800px] lg:w-[800px]"
 					style={{
 						background:
 							"radial-gradient(circle, var(--primary), var(--accent), transparent 90%)",
 					}}
 				/>
 
-				<div className="relative z-10 flex flex-col h-full">
-					<div className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary sm:px-3 sm:py-1.5">
-						<Zap className="w-3 h-3 sm:h-4 sm:w-4" />
+				<div className="relative z-10 flex h-full flex-col">
+					<div className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 font-medium text-primary text-xs sm:px-3 sm:py-1.5">
+						<Zap className="h-3 w-3 sm:h-4 sm:w-4" />
 						Universal compatibility
 					</div>
-					<h4 className="text-lg font-semibold font-caudex">
+					<h4 className="font-caudex font-semibold text-lg">
 						Works everywhere
 					</h4>
-					<p className="mt-1 text-base text-muted-foreground font-inter">
+					<p className="mt-1 font-inter text-base text-muted-foreground">
 						From vanilla JavaScript to React, Vue, and more, to no-code
 						platforms like Webflow and WordPress integrate Reviseo anywhere.
 					</p>
 
-					<div className="relative flex items-center justify-center flex-1 mt-4">
+					<div className="relative mt-4 flex flex-1 items-center justify-center">
 						<OrbitingCircles
 							iconSize={32}
 							radius={isLargeScreen ? 180 : 120}
 							speed={1.5}
 						>
-							<SiVuedotjs className="w-8 h-8 lg:w-12 lg:h-12 text-[#4FC08D]" />
-							<SiNextdotjs className="w-8 h-8 lg:w-12 lg:h-12 text-foreground" />
-							<SiReact className="w-8 h-8 lg:w-12 lg:h-12 text-[#61DAFB]" />
-							<SiJavascript className="w-8 h-8 lg:w-12 lg:h-12 text-[#F7DF1E]" />
-							<SiWebflow className="w-8 h-8 lg:w-12 lg:h-12 text-[#4353FF]" />
+							<SiVuedotjs className="h-8 w-8 text-[#4FC08D] lg:h-12 lg:w-12" />
+							<SiNextdotjs className="h-8 w-8 text-foreground lg:h-12 lg:w-12" />
+							<SiReact className="h-8 w-8 text-[#61DAFB] lg:h-12 lg:w-12" />
+							<SiJavascript className="h-8 w-8 text-[#F7DF1E] lg:h-12 lg:w-12" />
+							<SiWebflow className="h-8 w-8 text-[#4353FF] lg:h-12 lg:w-12" />
 						</OrbitingCircles>
 						<OrbitingCircles
 							iconSize={28}
@@ -311,31 +311,31 @@ export function OrbitingCirclesCard() {
 							reverse
 							speed={2}
 						>
-							<SiFramer className="w-7 h-7 lg:w-10 lg:h-10 text-[#0055FF]" />
-							<SiShopify className="w-7 h-7 lg:w-10 lg:h-10 text-[#96BF48]" />
-							<SiWordpress className="w-7 h-7 lg:w-10 lg:h-10 text-[#21759B]" />
-							<SiWix className="w-7 h-7 lg:w-10 lg:h-10 text-[#0C6EFC]" />
+							<SiFramer className="h-7 w-7 text-[#0055FF] lg:h-10 lg:w-10" />
+							<SiShopify className="h-7 w-7 text-[#96BF48] lg:h-10 lg:w-10" />
+							<SiWordpress className="h-7 w-7 text-[#21759B] lg:h-10 lg:w-10" />
+							<SiWix className="h-7 w-7 text-[#0C6EFC] lg:h-10 lg:w-10" />
 						</OrbitingCircles>
 						<OrbitingCircles
 							iconSize={24}
 							radius={isLargeScreen ? 75 : 50}
 							speed={2.5}
 						>
-							<SiSquarespace className="w-6 h-6 lg:w-9 lg:h-9 text-foreground" />
-							<SiHtml5 className="w-6 h-6 lg:w-9 lg:h-9 text-[#E34F26]" />
-							<SiAngular className="w-6 h-6 lg:w-9 lg:h-9 text-[#DD0031]" />
+							<SiSquarespace className="h-6 w-6 text-foreground lg:h-9 lg:w-9" />
+							<SiHtml5 className="h-6 w-6 text-[#E34F26] lg:h-9 lg:w-9" />
+							<SiAngular className="h-6 w-6 text-[#DD0031] lg:h-9 lg:w-9" />
 						</OrbitingCircles>
 
 						{/* Center logo */}
 						<div className="absolute inset-0 flex items-center justify-center">
-							<div className="flex items-center justify-center w-12 h-12 border-2 rounded-full shadow-lg lg:w-16 lg:h-16 bg-background border-primary/20">
+							<div className="flex h-12 w-12 items-center justify-center rounded-full border-2 border-primary/20 bg-background shadow-lg lg:h-16 lg:w-16">
 								<svg
 									width="24"
 									height="24"
 									viewBox="0 0 32 32"
 									fill="none"
 									xmlns="http://www.w3.org/2000/svg"
-									className="lg:w-8 lg:h-8"
+									className="lg:h-8 lg:w-8"
 								>
 									<title>Reviseo Logo</title>
 									<defs>
@@ -399,35 +399,35 @@ export function CollaborationCard() {
 			viewport={{ once: true }}
 			className="h-full"
 		>
-			<Card className="relative h-full p-4 overflow-hidden group border-border bg-gradient-to-br from-card to-card/50 sm:p-6">
+			<Card className="group relative h-full overflow-hidden border-border bg-gradient-to-br from-card to-card/50 p-4 sm:p-6">
 				{/* Background Gradient */}
 				<motion.div
 					initial={{ opacity: 0, scale: 0.8 }}
 					whileInView={{ opacity: 0.15, scale: 1 }}
 					transition={{ duration: 1.2, ease: "easeOut" }}
 					viewport={{ once: true }}
-					className="absolute -top-0 left-20 w-[500px] h-[500px] pointer-events-none blur-3xl"
+					className="-top-0 pointer-events-none absolute left-20 h-[500px] w-[500px] blur-3xl"
 					style={{
 						background:
 							"radial-gradient(circle, var(--primary), transparent 70%)",
 					}}
 				/>
 
-				<div className="relative z-10 flex flex-col justify-between h-full gap-2">
+				<div className="relative z-10 flex h-full flex-col justify-between gap-2">
 					<div>
-						<div className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary sm:px-3 sm:py-1.5">
-							<Users className="w-3 h-3 sm:h-4 sm:w-4" />
+						<div className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 font-medium text-primary text-xs sm:px-3 sm:py-1.5">
+							<Users className="h-3 w-3 sm:h-4 sm:w-4" />
 							Invite only access
 						</div>
-						<h4 className="text-lg font-semibold font-caudex">
+						<h4 className="font-caudex font-semibold text-lg">
 							Easy For Clients
 						</h4>
-						<p className="mt-1 text-base text-muted-foreground font-inter">
+						<p className="mt-1 font-inter text-base text-muted-foreground">
 							Send email invites to clients. Simple onboarding with secure,
 							invite only access.
 						</p>
 					</div>
-					<div className="flex justify-end mt-3">
+					<div className="mt-3 flex justify-end">
 						<motion.div
 							initial={{ scale: 0.8, opacity: 0 }}
 							whileInView={{ scale: 1, opacity: 1 }}
@@ -461,21 +461,21 @@ export function InviteOnlyVisualCard() {
 			viewport={{ once: true }}
 			className="h-full"
 		>
-			<Card className="relative h-full p-4 overflow-hidden group border-border bg-gradient-to-br from-card to-card/50 sm:p-6">
+			<Card className="group relative h-full overflow-hidden border-border bg-gradient-to-br from-card to-card/50 p-4 sm:p-6">
 				{/* Background Gradient */}
 				<motion.div
 					initial={{ opacity: 0, scale: 0.8 }}
 					whileInView={{ opacity: 0.15, scale: 1 }}
 					transition={{ duration: 1.2, ease: "easeOut" }}
 					viewport={{ once: true }}
-					className="absolute -top-20 left-1/2 -translate-x-1/2 w-[500px] h-[500px] pointer-events-none blur-3xl"
+					className="-top-20 -translate-x-1/2 pointer-events-none absolute left-1/2 h-[500px] w-[500px] blur-3xl"
 					style={{
 						background:
 							"radial-gradient(circle, var(--primary), transparent 70%)",
 					}}
 				/>
 
-				<div className="relative z-10 flex flex-col h-full">
+				<div className="relative z-10 flex h-full flex-col">
 					{/* Header */}
 					<div className="mb-3 sm:mb-4">
 						<motion.div
@@ -483,22 +483,22 @@ export function InviteOnlyVisualCard() {
 							whileInView={{ scale: 1 }}
 							transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
 							viewport={{ once: true }}
-							className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary sm:px-3 sm:py-1.5"
+							className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 font-medium text-primary text-xs sm:px-3 sm:py-1.5"
 						>
-							<Shield className="w-3 h-3 sm:h-4 sm:w-4" />
+							<Shield className="h-3 w-3 sm:h-4 sm:w-4" />
 							Invite-only access
 						</motion.div>
-						<h4 className="text-lg font-semibold font-caudex">
+						<h4 className="font-caudex font-semibold text-lg">
 							Only For Your Clients
 						</h4>
-						<p className="mt-1 text-sm sm:text-base text-muted-foreground font-inter">
+						<p className="mt-1 font-inter text-muted-foreground text-sm sm:text-base">
 							Only invited clients see the widget. Random website visitors won't
 							see anything.
 						</p>
 					</div>
 
 					{/* Visual Demonstration - Toggle Comparison */}
-					<div className="flex flex-col items-center justify-center flex-1 gap-4 mt-2 sm:flex-row sm:gap-6 md:gap-8 lg:gap-12 sm:mt-4">
+					<div className="mt-2 flex flex-1 flex-col items-center justify-center gap-4 sm:mt-4 sm:flex-row sm:gap-6 md:gap-8 lg:gap-12">
 						{/* Client (Invited) Window */}
 						<motion.div
 							initial={{ opacity: 0, x: -20 }}
@@ -508,15 +508,15 @@ export function InviteOnlyVisualCard() {
 							className="flex flex-col items-center gap-2"
 						>
 							<div className="w-28 sm:w-24 md:w-32 lg:w-40">
-								<div className="overflow-hidden border-2 rounded-lg shadow-lg bg-background border-border">
+								<div className="overflow-hidden rounded-lg border-2 border-border bg-background shadow-lg">
 									{/* Browser chrome */}
-									<div className="bg-muted px-2 py-1.5 flex gap-1.5">
-										<div className="w-2 h-2 rounded-full bg-muted-foreground/30"></div>
-										<div className="w-2 h-2 rounded-full bg-muted-foreground/30"></div>
-										<div className="w-2 h-2 rounded-full bg-muted-foreground/30"></div>
+									<div className="flex gap-1.5 bg-muted px-2 py-1.5">
+										<div className="h-2 w-2 rounded-full bg-muted-foreground/30"></div>
+										<div className="h-2 w-2 rounded-full bg-muted-foreground/30"></div>
+										<div className="h-2 w-2 rounded-full bg-muted-foreground/30"></div>
 									</div>
 									{/* Content */}
-									<div className="relative h-20 p-3 sm:h-20 md:h-24 bg-background">
+									<div className="relative h-20 bg-background p-3 sm:h-20 md:h-24">
 										<motion.div
 											initial={{ scale: 0 }}
 											whileInView={{ scale: 1 }}
@@ -527,9 +527,9 @@ export function InviteOnlyVisualCard() {
 												damping: 15,
 											}}
 											viewport={{ once: true }}
-											className="absolute flex items-center justify-center rounded-full shadow-md bottom-2 right-2 w-7 h-7 sm:w-7 sm:h-7 md:w-8 md:h-8 bg-primary"
+											className="absolute right-2 bottom-2 flex h-7 w-7 items-center justify-center rounded-full bg-primary shadow-md sm:h-7 sm:w-7 md:h-8 md:w-8"
 										>
-											<div className="w-2.5 h-2.5 sm:w-2.5 sm:h-2.5 md:w-3 md:h-3 rounded-full bg-background"></div>
+											<div className="h-2.5 w-2.5 rounded-full bg-background sm:h-2.5 sm:w-2.5 md:h-3 md:w-3"></div>
 										</motion.div>
 									</div>
 								</div>
@@ -541,10 +541,10 @@ export function InviteOnlyVisualCard() {
 								viewport={{ once: true }}
 								className="flex items-center gap-1.5"
 							>
-								<div className="flex items-center justify-center w-4 h-4 bg-green-500 rounded-full">
-									<Check className="w-2.5 h-2.5 text-white" strokeWidth={3} />
+								<div className="flex h-4 w-4 items-center justify-center rounded-full bg-green-500">
+									<Check className="h-2.5 w-2.5 text-white" strokeWidth={3} />
 								</div>
-								<span className="text-xs font-medium text-foreground font-inter">
+								<span className="font-inter font-medium text-foreground text-xs">
 									Client
 								</span>
 							</motion.div>
@@ -559,15 +559,15 @@ export function InviteOnlyVisualCard() {
 							className="flex flex-col items-center gap-2"
 						>
 							<div className="w-28 sm:w-24 md:w-32 lg:w-40">
-								<div className="overflow-hidden border-2 rounded-lg shadow-lg bg-background border-border">
+								<div className="overflow-hidden rounded-lg border-2 border-border bg-background shadow-lg">
 									{/* Browser chrome */}
-									<div className="bg-muted px-2 py-1.5 flex gap-1.5">
-										<div className="w-2 h-2 rounded-full bg-muted-foreground/30"></div>
-										<div className="w-2 h-2 rounded-full bg-muted-foreground/30"></div>
-										<div className="w-2 h-2 rounded-full bg-muted-foreground/30"></div>
+									<div className="flex gap-1.5 bg-muted px-2 py-1.5">
+										<div className="h-2 w-2 rounded-full bg-muted-foreground/30"></div>
+										<div className="h-2 w-2 rounded-full bg-muted-foreground/30"></div>
+										<div className="h-2 w-2 rounded-full bg-muted-foreground/30"></div>
 									</div>
 									{/* Content - Empty */}
-									<div className="h-20 p-3 sm:h-20 md:h-24 bg-background"></div>
+									<div className="h-20 bg-background p-3 sm:h-20 md:h-24"></div>
 								</div>
 							</div>
 							<motion.div
@@ -577,10 +577,10 @@ export function InviteOnlyVisualCard() {
 								viewport={{ once: true }}
 								className="flex items-center gap-1.5"
 							>
-								<div className="flex items-center justify-center w-4 h-4 bg-red-500 rounded-full">
-									<X className="w-2.5 h-2.5 text-white" strokeWidth={3} />
+								<div className="flex h-4 w-4 items-center justify-center rounded-full bg-red-500">
+									<X className="h-2.5 w-2.5 text-white" strokeWidth={3} />
 								</div>
-								<span className="text-xs font-medium text-foreground font-inter">
+								<span className="font-inter font-medium text-foreground text-xs">
 									Visitor
 								</span>
 							</motion.div>
@@ -611,43 +611,43 @@ export function TrackChangesCard() {
 			viewport={{ once: true }}
 			className="h-full"
 		>
-			<Card className="relative h-full p-4 overflow-hidden group border-border bg-gradient-to-br from-card to-card/50 sm:p-6">
+			<Card className="group relative h-full overflow-hidden border-border bg-gradient-to-br from-card to-card/50 p-4 sm:p-6">
 				{/* Background Gradient */}
 				<motion.div
 					initial={{ opacity: 0, scale: 0.8 }}
 					whileInView={{ opacity: 0.15, scale: 1 }}
 					transition={{ duration: 1.2, ease: "easeOut" }}
 					viewport={{ once: true }}
-					className="absolute -top-0 right-20 w-[500px] h-[500px] pointer-events-none blur-3xl"
+					className="-top-0 pointer-events-none absolute right-20 h-[500px] w-[500px] blur-3xl"
 					style={{
 						background:
 							"radial-gradient(circle, var(--primary), transparent 70%)",
 					}}
 				/>
 
-				<div className="relative z-10 flex flex-col justify-between h-full gap-2">
+				<div className="relative z-10 flex h-full flex-col justify-between gap-2">
 					<div>
 						<motion.div
 							initial={{ scale: 0 }}
 							whileInView={{ scale: 1 }}
 							transition={{ delay: 0.2, type: "spring", stiffness: 200 }}
 							viewport={{ once: true }}
-							className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 text-xs font-medium text-primary sm:px-3 sm:py-1.5"
+							className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-2.5 py-1 font-medium text-primary text-xs sm:px-3 sm:py-1.5"
 						>
-							<ListChecks className="w-3 h-3 sm:h-4 sm:w-4" />
+							<ListChecks className="h-3 w-3 sm:h-4 sm:w-4" />
 							Track progress
 						</motion.div>
-						<h4 className="text-lg font-semibold font-caudex">
+						<h4 className="font-caudex font-semibold text-lg">
 							Keep Clients In The Loop
 						</h4>
-						<p className="mt-1 text-base text-muted-foreground font-inter">
+						<p className="mt-1 font-inter text-base text-muted-foreground">
 							Let your clients see every step of the way. Update feedback status
 							so they always know what you're working on.
 						</p>
 					</div>
 
 					{/* Status Flow */}
-					<div className="flex items-center justify-center gap-2 mt-3 sm:gap-3">
+					<div className="mt-3 flex items-center justify-center gap-2 sm:gap-3">
 						{/* New Pill */}
 						<motion.div
 							initial={{ opacity: 0, y: 20 }}
@@ -665,10 +665,10 @@ export function TrackChangesCard() {
 									ease: "easeInOut",
 								},
 							}}
-							className="relative flex items-center justify-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 bg-red-500/10 border border-red-500/30 rounded-full"
+							className="relative flex items-center justify-center gap-1.5 rounded-full border border-red-500/30 bg-red-500/10 px-2 py-1 sm:px-3 sm:py-1.5"
 						>
-							<span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-red-500 rounded-full" />
-							<span className="text-[10px] sm:text-xs font-medium text-red-700 dark:text-red-400">
+							<span className="h-1.5 w-1.5 rounded-full bg-red-500 sm:h-2 sm:w-2" />
+							<span className="font-medium text-[10px] text-red-700 sm:text-xs dark:text-red-400">
 								New
 							</span>
 						</motion.div>
@@ -688,7 +688,7 @@ export function TrackChangesCard() {
 								ease: "easeInOut",
 							}}
 						>
-							<ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground/50" />
+							<ArrowRight className="h-3 w-3 text-muted-foreground/50 sm:h-4 sm:w-4" />
 						</motion.div>
 
 						{/* In Progress Pill */}
@@ -697,10 +697,10 @@ export function TrackChangesCard() {
 							whileInView={{ opacity: 1, y: 0 }}
 							transition={{ delay: 0.9, duration: 0.5 }}
 							viewport={{ once: true }}
-							className="flex items-center justify-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 bg-amber-500/10 border border-amber-500/30 rounded-full"
+							className="flex items-center justify-center gap-1.5 rounded-full border border-amber-500/30 bg-amber-500/10 px-2 py-1 sm:px-3 sm:py-1.5"
 						>
-							<span className="w-1.5 h-1.5 sm:w-2 sm:h-2 bg-amber-500 rounded-full" />
-							<span className="text-[10px] sm:text-xs font-medium text-amber-700 dark:text-amber-400">
+							<span className="h-1.5 w-1.5 rounded-full bg-amber-500 sm:h-2 sm:w-2" />
+							<span className="font-medium text-[10px] text-amber-700 sm:text-xs dark:text-amber-400">
 								In Progress
 							</span>
 						</motion.div>
@@ -720,7 +720,7 @@ export function TrackChangesCard() {
 								ease: "easeInOut",
 							}}
 						>
-							<ArrowRight className="w-3 h-3 sm:w-4 sm:h-4 text-muted-foreground/50" />
+							<ArrowRight className="h-3 w-3 text-muted-foreground/50 sm:h-4 sm:w-4" />
 						</motion.div>
 
 						{/* Resolved Pill */}
@@ -729,13 +729,13 @@ export function TrackChangesCard() {
 							whileInView={{ opacity: 1, y: 0 }}
 							transition={{ delay: 1.3, duration: 0.5 }}
 							viewport={{ once: true }}
-							className="flex items-center justify-center gap-1.5 px-2 py-1 sm:px-3 sm:py-1.5 bg-green-500/10 border border-green-500/30 rounded-full"
+							className="flex items-center justify-center gap-1.5 rounded-full border border-green-500/30 bg-green-500/10 px-2 py-1 sm:px-3 sm:py-1.5"
 						>
 							<Check
-								className="w-2.5 h-2.5 sm:w-3 sm:h-3 text-green-600 dark:text-green-400"
+								className="h-2.5 w-2.5 text-green-600 sm:h-3 sm:w-3 dark:text-green-400"
 								strokeWidth={3}
 							/>
-							<span className="text-[10px] sm:text-xs font-medium text-green-700 dark:text-green-400">
+							<span className="font-medium text-[10px] text-green-700 sm:text-xs dark:text-green-400">
 								Resolved
 							</span>
 						</motion.div>
@@ -747,17 +747,17 @@ export function TrackChangesCard() {
 						whileInView={{ opacity: 1, y: 0 }}
 						transition={{ duration: 0.5, delay: 1.5 }}
 						viewport={{ once: true }}
-						className="p-3 mt-3 border rounded-lg bg-background/50 border-border"
+						className="mt-3 rounded-lg border border-border bg-background/50 p-3"
 					>
 						<div className="flex items-start gap-2">
-							<div className="flex-shrink-0 w-8 h-8 rounded bg-gradient-to-br from-primary to-purple-500" />
-							<div className="flex-1 min-w-0">
-								<p className="text-sm font-medium truncate text-foreground font-inter">
+							<div className="h-8 w-8 flex-shrink-0 rounded bg-gradient-to-br from-primary to-purple-500" />
+							<div className="min-w-0 flex-1">
+								<p className="truncate font-inter font-medium text-foreground text-sm">
 									Update homepage design
 								</p>
-								<div className="flex items-center gap-1.5 mt-1">
-									<span className="w-1.5 h-1.5 bg-amber-500 rounded-full" />
-									<span className="text-xs font-bold font-inter text-amber-700 dark:text-amber-400">
+								<div className="mt-1 flex items-center gap-1.5">
+									<span className="h-1.5 w-1.5 rounded-full bg-amber-500" />
+									<span className="font-bold font-inter text-amber-700 text-xs dark:text-amber-400">
 										In Progress
 									</span>
 								</div>

@@ -12,7 +12,7 @@ export default function DangerZoneSection() {
 	return (
 		<Card className="border-destructive/50">
 			<CardHeader>
-				<CardTitle className="text-destructive flex items-center gap-2">
+				<CardTitle className="flex items-center gap-2 text-destructive">
 					<AlertTriangle className="size-5" />
 					Danger Zone
 				</CardTitle>
@@ -21,10 +21,10 @@ export default function DangerZoneSection() {
 				</CardDescription>
 			</CardHeader>
 			<CardContent className="space-y-4">
-				<div className="flex items-start justify-between gap-4 p-4 rounded-lg border border-destructive/20 bg-destructive/5">
+				<div className="flex items-start justify-between gap-4 rounded-lg border border-destructive/20 bg-destructive/5 p-4">
 					<div className="flex-1">
-						<p className="text-sm font-medium">Delete Account</p>
-						<p className="text-sm text-muted-foreground mt-1">
+						<p className="font-medium text-sm">Delete Account</p>
+						<p className="mt-1 text-muted-foreground text-sm">
 							Permanently delete your account, all websites, and all feedback.
 							This action cannot be undone.
 						</p>

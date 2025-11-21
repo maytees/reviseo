@@ -13,7 +13,7 @@ import { ShootingStars } from "@/components/ui/shadcn-io/shooting-stars";
 
 export default function AboutClient() {
 	return (
-		<div className="relative w-full min-h-screen overflow-x-hidden">
+		<div className="relative min-h-screen w-full overflow-x-hidden">
 			<ShootingStars
 				starColor="#9E00FF"
 				className="-z-30"
@@ -61,7 +61,7 @@ export default function AboutClient() {
 				initial={{ opacity: 0, x: -200 }}
 				animate={{ opacity: 0.3, x: 0 }}
 				transition={{ duration: 1.2, ease: "easeOut" }}
-				className="absolute max-w-screen -top-10 -left-56 w-[700px] h-[700px] pointer-events-none -z-30 blur-3xl"
+				className="-top-10 -left-56 -z-30 pointer-events-none absolute h-[700px] w-[700px] max-w-screen blur-3xl"
 				style={{
 					background:
 						"radial-gradient(circle, oklch(0.5053 0.2350 286.8637), transparent 70%)",
@@ -84,7 +84,7 @@ export default function AboutClient() {
 					ease: "easeInOut",
 				}}
 				viewport={{ once: true, amount: 0.3 }}
-				className="absolute top-[150vh] -right-32 w-[700px] h-[700px] pointer-events-none -z-30 blur-3xl"
+				className="-right-32 -z-30 pointer-events-none absolute top-[150vh] h-[700px] w-[700px] blur-3xl"
 				style={{
 					background:
 						"linear-gradient(to bottom right, var(--accent), var(--primary), transparent 70%)",
@@ -94,7 +94,7 @@ export default function AboutClient() {
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				transition={{ duration: 1, ease: "easeIn" }}
-				className="absolute w-[100dvw] h-[100vh] mask-contain mask-alpha -z-50 [mask-image:linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)]"
+				className="mask-contain mask-alpha -z-50 absolute h-[100vh] w-[100dvw] [mask-image:linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)]"
 			>
 				<Noise
 					patternSize={250}
@@ -105,27 +105,27 @@ export default function AboutClient() {
 				/>
 			</motion.div>
 			<div
-				className="fixed inset-0 w-full h-full pointer-events-none -z-40"
+				className="-z-40 pointer-events-none fixed inset-0 h-full w-full"
 				style={{
 					backgroundImage: `radial-gradient(circle, #562a2a 1px, transparent 1px)`,
 					backgroundSize: "32px 32px",
 				}}
 			/>
-			<div className="sticky z-50 flex items-center justify-center w-full px-2 pt-6 sm:px-4 md:px-6 top-4">
+			<div className="sticky top-4 z-50 flex w-full items-center justify-center px-2 pt-6 sm:px-4 md:px-6">
 				<Navbar />
 			</div>
 
 			{/* Hero Section */}
-			<section className="flex flex-col items-center justify-center w-full px-4 mt-32 sm:px-6 md:px-8">
-				<div className="flex flex-col items-center justify-center max-w-4xl gap-6">
+			<section className="mt-32 flex w-full flex-col items-center justify-center px-4 sm:px-6 md:px-8">
+				<div className="flex max-w-4xl flex-col items-center justify-center gap-6">
 					<motion.div
 						initial={{ scale: 0 }}
 						whileInView={{ scale: 1 }}
 						transition={{ type: "spring", duration: 0.6, bounce: 0.3 }}
 						viewport={{ once: true }}
-						className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary"
+						className="mb-2 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 font-medium text-primary text-xs"
 					>
-						<Users className="w-4 h-4" />
+						<Users className="h-4 w-4" />
 						About Us
 					</motion.div>
 					<motion.h1
@@ -133,11 +133,11 @@ export default function AboutClient() {
 						whileInView={{ opacity: 1, scale: 1, y: 0 }}
 						transition={{ type: "spring", duration: 1.2, bounce: 0.1 }}
 						viewport={{ once: true }}
-						className="text-5xl font-bold leading-snug text-center sm:text-5xl md:text-6xl font-caudex"
+						className="text-center font-bold font-caudex text-5xl leading-snug sm:text-5xl md:text-6xl"
 					>
 						Built by freelancers,
 						<br />
-						<span className="text-transparent font-caudex bg-gradient-to-r from-accent to-primary bg-clip-text">
+						<span className="bg-gradient-to-r from-accent to-primary bg-clip-text font-caudex text-transparent">
 							for freelancers
 						</span>
 					</motion.h1>
@@ -151,7 +151,7 @@ export default function AboutClient() {
 							delay: 0.2,
 						}}
 						viewport={{ once: true }}
-						className="max-w-2xl text-lg text-center sm:text-lg md:text-xl text-muted-foreground font-inter"
+						className="max-w-2xl text-center font-inter text-lg text-muted-foreground sm:text-lg md:text-xl"
 					>
 						At Reviseo, we know the frustration of endless emails and vague
 						feedback firsthand. That's why we built Reviseo — to make client
@@ -162,7 +162,7 @@ export default function AboutClient() {
 			</section>
 
 			{/* Mission Section */}
-			<section className="flex flex-col items-center justify-center w-full px-4 mt-32 sm:px-6 md:px-8">
+			<section className="mt-32 flex w-full flex-col items-center justify-center px-4 sm:px-6 md:px-8">
 				<div className="w-full max-w-5xl">
 					<motion.div
 						initial={{ opacity: 0, y: 40 }}
@@ -170,14 +170,14 @@ export default function AboutClient() {
 						transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
 						viewport={{ once: true, amount: 0.2 }}
 					>
-						<Card className="relative p-8 overflow-hidden border-border bg-gradient-to-br from-card to-card/50 sm:p-12">
+						<Card className="relative overflow-hidden border-border bg-gradient-to-br from-card to-card/50 p-8 sm:p-12">
 							{/* Background Gradient */}
 							<motion.div
 								initial={{ opacity: 0, scale: 0.8 }}
 								whileInView={{ opacity: 0.15, scale: 1 }}
 								transition={{ duration: 1.2, ease: "easeOut" }}
 								viewport={{ once: true }}
-								className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none blur-3xl -z-10"
+								className="-translate-x-1/2 -translate-y-1/2 -z-10 pointer-events-none absolute top-1/2 left-1/2 h-[600px] w-[600px] blur-3xl"
 								style={{
 									background:
 										"radial-gradient(circle, var(--primary), var(--accent), transparent 70%)",
@@ -185,20 +185,20 @@ export default function AboutClient() {
 							/>
 
 							<div className="relative z-10">
-								<div className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 text-xs font-medium text-primary">
-									<Lightbulb className="w-4 h-4" />
+								<div className="mb-6 inline-flex items-center gap-2 rounded-full bg-primary/10 px-3 py-1.5 font-medium text-primary text-xs">
+									<Lightbulb className="h-4 w-4" />
 									Our Mission
 								</div>
-								<h2 className="mb-6 text-3xl font-bold sm:text-4xl font-caudex">
+								<h2 className="mb-6 font-bold font-caudex text-3xl sm:text-4xl">
 									Simplifying client feedback, one annotation at a time
 								</h2>
-								<p className="mb-4 text-lg leading-relaxed text-muted-foreground font-inter">
+								<p className="mb-4 font-inter text-lg text-muted-foreground leading-relaxed">
 									As freelance developers ourselves, we know the pain of
 									decoding vague client feedback like "make it pop" or "I don't
 									like this section." We spent hours going back and forth over
 									email, trying to understand what our clients really wanted.
 								</p>
-								<p className="text-lg leading-relaxed text-muted-foreground font-inter">
+								<p className="font-inter text-lg text-muted-foreground leading-relaxed">
 									Reviseo was born from this frustration. We wanted a tool that
 									let clients show us exactly what they meant — with visual
 									annotations, comments, and screenshots. No more guessing. No
@@ -346,7 +346,7 @@ export default function AboutClient() {
 			</section> */}
 
 			{/* Contact CTA */}
-			<section className="flex flex-col items-center justify-center w-full px-4 mt-32 sm:px-6 md:px-8">
+			<section className="mt-32 flex w-full flex-col items-center justify-center px-4 sm:px-6 md:px-8">
 				<motion.div
 					initial={{ opacity: 0, y: 40 }}
 					whileInView={{ opacity: 1, y: 0 }}
@@ -354,14 +354,14 @@ export default function AboutClient() {
 					viewport={{ once: true }}
 					className="w-full max-w-3xl"
 				>
-					<Card className="relative p-8 overflow-hidden text-center border-border bg-gradient-to-br from-card to-card/50 sm:p-12">
+					<Card className="relative overflow-hidden border-border bg-gradient-to-br from-card to-card/50 p-8 text-center sm:p-12">
 						{/* Background Gradient */}
 						<motion.div
 							initial={{ opacity: 0, scale: 0.8 }}
 							whileInView={{ opacity: 0.15, scale: 1 }}
 							transition={{ duration: 1.2, ease: "easeOut" }}
 							viewport={{ once: true }}
-							className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] pointer-events-none blur-3xl -z-10"
+							className="-translate-x-1/2 -translate-y-1/2 -z-10 pointer-events-none absolute top-1/2 left-1/2 h-[600px] w-[600px] blur-3xl"
 							style={{
 								background:
 									"radial-gradient(circle, var(--primary), var(--accent), transparent 70%)",
@@ -369,11 +369,11 @@ export default function AboutClient() {
 						/>
 
 						<div className="relative z-10">
-							<Mail className="w-12 h-12 mx-auto mb-4 text-primary" />
-							<h3 className="mb-4 text-2xl font-bold sm:text-3xl font-caudex">
+							<Mail className="mx-auto mb-4 h-12 w-12 text-primary" />
+							<h3 className="mb-4 font-bold font-caudex text-2xl sm:text-3xl">
 								Want to get in touch?
 							</h3>
-							<p className="mb-6 text-lg text-muted-foreground font-inter">
+							<p className="mb-6 font-inter text-lg text-muted-foreground">
 								We'd love to hear from you. Whether you have questions,
 								feedback, or just want to say hi, we're here to help.
 							</p>

@@ -31,40 +31,40 @@ export default function DeleteAccountEmail({
 			<Tailwind>
 				<Head />
 				<Preview>Confirm your account deletion request</Preview>
-				<Body className="bg-[#f9fafb] font-sans py-[40px]">
-					<Container className="mx-auto px-[20px] max-w-[600px]">
-						<Section className="bg-[#ffffff] rounded-[8px] px-[32px] py-[40px] border border-solid border-[#e5e7eb]">
+				<Body className="bg-[#f9fafb] py-[40px] font-sans">
+					<Container className="mx-auto max-w-[600px] px-[20px]">
+						<Section className="rounded-[8px] border border-[#e5e7eb] border-solid bg-[#ffffff] px-[32px] py-[40px]">
 							{/* Header */}
 							<Row>
 								<Column className="p-1">
 									<Img
 										src="https://reviseo.app/logo.png"
 										alt="Reviseo"
-										className="size-10 h-auto mb-[12px]"
+										className="mb-[12px] size-10 h-auto"
 									/>
 								</Column>
 							</Row>
 
 							{/* Main Content */}
 							<Section>
-								<Text className="text-[#111827] text-[24px] font-bold mb-[8px] leading-[32px]">
+								<Text className="mb-[8px] font-bold text-[#111827] text-[24px] leading-[32px]">
 									Confirm Account Deletion
 								</Text>
 
-								<Text className="text-[#374151] text-[16px] mb-[24px] leading-[24px]">
+								<Text className="mb-[24px] text-[#374151] text-[16px] leading-[24px]">
 									Hi <strong>{userName}</strong>, we received a request to
 									delete your Reviseo account.
 								</Text>
 
 								{/* Warning Box */}
-								<Section className="bg-[#fef2f2] rounded-[8px] p-[20px] mb-[24px] border border-solid border-[#fee2e2]">
-									<Text className="text-[#991b1b] text-[14px] font-semibold mb-[8px] leading-[20px] m-0">
+								<Section className="mb-[24px] rounded-[8px] border border-[#fee2e2] border-solid bg-[#fef2f2] p-[20px]">
+									<Text className="m-0 mb-[8px] font-semibold text-[#991b1b] text-[14px] leading-[20px]">
 										⚠️ Warning: This action is permanent
 									</Text>
-									<Text className="text-[#374151] text-[14px] leading-[20px] m-0 mt-[8px]">
+									<Text className="m-0 mt-[8px] text-[#374151] text-[14px] leading-[20px]">
 										Deleting your account will permanently remove:
 									</Text>
-									<Text className="text-[#374151] text-[14px] leading-[20px] m-0 ml-[16px]">
+									<Text className="m-0 ml-[16px] text-[#374151] text-[14px] leading-[20px]">
 										• All your websites
 										<br />• All feedback submissions
 										<br />• Your profile and settings
@@ -72,7 +72,7 @@ export default function DeleteAccountEmail({
 									</Text>
 								</Section>
 
-								<Text className="text-[#374151] text-[14px] mb-[24px] leading-[20px]">
+								<Text className="mb-[24px] text-[#374151] text-[14px] leading-[20px]">
 									<strong>Email:</strong> {userEmail}
 								</Text>
 
@@ -80,19 +80,19 @@ export default function DeleteAccountEmail({
 								<Section className="mb-[24px]">
 									<Button
 										href={verificationUrl}
-										className="bg-[#dc2626] text-[#ffffff] px-[24px] py-[12px] rounded-[6px] text-[14px] font-medium no-underline text-center box-border w-full"
+										className="box-border w-full rounded-[6px] bg-[#dc2626] px-[24px] py-[12px] text-center font-medium text-[#ffffff] text-[14px] no-underline"
 									>
 										Confirm Account Deletion
 									</Button>
 								</Section>
 
-								<Text className="text-[#6b7280] text-[12px] mb-[8px] leading-[16px] text-center">
+								<Text className="mb-[8px] text-center text-[#6b7280] text-[12px] leading-[16px]">
 									Or copy this link into your browser:
 								</Text>
-								<Section className="bg-[#f9fafb] rounded-[8px] p-[12px] mb-[24px] border border-solid border-[#e5e7eb]">
+								<Section className="mb-[24px] rounded-[8px] border border-[#e5e7eb] border-solid bg-[#f9fafb] p-[12px]">
 									<Link
 										href={verificationUrl}
-										className="text-[#9c40ff] text-[12px] font-mono leading-[16px] break-all"
+										className="break-all font-mono text-[#9c40ff] text-[12px] leading-[16px]"
 									>
 										{verificationUrl}
 									</Link>
@@ -108,7 +108,7 @@ export default function DeleteAccountEmail({
 
 							{/* Footer */}
 							<Section>
-								<Text className="text-[#6b7280] text-[14px] leading-[20px] mb-[16px]">
+								<Text className="mb-[16px] text-[#6b7280] text-[14px] leading-[20px]">
 									Visual feedback for web freelancers.
 								</Text>
 
@@ -127,7 +127,7 @@ export default function DeleteAccountEmail({
 									</Column>
 								</Row>
 
-								<Text className="text-[#9ca3af] text-[12px] leading-[16px] mt-0">
+								<Text className="mt-0 text-[#9ca3af] text-[12px] leading-[16px]">
 									© 2025 Reviseo. All rights reserved.
 								</Text>
 

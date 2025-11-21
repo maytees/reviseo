@@ -90,13 +90,13 @@ export default function WidgetTab({
 					<div className="flex items-center justify-between">
 						<div className="space-y-1">
 							<div className="flex items-center gap-2">
-								<span className="text-sm font-medium">Installation Status</span>
+								<span className="font-medium text-sm">Installation Status</span>
 								<Badge variant={widgetInstalled ? "success" : "secondary"}>
 									{widgetInstalled ? "Installed" : "Not Installed"}
 								</Badge>
 							</div>
 							{verifiedAt && (
-								<p className="text-xs text-muted-foreground">
+								<p className="text-muted-foreground text-xs">
 									Last verified {moment(verifiedAt).fromNow()}
 								</p>
 							)}
@@ -214,14 +214,14 @@ export default function WidgetTab({
 						<AccordionItem value="vanilla">
 							<AccordionTrigger>
 								<div className="flex items-center gap-2">
-									<SiHtml5 className="text-[#E34F26] size-4" />
+									<SiHtml5 className="size-4 text-[#E34F26]" />
 									<span>Vanilla HTML</span>
 								</div>
 							</AccordionTrigger>
 							<AccordionContent className="space-y-3">
-								<p className="text-sm text-muted-foreground">
+								<p className="text-muted-foreground text-sm">
 									Add the widget script to the bottom of the{" "}
-									<code className="px-1.5 py-0.5 rounded bg-background text-xs">
+									<code className="rounded bg-background px-1.5 py-0.5 text-xs">
 										&lt;head&gt;
 									</code>{" "}
 									tag in every page, or in your global header component if you
@@ -279,18 +279,18 @@ export default function WidgetTab({
 						<AccordionItem value="vite">
 							<AccordionTrigger>
 								<div className="flex items-center gap-2">
-									<SiVite className="text-[#646CFF] size-4" />
+									<SiVite className="size-4 text-[#646CFF]" />
 									<span>Vite</span>
 								</div>
 							</AccordionTrigger>
 							<AccordionContent className="space-y-3">
-								<p className="text-sm text-muted-foreground">
+								<p className="text-muted-foreground text-sm">
 									Add the widget script to your{" "}
-									<code className="px-1.5 py-0.5 rounded bg-background text-xs">
+									<code className="rounded bg-background px-1.5 py-0.5 text-xs">
 										index.html
 									</code>{" "}
 									file in the{" "}
-									<code className="px-1.5 py-0.5 rounded bg-background text-xs">
+									<code className="rounded bg-background px-1.5 py-0.5 text-xs">
 										&lt;head&gt;
 									</code>{" "}
 									section, similar to the Vanilla HTML approach.
@@ -355,21 +355,21 @@ export default function WidgetTab({
 						<AccordionItem value="wordpress">
 							<AccordionTrigger>
 								<div className="flex items-center gap-2">
-									<SiWordpress className="text-[#21759B] size-4" />
+									<SiWordpress className="size-4 text-[#21759B]" />
 									<span>WordPress</span>
 								</div>
 							</AccordionTrigger>
 							<AccordionContent className="space-y-3">
-								<p className="text-sm text-muted-foreground">
+								<p className="text-muted-foreground text-sm">
 									Use a JavaScript insertion plugin to add the widget script to
 									your WordPress site. Popular options include "Insert Headers
 									and Footers" or "WPCode".
 								</p>
-								<div className="flex items-center gap-2 p-3 border rounded-lg bg-blue-500/10 border-blue-500/20">
+								<div className="flex items-center gap-2 rounded-lg border border-blue-500/20 bg-blue-500/10 p-3">
 									<Badge variant="info" size="sm">
 										Tutorial Coming Soon
 									</Badge>
-									<p className="text-sm text-muted-foreground">
+									<p className="text-muted-foreground text-sm">
 										Detailed WordPress tutorial is in progress
 									</p>
 								</div>
@@ -380,16 +380,16 @@ export default function WidgetTab({
 						<AccordionItem value="shopify">
 							<AccordionTrigger>
 								<div className="flex items-center gap-2">
-									<SiShopify className="text-[#7AB55C] size-4" />
+									<SiShopify className="size-4 text-[#7AB55C]" />
 									<span>Shopify</span>
 								</div>
 							</AccordionTrigger>
 							<AccordionContent className="space-y-3">
-								<div className="flex items-center gap-2 p-3 border rounded-lg bg-amber-500/10 border-amber-500/20">
+								<div className="flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 p-3">
 									<Badge variant="warning" size="sm">
 										Coming Soon
 									</Badge>
-									<p className="text-sm text-muted-foreground">
+									<p className="text-muted-foreground text-sm">
 										Shopify installation guide is under development
 									</p>
 								</div>

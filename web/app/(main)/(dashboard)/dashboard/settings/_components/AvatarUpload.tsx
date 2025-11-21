@@ -85,7 +85,7 @@ export default function AvatarUpload({
 	// };
 
 	return (
-		<div className={cn("flex flex-col items-center gap-4 ", className)}>
+		<div className={cn("flex flex-col items-center gap-4", className)}>
 			{/* Avatar Preview */}
 			<div className="relative">
 				{/** biome-ignore lint/a11y/noStaticElementInteractions: goon */}
@@ -140,11 +140,11 @@ export default function AvatarUpload({
 			</div>
 
 			{/* Upload Instructions */}
-			<div className="text-center space-y-0.5">
-				<p className="text-sm font-medium">
+			<div className="space-y-0.5 text-center">
+				<p className="font-medium text-sm">
 					{currentFile ? "Avatar uploaded" : "Upload avatar"}
 				</p>
-				<p className="text-xs text-muted-foreground">
+				<p className="text-muted-foreground text-xs">
 					PNG, JPG up to {formatBytes(maxSize)}
 				</p>
 			</div>

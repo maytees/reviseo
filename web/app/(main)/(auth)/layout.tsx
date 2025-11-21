@@ -4,10 +4,10 @@ import { Navbar } from "@/components/landing/Navbar";
 
 export default function AuthLayout({ children }: { children: ReactNode }) {
 	return (
-		<div className="relative w-full min-h-screen overflow-hidden">
+		<div className="relative min-h-screen w-full overflow-hidden">
 			{/* Background Gradient */}
 			<div
-				className="absolute -top-10 -left-56 w-[700px] h-[700px] pointer-events-none -z-30 blur-3xl opacity-30"
+				className="-top-10 -left-56 -z-30 pointer-events-none absolute h-[700px] w-[700px] opacity-30 blur-3xl"
 				style={{
 					background:
 						"radial-gradient(circle, oklch(0.5053 0.2350 286.8637), transparent 70%)",
@@ -16,7 +16,7 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 
 			{/* Background Dots */}
 			<div
-				className="fixed inset-0 w-full h-full pointer-events-none -z-40"
+				className="-z-40 pointer-events-none fixed inset-0 h-full w-full"
 				style={{
 					backgroundImage: `radial-gradient(circle, #562a2a 1px, transparent 1px)`,
 					backgroundSize: "32px 32px",
@@ -24,12 +24,12 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 			/>
 
 			{/* Navbar */}
-			<div className="sticky z-50 flex items-center justify-center w-full px-2 pt-6 sm:px-4 md:px-6 top-4">
+			<div className="sticky top-4 z-50 flex w-full items-center justify-center px-2 pt-6 sm:px-4 md:px-6">
 				<Navbar />
 			</div>
 
-			<div className="flex min-h-[calc(100vh-6rem)] mt-20 flex-col items-center justify-center relative z-10">
-				<div className="flex flex-col w-full max-w-md gap-6 px-4">
+			<div className="relative z-10 mt-20 flex min-h-[calc(100vh-6rem)] flex-col items-center justify-center">
+				<div className="flex w-full max-w-md flex-col gap-6 px-4">
 					{children}
 					{/* <div className="text-sm text-center text-balance text-muted-foreground font-inter">
 						By clicking continue, you agree to our{" "}

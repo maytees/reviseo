@@ -97,7 +97,7 @@ const TriggerButton = () => {
 					<Button
 						disabled={isPending}
 						id={triggerId}
-						className={cn("rounded-full border-2 border-border size-14")}
+						className={cn("size-14 rounded-full border-2 border-border")}
 						variant="secondary"
 						onClick={handleWidgetOpen}
 					>

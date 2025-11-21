@@ -114,7 +114,7 @@ const VerifyInstallation = ({
 					<>
 						Verify Widget
 						{!hideIcon && (
-							<ChevronRightCircle className="group-hover:translate-x-0.5 transition-all duration-300 ease-in-out" />
+							<ChevronRightCircle className="transition-all duration-300 ease-in-out group-hover:translate-x-0.5" />
 						)}
 					</>
 				);
@@ -141,7 +141,7 @@ const VerifyInstallation = ({
 			<Button
 				size={size}
 				variant={getButtonVariant()}
-				className={cn("w-full group font-inter sm:w-auto", className)}
+				className={cn("group w-full font-inter sm:w-auto", className)}
 				onClick={handleVerify}
 				disabled={state === "loading"}
 			>

@@ -23,7 +23,7 @@ const SiteLinkMedia = ({
 		: null;
 
 	return (
-		<div className="relative group">
+		<div className="group relative">
 			<Link
 				href={url}
 				onClick={(e) => e.stopPropagation()}
@@ -37,12 +37,12 @@ const SiteLinkMedia = ({
 					unoptimized
 					height={1080}
 					className={cn(
-						"z-40 object-cover w-full h-auto transition-all ease-in-out rounded duration-400 hover:opacity-80",
+						"z-40 h-auto w-full rounded object-cover transition-all duration-400 ease-in-out hover:opacity-80",
 						size === "small" ? "w-16" : "lg:w-36",
 					)}
 				/>
 			</Link>
-			<ExternalLink className="absolute top-2 right-2 z-50 size-3.5 opacity-0 group-hover:opacity-70 transition-opacity duration-400 ease-in-out text-white" />
+			<ExternalLink className="absolute top-2 right-2 z-50 size-3.5 text-white opacity-0 transition-opacity duration-400 ease-in-out group-hover:opacity-70" />
 		</div>
 	);
 };

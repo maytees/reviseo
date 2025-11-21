@@ -30,12 +30,12 @@ export function NavUser() {
 			<SidebarMenu>
 				<SidebarMenuItem>
 					<SidebarMenuButton size="lg" className="cursor-default">
-						<Skeleton className="w-8 h-8 rounded-lg" />
-						<div className="grid flex-1 gap-1 text-sm leading-tight text-left">
-							<Skeleton className="w-20 h-4" />
-							<Skeleton className="w-16 h-3" />
+						<Skeleton className="h-8 w-8 rounded-lg" />
+						<div className="grid flex-1 gap-1 text-left text-sm leading-tight">
+							<Skeleton className="h-4 w-20" />
+							<Skeleton className="h-3 w-16" />
 						</div>
-						<Skeleton className="w-4 h-4 ml-auto" />
+						<Skeleton className="ml-auto h-4 w-4" />
 					</SidebarMenuButton>
 				</SidebarMenuItem>
 			</SidebarMenu>
@@ -65,13 +65,13 @@ export function NavUser() {
 										: session?.user.email.charAt(0).toUpperCase()}
 								</AvatarFallback>
 							</Avatar>
-							<div className="grid flex-1 text-sm leading-tight text-left">
-								<span className="font-medium truncate">
+							<div className="grid flex-1 text-left text-sm leading-tight">
+								<span className="truncate font-medium">
 									{session?.user.name && session.user.name.length > 0
 										? session.user.name
 										: session?.user.email.split("@")[0]}
 								</span>
-								<span className="text-xs truncate text-muted-foreground">
+								<span className="truncate text-muted-foreground text-xs">
 									{session?.user.email}
 								</span>
 							</div>
@@ -86,7 +86,7 @@ export function NavUser() {
 					>
 						<DropdownMenuLabel className="p-0 font-normal">
 							<div className="flex items-center gap-2 px-1 py-1.5 text-left text-sm">
-								<Avatar className="w-8 h-8 rounded-lg">
+								<Avatar className="h-8 w-8 rounded-lg">
 									{/* Dropdown */}
 									<AvatarImage
 										src={
@@ -101,13 +101,13 @@ export function NavUser() {
 											: session?.user.email.charAt(0).toUpperCase()}
 									</AvatarFallback>
 								</Avatar>
-								<div className="grid flex-1 text-sm leading-tight text-left">
-									<span className="font-medium truncate">
+								<div className="grid flex-1 text-left text-sm leading-tight">
+									<span className="truncate font-medium">
 										{session?.user.name && session.user.name.length > 0
 											? session.user.name
 											: session?.user.email.split("@")[0]}
 									</span>
-									<span className="text-xs truncate text-muted-foreground">
+									<span className="truncate text-muted-foreground text-xs">
 										{session?.user.email}
 									</span>
 								</div>

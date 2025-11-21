@@ -9,9 +9,9 @@ import { TextAnimate } from "../ui/TextAnimate";
 
 const Hero = () => {
 	return (
-		<section className="flex items-center justify-center w-full px-4 mt-32 sm:px-6 md:px-8">
-			<div className="flex flex-col items-center justify-center w-full h-full gap-10 sm:gap-8">
-				<div className="flex flex-col items-center justify-center w-full gap-3 sm:gap-4">
+		<section className="mt-32 flex w-full items-center justify-center px-4 sm:px-6 md:px-8">
+			<div className="flex h-full w-full flex-col items-center justify-center gap-10 sm:gap-8">
+				<div className="flex w-full flex-col items-center justify-center gap-3 sm:gap-4">
 					<motion.div
 						initial={{ opacity: 0, scale: 0.9, y: 100 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -30,10 +30,10 @@ const Hero = () => {
 						initial={{ opacity: 0, scale: 1.1, y: 100 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
 						transition={{ type: "spring", duration: 1.2, bounce: 0.1 }}
-						className="max-w-3xl px-2 text-4xl font-bold text-center sm:text-5xl md:text-6xl lg:text-7xl font-caudex"
+						className="max-w-3xl px-2 text-center font-bold font-caudex text-4xl sm:text-5xl md:text-6xl lg:text-7xl"
 					>
 						Stop tracking client feedback with{" "}
-						<span className="italic font-bold text-transparent font-caudex bg-gradient-to-r from-accent to-primary bg-clip-text">
+						<span className="bg-gradient-to-r from-accent to-primary bg-clip-text font-bold font-caudex text-transparent italic">
 							endless
 						</span>{" "}
 						emails
@@ -45,7 +45,7 @@ const Hero = () => {
 						once
 						segmentClassName="text-base sm:text-lg md:text-xl text-muted-foreground font-inter"
 						by="word"
-						className="w-full max-w-2xl px-2 text-base text-center sm:text-lg md:text-xl text-muted-foreground font-inter"
+						className="w-full max-w-2xl px-2 text-center font-inter text-base text-muted-foreground sm:text-lg md:text-xl"
 					>
 						Reviseo lets your clients annotate screenshots and request changes
 						directly on your website. No more back and forth confusion between
@@ -53,7 +53,7 @@ const Hero = () => {
 						want it.
 					</TextAnimate>
 				</div>
-				<div className="flex flex-col items-center w-full gap-2 px-2 sm:flex-row sm:w-auto">
+				<div className="flex w-full flex-col items-center gap-2 px-2 sm:w-auto sm:flex-row">
 					<motion.div
 						initial={{ opacity: 0, scale: 1.1, y: 100 }}
 						animate={{ opacity: 1, scale: 1, y: 0 }}
@@ -97,7 +97,7 @@ const Hero = () => {
 						bounce: 0.1,
 						delay: 1.5,
 					}}
-					className="flex items-center gap-2 mt-20"
+					className="mt-20 flex items-center gap-2"
 				>
 					{/* <div className="flex -space-x-2">
 						<Avatar className="w-8 h-8 border-2 border-background sm:w-10 sm:h-10">
@@ -140,7 +140,7 @@ const Hero = () => {
 					<HyperText
 						duration={4000}
 						delay={1}
-						className="text-sm font-light hover:cursor-pointer text-muted-foreground"
+						className="font-light text-muted-foreground text-sm hover:cursor-pointer"
 					>
 						For freelancers by freelancers
 					</HyperText>

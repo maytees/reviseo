@@ -60,21 +60,21 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 	}
 
 	return (
-		<div className="relative w-full min-h-screen min-h-scren">
-			<div className="z-50 flex items-center justify-center w-full px-2 pt-6 sm:px-4 md:px-6 top-4">
+		<div className="relative min-h-screen min-h-scren w-full">
+			<div className="top-4 z-50 flex w-full items-center justify-center px-2 pt-6 sm:px-4 md:px-6">
 				<Navbar />
 			</div>
-			<section className="xl:px-18 lg:pr-10 lg:pl-5 mt-42">
-				<div className="relative flex flex-row items-start justify-around lg:space-x-10 ">
-					<div className="sticky flex-col hidden w-3/12 xl:w-2/12 lg:flex top-42">
-						<div className="flex flex-col w-full h-full ">
+			<section className="mt-42 lg:pr-10 lg:pl-5 xl:px-18">
+				<div className="relative flex flex-row items-start justify-around lg:space-x-10">
+					<div className="sticky top-42 hidden w-3/12 flex-col lg:flex xl:w-2/12">
+						<div className="flex h-full w-full flex-col">
 							<div className="w-fit">
-								<p className="text-sm font-bold tracking-widest text-left uppercase text-muted-foreground">
+								<p className="text-left font-bold text-muted-foreground text-sm uppercase tracking-widest">
 									Author
 								</p>
 								<Separator className="my-2" />
 							</div>
-							<div className="flex flex-row items-center gap-3 mt-1">
+							<div className="mt-1 flex flex-row items-center gap-3">
 								{articleData.authorImage && (
 									<Avatar className="size-12">
 										<AvatarImage src={articleData.authorImage} />
@@ -88,8 +88,8 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 									</Avatar>
 								)}
 								<div className="flex flex-col items-start">
-									<p className="text-sm font-semibold">{articleData.author}</p>
-									<span className="text-xs text-muted-foreground">
+									<p className="font-semibold text-sm">{articleData.author}</p>
+									<span className="text-muted-foreground text-xs">
 										{articleData.authorRole}
 									</span>
 								</div>
@@ -104,24 +104,24 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 									</Link>
 								</Button>
 							</div>
-							<div className="flex flex-row items-center justify-between mt-5">
-								<p className="text-sm font-bold tracking-widest text-left uppercase text-muted-foreground">
+							<div className="mt-5 flex flex-row items-center justify-between">
+								<p className="text-left font-bold text-muted-foreground text-sm uppercase tracking-widest">
 									Published
 								</p>
-								<span className="text-xs font-medium text-muted-foreground">
+								<span className="font-medium text-muted-foreground text-xs">
 									{moment(articleData.date).format("MMM Do YY")}
 								</span>
 							</div>
-							<div className="flex flex-row items-center justify-between mt-5">
-								<p className="text-sm font-bold tracking-widest text-left uppercase text-muted-foreground">
+							<div className="mt-5 flex flex-row items-center justify-between">
+								<p className="text-left font-bold text-muted-foreground text-sm uppercase tracking-widest">
 									Last Modified
 								</p>
-								<span className="text-xs font-medium text-muted-foreground">
+								<span className="font-medium text-muted-foreground text-xs">
 									{moment(articleData.lastModified).format("MMM Do YY")}
 								</span>
 							</div>
-							<div className="flex flex-row items-center justify-between mt-2">
-								<p className="text-sm font-bold tracking-widest text-left uppercase text-muted-foreground">
+							<div className="mt-2 flex flex-row items-center justify-between">
+								<p className="text-left font-bold text-muted-foreground text-sm uppercase tracking-widest">
 									Category
 								</p>
 								<Badge
@@ -136,7 +136,7 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 
 							{articleData.seeMore && articleData.seeMore.length > 0 && (
 								<div className="mt-2 w-fit">
-									<p className="text-sm font-bold tracking-widest text-left uppercase text-muted-foreground">
+									<p className="text-left font-bold text-muted-foreground text-sm uppercase tracking-widest">
 										More like this
 									</p>
 									<Separator className="my-2" />
@@ -147,7 +147,7 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 											return (
 												<Link
 													key={id}
-													className="text-sm font-semibold font-caudex hover:underline text-accent-foreground"
+													className="font-caudex font-semibold text-accent-foreground text-sm hover:underline"
 													href={`/blog/${id}`}
 												>
 													{a?.title}
@@ -160,13 +160,13 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 						</div>
 						<Link
 							href={"/blog"}
-							className="flex flex-row items-center gap-1 mt-8 text-sm font-semibold hover:underline text-primary"
+							className="mt-8 flex flex-row items-center gap-1 font-semibold text-primary text-sm hover:underline"
 						>
-							<ArrowLeft className="font-semibold size-4" />
+							<ArrowLeft className="size-4 font-semibold" />
 							See All
 						</Link>
 					</div>
-					<div className="flex flex-col flex-1 gap-6 max-w-9/12">
+					<div className="flex max-w-9/12 flex-1 flex-col gap-6">
 						{/* <div className="flex items-center justify-between">
 							<Link
 								href={"/blog"}
@@ -182,7 +182,7 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 							</div>
 						</div> */}
 						{articleData.cover ? (
-							<div className="relative w-full overflow-hidden border aspect-video rounded-xl border-border/50 bg-muted/30">
+							<div className="relative aspect-video w-full overflow-hidden rounded-xl border border-border/50 bg-muted/30">
 								<Image
 									src={articleData.cover}
 									alt={articleData.title}
@@ -192,11 +192,11 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 							</div>
 						) : null}
 						<header className="flex flex-col gap-2">
-							<h1 className="text-3xl font-bold sm:text-4xl md:text-5xl font-caudex">
+							<h1 className="font-bold font-caudex text-3xl sm:text-4xl md:text-5xl">
 								{articleData.title}
 							</h1>
 							{articleData.description ? (
-								<p className="text-base sm:text-lg text-muted-foreground">
+								<p className="text-base text-muted-foreground sm:text-lg">
 									{articleData.description}
 								</p>
 							) : null}

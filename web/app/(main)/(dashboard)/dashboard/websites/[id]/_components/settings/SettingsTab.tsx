@@ -80,7 +80,7 @@ const SettingsTab = ({ website }: { website: WebsiteDataTypeNonNullable }) => {
 	};
 
 	return (
-		<div className="w-full h-full space-y-6">
+		<div className="h-full w-full space-y-6">
 			{/* Website Details Card */}
 			<Card>
 				<CardHeader>
@@ -185,10 +185,10 @@ const SettingsTab = ({ website }: { website: WebsiteDataTypeNonNullable }) => {
 				</CardHeader>
 				<CardContent className="space-y-4">
 					{/* Archive Section */}
-					<div className="flex items-center justify-between p-4 border rounded-lg border-border">
+					<div className="flex items-center justify-between rounded-lg border border-border p-4">
 						<div className="flex-1">
 							<h4 className="font-semibold">Archive Website</h4>
-							<p className="text-sm text-muted-foreground">
+							<p className="text-muted-foreground text-sm">
 								Hide this website from your dashboard. You can restore it later.
 								Clients will not be able to submit new feedback.
 							</p>
@@ -208,10 +208,10 @@ const SettingsTab = ({ website }: { website: WebsiteDataTypeNonNullable }) => {
 					<Separator />
 
 					{/* Delete Section */}
-					<div className="flex items-center justify-between p-4 border rounded-lg border-destructive/50 bg-destructive/5">
+					<div className="flex items-center justify-between rounded-lg border border-destructive/50 bg-destructive/5 p-4">
 						<div className="flex-1">
 							<h4 className="font-semibold text-destructive">Delete Website</h4>
-							<p className="text-sm text-muted-foreground">
+							<p className="text-muted-foreground text-sm">
 								Permanently delete this website and all associated feedback.
 								This action cannot be undone.
 							</p>

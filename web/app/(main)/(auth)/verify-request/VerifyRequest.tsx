@@ -47,7 +47,7 @@ export function VerifyRequest() {
 		});
 	}
 	return (
-		<Card className="w-full mx-auto">
+		<Card className="mx-auto w-full">
 			<CardHeading>
 				<CardHeader className="py-4">
 					<CardTitle className="text-xl">Please check your email</CardTitle>
@@ -76,7 +76,7 @@ export function VerifyRequest() {
 							<InputOTPSlot index={5} />
 						</InputOTPGroup>
 					</InputOTP>
-					<p className="text-sm text-muted-foreground">
+					<p className="text-muted-foreground text-sm">
 						Enter the 6-digit code sent to your email
 					</p>
 				</div>

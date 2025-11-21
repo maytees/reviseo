@@ -108,7 +108,7 @@ export const ShootingStars: React.FC<ShootingStarsProps> = ({
 		// biome-ignore lint/a11y/noSvgWithoutTitle: goon
 		<svg
 			ref={svgRef}
-			className={cn("w-full h-full absolute inset-0", className)}
+			className={cn("absolute inset-0 h-full w-full", className)}
 		>
 			{star && (
 				<rect

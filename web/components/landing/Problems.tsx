@@ -29,14 +29,14 @@ const content = [
 
 const Problems = () => {
 	return (
-		<section className="mt-48 w-full flex flex-col items-center justify-center px-4 sm:px-6 md:px-8">
-			<div className="flex flex-col items-center justify-center gap-4 max-w-3xl">
+		<section className="mt-48 flex w-full flex-col items-center justify-center px-4 sm:px-6 md:px-8">
+			<div className="flex max-w-3xl flex-col items-center justify-center gap-4">
 				<motion.h2
 					initial={{ opacity: 0, scale: 1.1, y: 100 }}
 					whileInView={{ opacity: 1, scale: 1, y: 0 }}
 					transition={{ type: "spring", duration: 1.2, bounce: 0.1 }}
 					viewport={{ once: true }}
-					className="text-3xl sm:text-4xl md:text-5xl text-center font-bold font-caudex"
+					className="text-center font-bold font-caudex text-3xl sm:text-4xl md:text-5xl"
 				>
 					Freelance web developers waste hours decoding vague client feedback
 				</motion.h2>
@@ -50,13 +50,13 @@ const Problems = () => {
 						delay: 0.2,
 					}}
 					viewport={{ once: true }}
-					className="text-lg sm:text-xl md:text-2xl text-muted-foreground text-center font-inter"
+					className="text-center font-inter text-lg text-muted-foreground sm:text-xl md:text-2xl"
 				>
 					You&apos;re spending more time on client communication than actual
 					development work.
 				</motion.p>
 			</div>
-			<div className="w-full h-full pb-52 mt-20 min-w-screen">
+			<div className="mt-20 h-full w-full min-w-screen pb-52">
 				<StickyScroll content={content} />
 			</div>
 		</section>

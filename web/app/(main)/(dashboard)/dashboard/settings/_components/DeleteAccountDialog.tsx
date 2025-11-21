@@ -65,17 +65,17 @@ export default function DeleteAccountDialog() {
 				</Button>
 			</DialogTrigger>
 			<DialogContent>
-				<DialogTitle className="text-xl font-bold">Delete Account</DialogTitle>
+				<DialogTitle className="font-bold text-xl">Delete Account</DialogTitle>
 				<DialogDescription>
 					This action cannot be undone. This will permanently delete your
 					account and remove all your data from our servers.
 				</DialogDescription>
 
-				<div className="bg-destructive/10 border border-destructive/20 rounded-lg p-4 my-4">
-					<p className="text-sm text-destructive font-medium mb-2">
+				<div className="my-4 rounded-lg border border-destructive/20 bg-destructive/10 p-4">
+					<p className="mb-2 font-medium text-destructive text-sm">
 						⚠️ This will permanently delete:
 					</p>
-					<ul className="text-sm text-muted-foreground space-y-1 ml-4">
+					<ul className="ml-4 space-y-1 text-muted-foreground text-sm">
 						<li>• All your websites</li>
 						<li>• All feedback submissions</li>
 						<li>• Your profile and settings</li>
@@ -85,7 +85,7 @@ export default function DeleteAccountDialog() {
 
 				<Field>
 					<FieldLabel>
-						Type <span className="font-mono font-bold">DELETE</span> to confirm
+						Type <span className="font-bold font-mono">DELETE</span> to confirm
 					</FieldLabel>
 					<Input
 						value={confirmText}

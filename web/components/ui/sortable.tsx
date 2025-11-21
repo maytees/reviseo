@@ -341,7 +341,7 @@ function KanbanBoard({ children, className }: KanbanBoardProps) {
 		<SortableContext items={columnIds} strategy={rectSortingStrategy}>
 			<div
 				data-slot="kanban-board"
-				className={cn("grid auto-rows-fr sm:grid-cols-3 gap-4", className)}
+				className={cn("grid auto-rows-fr gap-4 sm:grid-cols-3", className)}
 			>
 				{children}
 			</div>
@@ -726,7 +726,6 @@ function Sortable<T>({
 				return rectSortingStrategy;
 			case "grid":
 				return rectSortingStrategy;
-			case "vertical":
 			default:
 				return verticalListSortingStrategy;
 		}
@@ -826,7 +825,7 @@ function SortableItem({
 				style={style}
 				{...attributes}
 				className={cn(
-					isSortableDragging && "opacity-50 z-50",
+					isSortableDragging && "z-50 opacity-50",
 					disabled && "opacity-50",
 					className,
 				)}

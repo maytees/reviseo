@@ -71,7 +71,7 @@ function TableRow({
 		<tr
 			data-slot="table-row"
 			className={cn(
-				"border-b transition-colors [&:has(td):hover]:bg-accent/50  dark:[&:has(td):hover]:bg-muted/10 data-[state=selected]:bg-muted",
+				"border-b transition-colors data-[state=selected]:bg-muted [&:has(td):hover]:bg-accent/50 dark:[&:has(td):hover]:bg-muted/10",
 				className,
 			)}
 			{...props}
@@ -87,7 +87,7 @@ function TableHead({
 		<th
 			data-slot="table-head"
 			className={cn(
-				"h-12 px-4 text-left rtl:text-right align-middle font-normal text-muted-foreground [&:has([role=checkbox])]:pe-0",
+				"h-12 px-4 text-left align-middle font-normal text-muted-foreground rtl:text-right [&:has([role=checkbox])]:pe-0",
 				className,
 			)}
 			{...props}
@@ -118,7 +118,7 @@ function TableCaption({
 	return (
 		<caption
 			data-slot="table-caption"
-			className={cn("mt-4 text-sm text-muted-foreground", className)}
+			className={cn("mt-4 text-muted-foreground text-sm", className)}
 			{...props}
 		/>
 	);

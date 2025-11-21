@@ -22,10 +22,7 @@ import {
 } from "@/components/ui/empty";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { Separator } from "@/components/ui/separator";
-import {
-	INVITE_STATUS_BADGE_MAP,
-	INVITE_STATUS_CONFIG,
-} from "@/lib/types";
+import { INVITE_STATUS_BADGE_MAP, INVITE_STATUS_CONFIG } from "@/lib/types";
 
 interface InvitesDialogProps {
 	website: WebsiteDataTypeNonNullable;
@@ -69,12 +66,12 @@ const InvitesDialog = ({ website, children }: InvitesDialogProps) => {
 
 								return (
 									<div key={invite.id}>
-										<div className="flex flex-col gap-3 p-4 border rounded-lg bg-card/30">
+										<div className="flex flex-col gap-3 rounded-lg border bg-card/30 p-4">
 											{/* Email and Status Row */}
 											<div className="flex items-start justify-between gap-2">
-												<div className="flex items-center gap-2 min-w-0 flex-1">
-													<MailIcon className="size-4 text-muted-foreground shrink-0" />
-													<span className="text-sm font-medium truncate">
+												<div className="flex min-w-0 flex-1 items-center gap-2">
+													<MailIcon className="size-4 shrink-0 text-muted-foreground" />
+													<span className="truncate font-medium text-sm">
 														{invite.email}
 													</span>
 												</div>
@@ -85,16 +82,19 @@ const InvitesDialog = ({ website, children }: InvitesDialogProps) => {
 													className="shrink-0"
 												>
 													<StatusIcon className="size-3" />
-													<span>{INVITE_STATUS_CONFIG[invite.status].label}</span>
+													<span>
+														{INVITE_STATUS_CONFIG[invite.status].label}
+													</span>
 												</Badge>
 											</div>
 
 											{/* Dates Row */}
-											<div className="flex flex-wrap gap-4 text-xs text-muted-foreground">
+											<div className="flex flex-wrap gap-4 text-muted-foreground text-xs">
 												<div className="flex items-center gap-1.5">
 													<CalendarIcon className="size-3" />
 													<span>
-														Sent {moment(invite.createdAt).format("MMM D, YYYY")}
+														Sent{" "}
+														{moment(invite.createdAt).format("MMM D, YYYY")}
 													</span>
 												</div>
 
@@ -122,7 +122,9 @@ const InvitesDialog = ({ website, children }: InvitesDialogProps) => {
 											</div>
 										</div>
 
-										{index < invites.length - 1 && <Separator className="my-2" />}
+										{index < invites.length - 1 && (
+											<Separator className="my-2" />
+										)}
 									</div>
 								);
 							})}
