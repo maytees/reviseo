@@ -1,6 +1,5 @@
 import { type ClassValue, clsx } from "clsx";
 import { twMerge } from "tailwind-merge";
-import { prisma } from "./db";
 import { env } from "./env";
 
 /**
@@ -27,37 +26,37 @@ export type Prettify<T> = {
  * @param userId - The ID of the user to check.
  * @returns True if the user is a developer, false otherwise.
  */
-export async function isDeveloper(userId: string): Promise<boolean> {
-	const user = await prisma.user.findUnique({
-		where: { id: userId },
-		select: { role: true },
-	});
+// export async function isDeveloper(userId: string): Promise<boolean> {
+// 	const user = await prisma.user.findUnique({
+// 		where: { id: userId },
+// 		select: { role: true },
+// 	});
 
-	if (!user) {
-		throw new Error("Invalid User ID");
-	}
+// 	if (!user) {
+// 		throw new Error("Invalid User ID");
+// 	}
 
-	return user.role === "developer";
-}
+// 	return user.role === "developer";
+// }
 
-/**
- * Checks if a user has the client role.
- *
- * @param userId - The ID of the user to check.
- * @returns True if the user is a client, false otherwise.
- */
-export async function isClient(userId: string): Promise<boolean> {
-	const user = await prisma.user.findUnique({
-		where: { id: userId },
-		select: { role: true },
-	});
+// /**
+//  * Checks if a user has the client role.
+//  *
+//  * @param userId - The ID of the user to check.
+//  * @returns True if the user is a client, false otherwise.
+//  */
+// export async function isClient(userId: string): Promise<boolean> {
+// 	const user = await prisma.user.findUnique({
+// 		where: { id: userId },
+// 		select: { role: true },
+// 	});
 
-	if (!user) {
-		throw new Error("Invalid User ID");
-	}
+// 	if (!user) {
+// 		throw new Error("Invalid User ID");
+// 	}
 
-	return user.role === "client";
-}
+// 	return user.role === "client";
+// }
 
 function objectToStringWithoutQuotedKeys(obj: Record<string, string>) {
 	const parts = [];

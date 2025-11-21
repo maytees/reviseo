@@ -1,11 +1,11 @@
 "use server";
 
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { requireUser } from "@/app/data/require-user";
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
 import type { ApiResponse } from "@/lib/types";
-import type { FeedbackStatus } from "@/prisma/generated/client";
-import { PrismaClientKnownRequestError } from "@/prisma/generated/client/runtime/library";
+import type { FeedbackStatus } from "@/prisma/generated/enums";
 
 export async function updateFeedbackStatus(
 	id: string,
@@ -52,7 +52,7 @@ export async function updateFeedbackStatus(
 			status: "success",
 			message: "Feedback status updated successfully!",
 		};
-	} catch (e: unknown) {
+	} catch (e) {
 		if (e instanceof PrismaClientKnownRequestError) {
 			switch (e.code) {
 				default:
@@ -111,7 +111,8 @@ export async function deleteFeedback(feedbackId: string): Promise<ApiResponse> {
 			status: "success",
 			message: "Feedback deleted successfully",
 		};
-	} catch (e: unknown) {
+		// biome-ignore lint/suspicious/noExplicitAny: prisma 7
+	} catch (e: any) {
 		if (e instanceof PrismaClientKnownRequestError) {
 			switch (e.code) {
 				default:

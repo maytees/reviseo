@@ -1,10 +1,10 @@
 "use server";
 
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { requireUser } from "@/app/data/require-user";
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
 import type { ApiResponse } from "@/lib/types";
-import { PrismaClientKnownRequestError } from "@/prisma/generated/client/runtime/library";
 
 export async function deleteWebsite(websiteId: string): Promise<ApiResponse> {
 	await requireUser();
@@ -51,7 +51,7 @@ export async function deleteWebsite(websiteId: string): Promise<ApiResponse> {
 			status: "success",
 			message: "Website deleted successfully",
 		};
-	} catch (e: unknown) {
+	} catch (e) {
 		if (e instanceof PrismaClientKnownRequestError) {
 			switch (e.code) {
 				default:

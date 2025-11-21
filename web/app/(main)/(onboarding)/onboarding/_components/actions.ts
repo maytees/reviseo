@@ -1,5 +1,6 @@
 "use server";
 
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { addDays } from "date-fns";
 import { v4 } from "uuid";
 import { requireUser } from "@/app/data/require-user";
@@ -11,7 +12,6 @@ import { resend } from "@/lib/resend";
 import type { ApiResponse } from "@/lib/types";
 import { fetchSetSiteScreenshot } from "@/lib/utils";
 import type { ClientFormData, WebsiteFormData } from "@/lib/validations";
-import { PrismaClientKnownRequestError } from "@/prisma/generated/client/runtime/library";
 
 export async function inviteClient({
 	clientName,
@@ -138,7 +138,7 @@ export async function createWebsiteOnboarding({
 			},
 			message: "Created website successfully",
 		};
-	} catch (e: unknown) {
+	} catch (e) {
 		if (e instanceof PrismaClientKnownRequestError) {
 			switch (e.code) {
 				case "P2002": {

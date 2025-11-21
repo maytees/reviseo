@@ -1,5 +1,6 @@
 "use server";
 
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { addDays } from "date-fns";
 import { revalidatePath } from "next/cache";
 import { v4 } from "uuid";
@@ -10,7 +11,6 @@ import ClientRemovalNotificationEmail from "@/lib/email/client-removal-notificat
 import { env } from "@/lib/env";
 import { resend } from "@/lib/resend";
 import type { ApiResponse } from "@/lib/types";
-import { PrismaClientKnownRequestError } from "@/prisma/generated/client/runtime/library";
 
 export async function removeClientFromSite(
 	websiteId: string,

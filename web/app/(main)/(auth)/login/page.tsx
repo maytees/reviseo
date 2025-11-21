@@ -3,12 +3,25 @@ import { headers } from "next/headers";
 import Link from "next/link";
 import { redirect } from "next/navigation";
 import { auth } from "@/lib/auth";
-import { isClient, isDeveloper } from "@/lib/utils";
+import { prisma } from "@/lib/db";
 import { LoginForm } from "./_components/LoginForm";
 
 export const metadata: Metadata = {
 	title: "Login",
 };
+
+async function isDeveloper(userId: string): Promise<boolean> {
+	const user = await prisma.user.findUnique({
+		where: { id: userId },
+		select: { role: true },
+	});
+
+	if (!user) {
+		throw new Error("Invalid User ID");
+	}
+
+	return user.role === "developer";
+}
 
 export default async function LoginPage() {
 	const session = await auth.api.getSession({
@@ -17,8 +30,6 @@ export default async function LoginPage() {
 
 	if (session) {
 		// Check if user has completed onboarding
-		console.log(await isDeveloper(session.user.id), "is developer");
-		console.log(await isClient(session.user.id), "is client");
 		if (
 			!session.user.hasCompletedOnboarding &&
 			(await isDeveloper(session.user.id))

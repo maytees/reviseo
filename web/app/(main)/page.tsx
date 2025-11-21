@@ -1,4 +1,5 @@
 "use client";
+import { motion } from "framer-motion";
 import { BentoFeatures } from "@/components/landing/BentoFeatures";
 import { Contact } from "@/components/landing/Contact";
 import { FAQ } from "@/components/landing/FAQ";
@@ -12,11 +13,10 @@ import { Pricing } from "@/components/landing/Pricing";
 import Problems from "@/components/landing/Problems";
 import UsedWith from "@/components/landing/UsedBy";
 import { ShootingStars } from "@/components/ui/shadcn-io/shooting-stars";
-import { motion } from "framer-motion";
 
 export default function Home() {
 	return (
-		<div className="relative w-full min-h-screen overflow-x-hidden min-h-scren">
+		<div className="relative min-h-screen min-h-scren w-full overflow-x-hidden">
 			<ShootingStars
 				starColor="#9E00FF"
 				className="-z-30"
