@@ -5,7 +5,7 @@ import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
 import { Suspense } from "react";
-import VerifyInstallation from "@/app/(main)/(onboarding)/onboarding/_components/VerifyInstallation";
+import VerifyInstallation from "@/app/(main)/(landing)/(onboarding)/onboarding/_components/VerifyInstallation";
 import { getUserData } from "@/app/data/user/get-user-data";
 import { getWebsiteByIdAndDevId } from "@/app/data/website/get-website-by-id-and-dev-id";
 import { Badge } from "@/components/ui/badge";

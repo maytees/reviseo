@@ -13,7 +13,7 @@ import {
 } from "@/components/ui/select";
 import { tryCatch } from "@/lib/try-catch";
 import type { FeedbackSelectAllPayload } from "@/lib/types";
-import type { FeedbackStatus } from "@/prisma/generated/client";
+import type { FeedbackStatus } from "@/prisma/generated/client/client";
 import { updateFeedbackStatus } from "./actions";
 
 const SelectStatus = ({ feedback }: { feedback: FeedbackSelectAllPayload }) => {

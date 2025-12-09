@@ -1,6 +1,6 @@
 "use client";
 
-import { Menu } from "lucide-react";
+import { ChevronDownIcon, LogOutIcon, Menu } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -19,8 +19,19 @@ import {
 	SheetTitle,
 	SheetTrigger,
 } from "@/components/ui/sheet";
+import { authClient } from "@/lib/auth-client";
+import { useSignOut } from "@/lib/hooks/useSignOut";
 import { cn } from "@/lib/utils";
+import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
 import { BorderBeam } from "../ui/BorderBeam";
+import {
+	DropdownMenu,
+	DropdownMenuContent,
+	DropdownMenuItem,
+	DropdownMenuLabel,
+	DropdownMenuSeparator,
+	DropdownMenuTrigger,
+} from "../ui/dropdown-menu";
 
 interface MenuItem {
 	title: string;
@@ -38,7 +49,7 @@ interface NavbarProps {
 		title: string;
 	};
 	menu?: MenuItem[];
-	auth?: {
+	authcta?: {
 		getStarted: {
 			title: string;
 			url: string;
@@ -56,134 +67,184 @@ const Navbar = ({
 	menu = [
 		{ title: "Home", url: "/" },
 		{ title: "Features", url: "/#features" },
-		{ title: "Pricing", url: "/#pricing" },
+		{ title: "Pricing", url: "/pricing" },
 		{ title: "FAQ", url: "/#faq" },
 		{ title: "About", url: "/about" },
 		{ title: "Blog", url: "/blog" },
 	],
-	auth = {
-		getStarted: { title: "Join Waitlist", url: "/waitlist" },
+	authcta = {
+		getStarted: { title: "Get Started", url: "/login" },
 	},
 }: NavbarProps) => {
-	const [scrolled, setScrolled] = useState(false);
-	const [visible, setVisible] = useState(true);
-	const [lastScrollY, setLastScrollY] = useState(0);
+	const { data: session } = authClient.useSession();
+	const handleSignOut = useSignOut();
+	const [isMounted, setIsMounted] = useState(false);
 
 	useEffect(() => {
-		const onScroll = () => {
-			const currentScrollY = window.scrollY;
-			const scrollThreshold = window.innerHeight * 0.2;
+		setIsMounted(true);
+	}, []);
 
-			setScrolled(currentScrollY > 10);
-
-			if (currentScrollY < scrollThreshold) {
-				setVisible(true);
-			} else if (currentScrollY > lastScrollY) {
-				// Scrolling down
-				setVisible(false);
-			} else {
-				// Scrolling up
-				setVisible(true);
-			}
-
-			setLastScrollY(currentScrollY);
-		};
-
-		onScroll();
-		window.addEventListener("scroll", onScroll, { passive: true });
-		return () => window.removeEventListener("scroll", onScroll);
-	}, [lastScrollY]);
+	if (!isMounted) {
+		return null;
+	}
 
 	return (
-		<section
-			className={cn(
-				"fixed z-50 mt-16 w-full max-w-7xl rounded-3xl px-4 py-4 shadow-[inset_0_4px_8px_0_rgba(0,0,0,0.3)] backdrop-blur-sm transition-all duration-300 md:px-16 lg:px-20 xl:px-32",
-				scrolled ? "bg-background/30" : "bg-background/70",
-				visible ? "translate-y-0 opacity-100" : "-translate-y-full opacity-0",
-			)}
-		>
-			{/* Desktop Menu */}
-			<nav className="hidden w-full items-center justify-between gap-2 lg:flex">
-				{/* Logo */}
-				<Link href={logo.url} className="flex items-center gap-1">
-					<Image src={logo.src} width={32} height={32} alt={logo.alt} />
-					<h1 className="font-bold font-caudex text-4xl">{logo.title}</h1>
-				</Link>
-
-				{/* Centered Navigation Links */}
-				<div className="-translate-x-1/2 absolute left-1/2 flex transform items-center">
-					<NavigationMenu>
-						<NavigationMenuList>
-							{menu.map((item) => renderMenuItem(item))}
-						</NavigationMenuList>
-					</NavigationMenu>
-				</div>
-
-				{/* CTA Button */}
-				<div className="flex gap-2">
-					<Button asChild className="relative" size="lg" variant={"inset"}>
-						<Link className="relative" href={auth.getStarted.url}>
-							{auth.getStarted.title}
-							<BorderBeam
-								delay={3}
-								duration={2}
-								borderWidth={2}
-								className="from-accent to-primary"
-							/>
-						</Link>
-					</Button>
-				</div>
-			</nav>
-
-			{/* Mobile Menu */}
-			<div className="w-full lg:hidden">
-				<div className="flex w-full items-center justify-between">
+		<div className="fixed top-0 right-0 left-0 z-50 flex justify-center px-4 pt-4 sm:px-6">
+			<section
+				className={cn(
+					"w-full max-w-7xl rounded-3xl px-4 py-4 shadow-[inset_0_4px_8px_0_rgba(0,0,0,0.3)] backdrop-blur-sm transition-all duration-300 sm:px-6 md:px-16 lg:px-20",
+				)}
+			>
+				{/* Desktop Menu */}
+				<nav className="hidden w-full items-center justify-between gap-2 lg:flex">
 					{/* Logo */}
-					<Link href={logo.url} className="flex items-center gap-2">
+					<Link href={logo.url} className="flex items-center gap-1">
 						<Image src={logo.src} width={32} height={32} alt={logo.alt} />
 						<h1 className="font-bold font-caudex text-4xl">{logo.title}</h1>
 					</Link>
-					<Sheet>
-						<SheetTrigger asChild>
-							<Button variant="outline" size="lg" mode={"icon"}>
-								<Menu />
-							</Button>
-						</SheetTrigger>
-						<SheetContent className="overflow-y-auto">
-							<SheetHeader>
-								<SheetTitle>
-									<Link href={logo.url} className="flex items-center gap-2">
-										<Image
-											src={logo.src}
-											width={32}
-											height={32}
-											alt={logo.alt}
-										/>
-									</Link>
-								</SheetTitle>
-							</SheetHeader>
-							<div className="flex flex-col gap-6 p-4">
-								<Accordion
-									type="single"
-									collapsible
-									className="flex w-full flex-col gap-4"
-								>
-									{menu.map((item) => renderMobileMenuItem(item))}
-								</Accordion>
 
-								<div className="flex flex-col gap-3">
-									<Button asChild>
-										<Link href={auth.getStarted.url}>
-											{auth.getStarted.title}
+					{/* Centered Navigation Links */}
+					<div className="-translate-x-1/2 absolute left-1/2 flex transform items-center">
+						<NavigationMenu>
+							<NavigationMenuList>
+								{menu.map((item) => renderMenuItem(item))}
+							</NavigationMenuList>
+						</NavigationMenu>
+					</div>
+
+					{/* CTA Button or User Menu */}
+					{session?.user ? (
+						<DropdownMenu>
+							<DropdownMenuTrigger asChild>
+								<Button
+									variant="ghost"
+									className="h-auto p-0 hover:bg-transparent"
+								>
+									<Avatar>
+										<AvatarImage
+											src={
+												session.user.image ??
+												`https://avatar.vercel.sh/${session.user.email}`
+											}
+											alt={session.user.name ?? "User avatar"}
+										/>
+										<AvatarFallback>
+											{session.user.name && session.user.name.length > 0
+												? session.user.name.charAt(0).toUpperCase()
+												: session.user.email.charAt(0).toUpperCase()}
+										</AvatarFallback>
+									</Avatar>
+									<ChevronDownIcon
+										size={16}
+										className="opacity-60"
+										aria-hidden="true"
+									/>
+								</Button>
+							</DropdownMenuTrigger>
+							<DropdownMenuContent className="max-w-64" align="end">
+								<DropdownMenuLabel className="flex min-w-0 flex-col">
+									<span className="truncate font-medium text-foreground text-sm">
+										{session.user.name && session.user.name.length > 0
+											? session.user.name
+											: session.user.email.split("@")[0]}
+									</span>
+									<span className="truncate font-normal text-muted-foreground text-xs">
+										{session.user.email}
+									</span>
+								</DropdownMenuLabel>
+								<DropdownMenuSeparator />
+								<DropdownMenuItem asChild>
+									<Link href="/dashboard">Dashboard</Link>
+								</DropdownMenuItem>
+								<DropdownMenuSeparator />
+								<DropdownMenuItem onClick={handleSignOut}>
+									<LogOutIcon
+										size={16}
+										className="opacity-60"
+										aria-hidden="true"
+									/>
+									<span>Log out</span>
+								</DropdownMenuItem>
+							</DropdownMenuContent>
+						</DropdownMenu>
+					) : (
+						<div className="flex gap-2">
+							<Button asChild className="relative" size="lg" variant={"inset"}>
+								<Link className="relative" href={authcta.getStarted.url}>
+									{authcta.getStarted.title}
+									<BorderBeam
+										delay={3}
+										duration={2}
+										borderWidth={2}
+										className="from-accent to-primary"
+									/>
+								</Link>
+							</Button>
+						</div>
+					)}
+				</nav>
+
+				{/* Mobile Menu */}
+				<div className="w-full lg:hidden">
+					<div className="flex w-full items-center justify-between">
+						{/* Logo */}
+						<Link href={logo.url} className="flex items-center gap-2">
+							<Image src={logo.src} width={32} height={32} alt={logo.alt} />
+							<h1 className="font-bold font-caudex text-4xl">{logo.title}</h1>
+						</Link>
+						<Sheet>
+							<SheetTrigger asChild>
+								<Button variant="outline" size="lg" mode={"icon"}>
+									<Menu />
+								</Button>
+							</SheetTrigger>
+							<SheetContent className="overflow-y-auto">
+								<SheetHeader>
+									<SheetTitle>
+										<Link href={logo.url} className="flex items-center gap-2">
+											<Image
+												src={logo.src}
+												width={32}
+												height={32}
+												alt={logo.alt}
+											/>
 										</Link>
-									</Button>
+									</SheetTitle>
+								</SheetHeader>
+								<div className="flex flex-col gap-6 p-4">
+									<Accordion
+										type="single"
+										collapsible
+										className="flex w-full flex-col gap-4"
+									>
+										{menu.map((item) => renderMobileMenuItem(item))}
+									</Accordion>
+
+									<div className="flex flex-col gap-3">
+										{session?.user ? (
+											<>
+												<Button asChild variant="outline">
+													<Link href="/dashboard">Dashboard</Link>
+												</Button>
+												<Button variant="destructive" onClick={handleSignOut}>
+													Log out
+												</Button>
+											</>
+										) : (
+											<Button asChild>
+												<Link href={authcta.getStarted.url}>
+													{authcta.getStarted.title}
+												</Link>
+											</Button>
+										)}
+									</div>
 								</div>
-							</div>
-						</SheetContent>
-					</Sheet>
+							</SheetContent>
+						</Sheet>
+					</div>
 				</div>
-			</div>
-		</section>
+			</section>
+		</div>
 	);
 };
 

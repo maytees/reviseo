@@ -7,10 +7,10 @@
 		"dev": "next dev --turbopack",
 		"build": "next build --turbopack",
 		"start": "next start",
-		"db:generate": "prisma generate",
-		"db:push": "prisma db push",
 		"check:unsafe": "biome check --unsafe --write .",
 		"vercel-build": "prisma db push && next build",
+		"db:generate": "prisma generate",
+		"db:push": "prisma db push",
 		"postinstall": "prisma generate"
 	},
 	"dependencies": {

@@ -4,7 +4,6 @@ import Image from "next/image";
 import Link from "next/link";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
-import { Navbar } from "@/components/landing/Navbar";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { getAllArticles } from "@/lib/blog";
@@ -19,9 +18,9 @@ const BlogPage = async () => {
 
 	return (
 		<div className="relative min-h-screen min-h-scren w-full overflow-x-hidden">
-			<div className="sticky top-4 z-50 flex w-full items-center justify-center px-2 pt-6 sm:px-4 md:px-6">
+			{/* <div className="sticky top-4 z-50 flex w-full items-center justify-center px-2 pt-6 sm:px-4 md:px-6">
 				<Navbar />
-			</div>
+			</div> */}
 			<header className="mt-48">
 				<h1 className="mx-auto max-w-xl text-center font-caudex font-extrabold text-5xl">
 					Learn with Reviseo

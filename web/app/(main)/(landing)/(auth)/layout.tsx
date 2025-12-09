@@ -24,9 +24,9 @@ export default function AuthLayout({ children }: { children: ReactNode }) {
 			/>
 
 			{/* Navbar */}
-			<div className="sticky top-4 z-50 flex w-full items-center justify-center px-2 pt-6 sm:px-4 md:px-6">
+			{/* <div className="sticky top-4 z-50 flex w-full items-center justify-center px-2 pt-6 sm:px-4 md:px-6">
 				<Navbar />
-			</div>
+			</div> */}
 
 			<div className="relative z-10 mt-20 flex min-h-[calc(100vh-6rem)] flex-col items-center justify-center">
 				<div className="flex w-full max-w-md flex-col gap-6 px-4">

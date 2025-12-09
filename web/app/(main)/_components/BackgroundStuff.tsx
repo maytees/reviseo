@@ -1,22 +1,12 @@
 "use client";
-import { motion } from "framer-motion";
-import { BentoFeatures } from "@/components/landing/BentoFeatures";
-import { Contact } from "@/components/landing/Contact";
-import { FAQ } from "@/components/landing/FAQ";
-import { FinalCTA } from "@/components/landing/FinalCTA";
-import { Footer } from "@/components/landing/Footer";
-import Hero from "@/components/landing/Hero";
-import { HowItWorks } from "@/components/landing/HowItWorks";
-import { Navbar } from "@/components/landing/Navbar";
+import { motion } from "motion/react";
+import { Fragment } from "react";
 import Noise from "@/components/landing/Noise";
-import { Pricing } from "@/components/landing/Pricing";
-import Problems from "@/components/landing/Problems";
-import UsedWith from "@/components/landing/UsedBy";
 import { ShootingStars } from "@/components/ui/shadcn-io/shooting-stars";
 
-export default function Home() {
+const BackgroundStuff = ({ short = false }: { short?: boolean }) => {
 	return (
-		<div className="relative min-h-screen min-h-scren w-full overflow-x-hidden">
+		<Fragment>
 			<ShootingStars
 				starColor="#9E00FF"
 				className="-z-30"
@@ -71,28 +61,30 @@ export default function Home() {
 				}}
 			/>
 			{/* Problems Section Gradient */}
-			<motion.div
-				initial={{ opacity: 0, rotate: 180 }}
-				whileInView={{
-					opacity: 0.3,
-					rotate: 0,
-				}}
-				transition={{
-					duration: 4.5,
-					stiffness: 50,
-					damping: 50,
-					mass: 2,
-					type: "spring",
-					bounce: 0.05,
-					ease: "easeInOut",
-				}}
-				viewport={{ once: true, amount: 0.3 }}
-				className="-right-32 -z-30 pointer-events-none absolute top-[220vh] h-[700px] w-[700px] blur-3xl"
-				style={{
-					background:
-						"linear-gradient(to bottom right, var(--accent), var(--primary), transparent 70%)",
-				}}
-			/>
+			{!short && (
+				<motion.div
+					initial={{ opacity: 0, rotate: 180 }}
+					whileInView={{
+						opacity: 0.3,
+						rotate: 0,
+					}}
+					transition={{
+						duration: 4.5,
+						stiffness: 50,
+						damping: 50,
+						mass: 2,
+						type: "spring",
+						bounce: 0.05,
+						ease: "easeInOut",
+					}}
+					viewport={{ once: true, amount: 0.3 }}
+					className="-right-32 -z-30 pointer-events-none absolute top-[220vh] h-[700px] w-[700px] blur-3xl"
+					style={{
+						background:
+							"linear-gradient(to bottom right, var(--accent), var(--primary), transparent 70%)",
+					}}
+				/>
+			)}
 			<motion.div
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
@@ -114,19 +106,8 @@ export default function Home() {
 					backgroundSize: "32px 32px",
 				}}
 			/>
-			<div className="sticky top-4 z-50 flex w-full items-center justify-center px-2 pt-6 sm:px-4 md:px-6">
-				<Navbar />
-			</div>
-			<Hero />
-			<UsedWith />
-			<Problems />
-			<BentoFeatures />
-			<HowItWorks />
-			<Pricing />
-			<FAQ />
-			<Contact />
-			<FinalCTA />
-			<Footer />
-		</div>
+		</Fragment>
 	);
-}
+};
+
+export default BackgroundStuff;

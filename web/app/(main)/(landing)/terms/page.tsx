@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { Footer } from "@/components/landing/Footer";
-import { Navbar } from "@/components/landing/Navbar";
 
 export const metadata: Metadata = {
 	title: "Terms of Service",
@@ -10,9 +9,9 @@ export const metadata: Metadata = {
 export default function TermsPage() {
 	return (
 		<div className="relative min-h-screen w-full overflow-x-hidden">
-			<div className="sticky top-4 z-50 flex w-full items-center justify-center px-2 pt-6 sm:px-4 md:px-6">
+			{/* <div className="sticky top-4 z-50 flex w-full items-center justify-center px-2 pt-6 sm:px-4 md:px-6">
 				<Navbar />
-			</div>
+			</div> */}
 
 			<article className="mx-auto mt-32 max-w-4xl px-4 py-24 sm:px-6 md:px-8">
 				<h1 className="font-bold font-caudex text-4xl sm:text-5xl md:text-6xl">

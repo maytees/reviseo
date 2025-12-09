@@ -115,6 +115,33 @@ model Invite {
   @@index([email])
 }
 
+// enum SubscriptionStatus {
+//   incomplete
+//   incomplete_expired
+//   trailing
+//   active
+//   past_due
+//   canceled
+//   unpaid
+// }
+
+model Subscription {
+  id     String @id @default(cuid())
+  userId String @unique
+  user   User   @relation(fields: [userId], references: [id])
+
+  polarSubId String @unique
+  planId     String
+  // status     SubscriptionStatus
+  status     String
+
+  currentPeriodStart DateTime
+  currentPeriodEnd   DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
 model User {
   id            String  @id
   name          String
@@ -133,9 +160,10 @@ model User {
   emailNotifications     Boolean  @default(true)
 
   // Reviseo relations
-  developerWebsites Website[]  @relation("DeveloperWebsites")
-  clientWebsites    Website[]  @relation("ClientWebsites")
+  developerWebsites Website[]     @relation("DeveloperWebsites")
+  clientWebsites    Website[]     @relation("ClientWebsites")
   feedback          Feedback[]
+  subscription      Subscription?
 
   @@unique([email])
   @@map("user")

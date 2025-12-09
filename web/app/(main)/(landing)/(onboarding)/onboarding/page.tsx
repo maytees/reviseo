@@ -1,7 +1,6 @@
 import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import { Suspense } from "react";
-import { requireUser } from "@/app/data/require-user";
 import { getUserOnboardingData } from "@/app/data/user/get-user-onboarding-data";
 import { OnboardingFlow } from "./_components/OnboardingFlow";
 
@@ -10,14 +9,20 @@ export const metadata: Metadata = {
 };
 
 export default async function OnboardingPage() {
-	const user = await requireUser();
+	// const user = await requireUser();
+
+	const userData = await getUserOnboardingData();
+
+	if (!userData) {
+		return redirect("/");
+	}
 
 	// If already completed onboarding, go to dashboard
-	if (user.hasCompletedOnboarding) {
+	if (userData.hasCompletedOnboarding) {
 		return redirect("/dashboard");
 	}
 
-	const userData = await getUserOnboardingData();
+	// if (userData.subscription?.status !== "active") return redirect("/pricing");
 
 	return (
 		<Suspense>

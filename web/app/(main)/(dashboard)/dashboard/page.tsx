@@ -36,6 +36,8 @@ export default async function DashboardPage() {
 		(website) => website.feedback,
 	);
 
+	// if (userData.subscription?.status !== "active") return redirect("/pricing");
+
 	return (
 		<div className="flex flex-col gap-10">
 			<div className="flex flex-col gap-0.5">

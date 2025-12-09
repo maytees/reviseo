@@ -1,5 +1,6 @@
 "use server";
 
+import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import moment from "moment";
 import { requireUser } from "@/app/data/require-user";
 import { prisma } from "@/lib/db";
@@ -8,7 +9,6 @@ import { env } from "@/lib/env";
 import { resend } from "@/lib/resend";
 import type { ApiResponse, BrowserInfo } from "@/lib/types";
 import { type FeedbackFormData, feedbackFormSchema } from "@/lib/validations";
-import { PrismaClientKnownRequestError } from "@/prisma/generated/client/runtime/library";
 
 // Parent website URL, e.g clientsite.com
 export async function submitFeedbackForm(

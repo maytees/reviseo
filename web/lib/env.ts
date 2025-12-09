@@ -18,8 +18,11 @@ export const env = createEnv({
 		ROUTER_TOKEN: z.string().min(1),
 		ROUTER_ENDPOINT: z.url().min(1),
 		POLAR_ACCESS_TOKEN: z.string().min(1),
+		POLAR_WEBHOOK_SECRET: z.string().min(1),
 		POLAR_STARTER_PLAN_PRODUCT_ID: z.string().min(1),
+		POLAR_STARTER_YEARLY_PLAN_PRODUCT_ID: z.string().min(1),
 		POLAR_PROFESSIONAL_PLAN_PRODUCT_ID: z.string().min(1),
+		POLAR_PROFESSIONAL_YEARLY_PLAN_PRODUCT_ID: z.string().min(1),
 		NODE_ENV: z
 			.enum(["production", "preview", "development"])
 			.default("development"),

@@ -42,7 +42,7 @@ export default async function LoginPage() {
 		<div>
 			<LoginForm />
 
-			<div className="text-balance text-center font-inter text-muted-foreground text-sm">
+			<div className="mt-2 text-balance text-center font-inter text-muted-foreground text-sm">
 				By clicking continue, you agree to our{" "}
 				<Link
 					href="/terms"

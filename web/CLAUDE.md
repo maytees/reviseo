@@ -159,7 +159,7 @@ import { prisma } from "@/lib/db"
 
 Always import from the custom generated path:
 ```typescript
-import { PrismaClient } from "@/prisma/generated/client"
+import { PrismaClient } from "@/prisma/generated/client/client"
 ```
 
 Use the singleton instance from `lib/db.ts`:

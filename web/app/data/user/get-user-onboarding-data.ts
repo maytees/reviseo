@@ -21,6 +21,12 @@ export async function getUserOnboardingData() {
 					projectId: true,
 				},
 			},
+			hasCompletedOnboarding: true,
+			subscription: {
+				select: {
+					status: true,
+				},
+			},
 		},
 	});
 

@@ -1,6 +1,5 @@
 import type { ReactNode } from "react";
 import { Footer } from "@/components/landing/Footer";
-import { Navbar } from "@/components/landing/Navbar";
 
 export default function OnboardingLayout({
 	children,
@@ -19,9 +18,9 @@ export default function OnboardingLayout({
 			/>
 
 			{/* Navbar */}
-			<div className="sticky top-4 z-50 flex w-full items-center justify-center px-2 pt-6 sm:px-4 md:px-6">
+			{/* <div className="sticky top-4 z-50 flex w-full items-center justify-center px-2 pt-6 sm:px-4 md:px-6">
 				<Navbar />
-			</div>
+			</div> */}
 
 			<div className="relative z-10">{children}</div>
 			<Footer />

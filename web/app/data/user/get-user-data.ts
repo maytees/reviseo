@@ -175,6 +175,12 @@ export async function getUserData() {
 					updatedAt: true,
 				},
 			},
+			subscription: {
+				select: {
+					status: true,
+					// TODO: Get other fields
+				},
+			},
 		},
 	});
 

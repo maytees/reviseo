@@ -6,7 +6,7 @@ import type React from "react";
 import { useEffect, useId, useState, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { createWebsiteOnboarding } from "@/app/(main)/(onboarding)/onboarding/_components/actions";
+import { createWebsiteOnboarding } from "@/app/(main)/(landing)/(onboarding)/onboarding/_components/actions";
 import { Button } from "@/components/ui/button";
 import {
 	Dialog,

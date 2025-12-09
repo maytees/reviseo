@@ -5,7 +5,6 @@ import { Lightbulb, Mail, Users } from "lucide-react";
 import Link from "next/link";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
-import { Navbar } from "@/components/landing/Navbar";
 import Noise from "@/components/landing/Noise";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -111,9 +110,9 @@ export default function AboutClient() {
 					backgroundSize: "32px 32px",
 				}}
 			/>
-			<div className="sticky top-4 z-50 flex w-full items-center justify-center px-2 pt-6 sm:px-4 md:px-6">
+			{/* <div className="sticky top-4 z-50 flex w-full items-center justify-center px-2 pt-6 sm:px-4 md:px-6">
 				<Navbar />
-			</div>
+			</div> */}
 
 			{/* Hero Section */}
 			<section className="mt-32 flex w-full flex-col items-center justify-center px-4 sm:px-6 md:px-8">
@@ -236,7 +235,7 @@ export default function AboutClient() {
 							transition={{ duration: 0.6 }}
 							viewport={{ once: true }}
 						>
-							<Card className="h-full p-6 transition-all duration-300 border-border bg-gradient-to-br from-card to-card/50 hover:shadow-lg sm:p-8">
+							<Card className="h-full p-6 transition-all duration-300 border-border bg-linear-to-br from-card to-card/50 hover:shadow-lg sm:p-8">
 								<div className="flex flex-col items-center">
 									<Avatar className="w-32 h-32 mb-6 border-4 border-primary/20">
 										<AvatarImage
@@ -244,7 +243,7 @@ export default function AboutClient() {
 											alt="Maytham Ajam"
 											className="object-cover"
 										/>
-										<AvatarFallback className="text-4xl font-bold text-white bg-gradient-to-br from-primary to-accent font-caudex">
+										<AvatarFallback className="text-4xl font-bold text-white bg-linear-to-br from-primary to-accent font-caudex">
 											MA
 										</AvatarFallback>
 									</Avatar>

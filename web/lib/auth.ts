@@ -1,4 +1,5 @@
-import { checkout, polar, portal } from "@polar-sh/better-auth";
+import { checkout, polar, portal, webhooks } from "@polar-sh/better-auth";
+import type { OrderSubscription } from "@polar-sh/sdk/models/components/ordersubscription.js";
 import { betterAuth } from "better-auth";
 import { prismaAdapter } from "better-auth/adapters/prisma";
 import { emailOTP } from "better-auth/plugins";
@@ -110,18 +111,60 @@ export const auth = betterAuth({
 				checkout({
 					products: [
 						{
+							productId: env.POLAR_PROFESSIONAL_PLAN_PRODUCT_ID,
+							slug: "professional", // Custom slug for easy reference in Checkout URL, e.g. /checkout/Reviseo
+						},
+						{
+							productId: env.POLAR_PROFESSIONAL_YEARLY_PLAN_PRODUCT_ID,
+							slug: "professional-yearly",
+						},
+						{
 							productId: env.POLAR_STARTER_PLAN_PRODUCT_ID,
 							slug: "starter", // Custom slug for easy reference in Checkout URL, e.g. /checkout/Reviseo
 						},
 						{
-							productId: env.POLAR_PROFESSIONAL_PLAN_PRODUCT_ID,
-							slug: "professional", // Custom slug for easy reference in Checkout URL, e.g. /checkout/Reviseo
+							productId: env.POLAR_STARTER_YEARLY_PLAN_PRODUCT_ID,
+							slug: "starter-yearly",
 						},
 					],
 					successUrl: "/success?checkout_id={CHECKOUT_ID}",
 					authenticatedUsersOnly: true,
 				}),
 				portal(),
+				webhooks({
+					secret: env.POLAR_WEBHOOK_SECRET,
+					onOrderPaid: async (payload) => {
+						const sub = payload.data.subscription as OrderSubscription;
+						const userId = payload.data.customer.externalId as string;
+
+						await prisma.subscription.upsert({
+							where: {
+								id: userId,
+							},
+							create: {
+								userId,
+								polarSubId: sub.id,
+								status: sub.status,
+								planId: sub.productId,
+								currentPeriodStart: sub.currentPeriodStart,
+								currentPeriodEnd: sub.currentPeriodEnd,
+							},
+							update: {
+								status: "active",
+								currentPeriodStart: sub.currentPeriodStart,
+								currentPeriodEnd: sub.currentPeriodEnd,
+							},
+						});
+					},
+					onSubscriptionRevoked: async (payload) => {
+						const sub = payload.data;
+
+						await prisma.subscription.update({
+							where: { polarSubId: sub.id },
+							data: { status: "expired" },
+						});
+					},
+				}),
 			],
 		}),
 	],

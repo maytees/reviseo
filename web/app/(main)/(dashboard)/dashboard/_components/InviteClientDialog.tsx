@@ -8,7 +8,7 @@ import type React from "react";
 import { useEffect, useId, useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { inviteClient } from "@/app/(main)/(onboarding)/onboarding/_components/actions";
+import { inviteClient } from "@/app/(main)/(landing)/(onboarding)/onboarding/_components/actions";
 import type { UserDataType } from "@/app/data/user/get-user-data";
 import type { WebsiteDataTypeNonNullable } from "@/app/data/website/get-website-by-id-and-dev-id";
 import { Alert, AlertDescription } from "@/components/ui/alert";

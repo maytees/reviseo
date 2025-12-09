@@ -21,7 +21,7 @@ import type {
 	FeedbackType,
 	InviteStatus,
 	Prisma,
-} from "@/prisma/generated/client";
+} from "@/prisma/generated/client/client";
 
 // 	message: string;
 // };

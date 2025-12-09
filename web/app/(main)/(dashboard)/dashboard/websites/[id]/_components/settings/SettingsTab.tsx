@@ -6,7 +6,7 @@ import { useRouter } from "next/navigation";
 import { useId, useState, useTransition } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { toast } from "sonner";
-import { updateWebsiteOnboarding } from "@/app/(main)/(onboarding)/onboarding/_components/actions";
+import { updateWebsiteOnboarding } from "@/app/(main)/(landing)/(onboarding)/onboarding/_components/actions";
 import type { WebsiteDataTypeNonNullable } from "@/app/data/website/get-website-by-id-and-dev-id";
 import { Button } from "@/components/ui/button";
 import {

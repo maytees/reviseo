@@ -9,7 +9,7 @@ import {
 import moment from "moment";
 import { useId, useState } from "react";
 import { toast } from "sonner";
-import VerifyInstallation from "@/app/(main)/(onboarding)/onboarding/_components/VerifyInstallation";
+import VerifyInstallation from "@/app/(main)/(landing)/(onboarding)/onboarding/_components/VerifyInstallation";
 import {
 	Accordion,
 	AccordionContent,

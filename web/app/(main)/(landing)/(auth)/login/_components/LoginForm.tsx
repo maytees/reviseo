@@ -38,6 +38,7 @@ export function LoginForm() {
 		startGithubTransition(async () => {
 			await authClient.signIn.social({
 				provider: "github",
+				// TODO: Get callback url via slug if user purchased something
 				callbackURL: !isClientInvite ? "/dashboard" : "/invite",
 				fetchOptions: {
 					onSuccess: () => {

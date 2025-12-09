@@ -9,7 +9,7 @@ import { FaLinkedin } from "react-icons/fa";
 const footerLinks = {
 	product: [
 		{ name: "Features", href: "/#features" },
-		{ name: "Pricing", href: "/#pricing" },
+		{ name: "Pricing", href: "/pricing" },
 		{ name: "FAQ", href: "/#faq" },
 		{ name: "Changelog", href: "/changelog" },
 	],
