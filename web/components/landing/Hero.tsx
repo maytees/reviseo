@@ -33,7 +33,7 @@ const Hero = () => {
 						className="max-w-3xl px-2 text-center font-bold font-caudex text-4xl sm:text-5xl md:text-6xl lg:text-7xl"
 					>
 						Stop tracking client feedback with{" "}
-						<span className="bg-gradient-to-r from-accent to-primary bg-clip-text font-bold font-caudex text-transparent italic">
+						<span className="bg-linear-to-r from-accent to-primary bg-clip-text font-bold font-caudex text-transparent italic">
 							endless
 						</span>{" "}
 						emails

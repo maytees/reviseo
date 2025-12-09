@@ -39,7 +39,7 @@ const socialLinks = [
 
 export function Footer() {
 	return (
-		<footer className="relative z-40 mt-48 w-full overflow-x-hidden border-border border-t bg-gradient-to-b from-background to-muted/20">
+		<footer className="relative z-40 mt-48 w-full overflow-x-hidden border-border border-t bg-linear-to-b from-background to-muted/20">
 			{/* Background Gradient */}
 			<motion.div
 				initial={{ opacity: 0, scale: 0.8 }}
@@ -214,7 +214,7 @@ export function Footer() {
 				>
 					<div className="flex flex-col items-center justify-center gap-4 sm:flex-row">
 						<p className="font-inter text-muted-foreground text-sm">
-							© {new Date().getFullYear()} Reviseo. All rights reserved.
+							© 2025 Reviseo. All rights reserved.
 						</p>
 					</div>
 				</motion.div>

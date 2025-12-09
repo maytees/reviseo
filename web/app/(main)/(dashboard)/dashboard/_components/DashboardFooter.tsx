@@ -6,7 +6,7 @@ const DashboardFooter = () => {
 		<div className="pt-6">
 			<Separator className="mb-4" />
 			<div className="flex flex-col items-center justify-between gap-2 text-muted-foreground text-xs lg:flex-row">
-				<p>© {new Date().getFullYear()} Reviseo. All rights reserved.</p>
+				<p>© 2025 Reviseo. All rights reserved.</p>
 				<div className="flex items-center gap-3">
 					<Link className="hover:underline" href="/privacy">
 						Privacy

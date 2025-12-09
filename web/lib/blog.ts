@@ -1,121 +1,113 @@
-import fs from "node:fs";
-import path from "node:path";
-import matter from "gray-matter";
-import { remark } from "remark";
-import html from "remark-html";
+"use server";
+
+import { cacheLife } from "next/cache";
+import { prisma } from "@/lib/db";
 import type { BlogItem } from "./types";
 
-const blogDirectory = path.join(process.cwd(), "blog");
+/**
+ * Converts database Article to BlogItem format
+ * Maps database fields to the expected BlogItem structure
+ */
+function articleToBlogItem(article: {
+	id: string;
+	title: string;
+	slug: string;
+	content_markdown: string;
+	content_html: string;
+	meta_description: string;
+	image_url: string | null;
+	tags: string[];
+	created_at: Date;
+	received_at: Date;
+}): BlogItem {
+	// Use first tag as category, default to 'guide' if no tags
+	const category = (article.tags[0] as "story" | "product" | "guide") ?? "guide";
 
-const getSortedArticles = (): BlogItem[] => {
-	const fileNames = fs.readdirSync(blogDirectory);
+	return {
+		id: article.id,
+		title: article.title,
+		slug: article.slug,
+		description: article.meta_description,
+		cover: article.image_url ?? undefined,
+		date: article.created_at,
+		lastModified: article.received_at,
+		category,
+		// Default author values (can be enhanced later if needed)
+		author: "Reviseo Team",
+		authorImage: undefined,
+		authorLinkedIn: "https://linkedin.com/company/reviseo",
+		authorRole: "Content Team",
+		seeMore: [], // Related articles can be added later
+	};
+}
 
-	const allArticlesData = fileNames.map((fileName) => {
-		const id = fileName.replace(/\.md$/, "");
+/**
+ * Get all articles sorted by creation date (newest first)
+ * Cached for 24 hours
+ */
+export async function getAllArticles(): Promise<BlogItem[]> {
+	"use cache";
+	cacheLife("days");
 
-		const fullPath = path.join(blogDirectory, fileName);
-		const fileContents = fs.readFileSync(fullPath, "utf-8");
-
-		const matterResult = matter(fileContents);
-
-		return {
-			id,
-			title: matterResult.data.title,
-			date: matterResult.data.date,
-			author: matterResult.data.author,
-			category: matterResult.data.category,
-			description: matterResult.data.description,
-			cover: matterResult.data.cover,
-			slug: matterResult.data.slug ?? id,
-			authorImage: matterResult.data.authorImage,
-			authorLinkedIn: matterResult.data.authorLinkedIn,
-			seeMore: matterResult.data.seeMore,
-			authorRole: matterResult.data.authorRole,
-			lastModified: matterResult.data.lastModified,
-		} satisfies BlogItem;
+	const articles = await prisma.article.findMany({
+		orderBy: {
+			created_at: "desc",
+		},
 	});
 
-	return allArticlesData.sort((a, b) => {
-		const dateOne = a.date;
-		const dateTwo = b.date;
+	return articles.map(articleToBlogItem);
+}
 
-		if (dateOne.isBefore(dateTwo)) {
-			return -1;
-		} else if (dateTwo.isAfter(dateOne)) {
-			return 1;
-		}
+/**
+ * Get articles grouped by category
+ * Cached for 24 hours
+ */
+export async function getCategorisedArticles(): Promise<
+	Record<string, BlogItem[]>
+> {
+	"use cache";
+	cacheLife("days");
 
-		return 0;
-	});
-};
-
-export const getCategorisedArticles = (): Record<string, BlogItem[]> => {
-	const sortedArticles = getSortedArticles();
+	const allArticles = await getAllArticles();
 	const categorisedArticles: Record<string, BlogItem[]> = {};
-	sortedArticles.forEach((article) => {
+
+	for (const article of allArticles) {
 		if (!categorisedArticles[article.category]) {
 			categorisedArticles[article.category] = [];
 		}
-
 		categorisedArticles[article.category].push(article);
-	});
+	}
 
 	return categorisedArticles;
-};
+}
 
-export const getAllArticles = (): BlogItem[] => {
-	// Newest first for list views
-	return [...getSortedArticles()].reverse();
-};
+/**
+ * Get a single article by ID or slug
+ * Returns null if not found
+ * Cached for 24 hours
+ */
+export async function getArticleData(
+	idOrSlug: string,
+): Promise<(BlogItem & { contentHtml: string; content: string }) | null> {
+	"use cache";
+	cacheLife("days");
 
-export const getArticleData = async (
-	id: string,
-): Promise<(BlogItem & { contentHtml: string; content: string }) | null> => {
-	let filePath = path.join(blogDirectory, `${id}.md`);
-	let fileContents: string | null = null;
+	// Try to find by id first, then by slug
+	const article = await prisma.article.findFirst({
+		where: {
+			OR: [{ id: idOrSlug }, { slug: idOrSlug }],
+		},
+	});
 
-	if (fs.existsSync(filePath)) {
-		fileContents = fs.readFileSync(filePath, "utf-8");
-	} else {
-		// Fallback: resolve by slug metadata
-		const fileNames = fs.readdirSync(blogDirectory);
-		for (const fileName of fileNames) {
-			const candidatePath = path.join(blogDirectory, fileName);
-			const candidate = fs.readFileSync(candidatePath, "utf-8");
-			const matterResult = matter(candidate);
-			if (matterResult.data?.slug === id) {
-				filePath = candidatePath;
-				fileContents = candidate;
-				break;
-			}
-		}
-		if (!fileContents) {
-			return null;
-		}
+	if (!article) {
+		return null;
 	}
-	const matterResult = matter(fileContents);
 
-	const processedContent = await remark()
-		.use(html)
-		.process(matterResult.content);
-
-	const contentHtml = processedContent.toString();
+	const blogItem = articleToBlogItem(article);
 
 	return {
-		id,
-		contentHtml,
-		title: matterResult.data.title,
-		category: matterResult.data.category,
-		author: matterResult.data.author,
-		description: matterResult.data.description,
-		cover: matterResult.data.cover,
-		slug: matterResult.data.slug ?? id,
-		content: matterResult.content,
-		authorImage: matterResult.data.authorImage,
-		authorLinkedIn: matterResult.data.authorLinkedIn,
-		authorRole: matterResult.data.authorRole,
-		seeMore: matterResult.data.seeMore,
-		lastModified: matterResult.data.lastModified,
-		date: matterResult.data.date,
+		...blogItem,
+		content: article.content_markdown,
+		contentHtml: article.content_html,
 	};
-};
+}

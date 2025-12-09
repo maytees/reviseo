@@ -215,3 +215,16 @@ model Verification {
 
   @@map("verification")
 }
+
+model Article {
+  id               String   @id
+  title            String
+  slug             String   @unique
+  content_markdown String
+  content_html     String
+  meta_description String
+  image_url        String?
+  tags             String[] // Postgres supports arrays
+  created_at       DateTime
+  received_at      DateTime @default(now())
+}

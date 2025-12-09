@@ -18,9 +18,9 @@ import { categoryMap } from "@/lib/types";
 export async function generateStaticParams() {
 	const articles = await getAllArticles();
 
-	// Puts id's of all articles into an array (prerender all of these)
-	return articles.map(({ id }) => ({
-		id,
+	// Puts slugs of all articles into an array (prerender all of these)
+	return articles.map(({ slug, id }) => ({
+		id: slug ?? id,
 	}));
 }
 
@@ -200,7 +200,6 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 								</p>
 							) : null}
 						</header>
-						{/** biome-ignore lint/correctness/useUniqueElementIds: goon */}
 						<article
 							id="article-content"
 							className="prose dark:prose-invert max-w-none"

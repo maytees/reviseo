@@ -34,7 +34,7 @@ const BlogPage = async () => {
 			<section className="mt-10 grid place-content-center gap-y-10 md:grid-cols-2 md:px-5 lg:grid-cols-3 lg:px-10 xl:px-28">
 				{articles.map((article) => (
 					<Link
-						className="h-[30rem] max-w-sm rounded-xl p-5 transition-all duration-300 ease-in-out hover:scale-105 hover:bg-accent/20 focus:scale-105 focus:bg-accent/20"
+						className="h-120 max-w-sm rounded-xl p-5 transition-all duration-300 ease-in-out hover:scale-105 hover:bg-accent/20 focus:scale-105 focus:bg-accent/20"
 						key={article.id}
 						href={`/blog/${article.slug ?? article.id}`}
 					>
@@ -56,7 +56,7 @@ const BlogPage = async () => {
 											article.category.substring(1)}
 									</Badge>
 									<p className="text-muted-foreground text-xs">
-										{moment().format("MMM Do YY")}
+										{moment(article.date).format("MMM Do YY")}
 									</p>
 								</div>
 								<h1 className="mt-5 font-caudex font-semibold text-2xl">
