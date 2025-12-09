@@ -26,9 +26,9 @@ export default function OtpEmail({ otp, email }: OtpEmailProps) {
 			<Tailwind>
 				<Head />
 				<Preview>Your verification code for Reviseo</Preview>
-				<Body className="bg-[#f9fafb] py-[40px] font-sans">
-					<Container className="mx-auto max-w-[600px] px-[20px]">
-						<Section className="rounded-[8px] border border-[#e5e7eb] border-solid bg-[#ffffff] px-[32px] py-[40px]">
+				<Body className="bg-[#f9fafb] py-10 font-sans">
+					<Container className="mx-auto max-w-[600px] px-5">
+						<Section className="rounded-xl border border-[#e5e7eb] border-solid bg-[#ffffff] px-[32px] py-[40px]">
 							{/* Header */}
 							<Row>
 								<Column className="p-1">
