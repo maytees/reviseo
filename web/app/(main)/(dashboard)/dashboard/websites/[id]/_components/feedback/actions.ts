@@ -5,7 +5,7 @@ import { requireUser } from "@/app/data/require-user";
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
 import type { ApiResponse } from "@/lib/types";
-import type { FeedbackStatus } from "@/prisma/generated/enums";
+import type { FeedbackStatus } from "@/prisma/generated/client/enums";
 
 export async function updateFeedbackStatus(
 	id: string,
