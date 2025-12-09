@@ -69,7 +69,7 @@ const Hero = () => {
 							Get Started
 						</Button> */}
 						<Button asChild size={"lg"} className="w-full sm:w-auto">
-							<Link href={"/waitlist"}>Join Waitlist</Link>
+							<Link href={"/login"}>Get Started</Link>
 						</Button>
 					</motion.div>
 					{/* <motion.div

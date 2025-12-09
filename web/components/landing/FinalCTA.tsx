@@ -17,7 +17,7 @@ export function FinalCTA() {
 				viewport={{ once: true, amount: 0.2 }}
 				className="w-full max-w-5xl"
 			>
-				<Card className="relative overflow-hidden bg-gradient-to-br from-card to-card/50 p-12 shadow-2xl backdrop-blur-sm sm:p-16 md:p-20">
+				<Card className="relative overflow-hidden bg-linear-to-br from-card to-card/50 p-12 shadow-2xl backdrop-blur-sm sm:p-16 md:p-20">
 					{/* Bottom Radial Gradient */}
 					<motion.div
 						initial={{ opacity: 0, scale: 0.8 }}
@@ -47,7 +47,7 @@ export function FinalCTA() {
 						whileInView={{ opacity: 0.2 }}
 						transition={{ duration: 1.2, ease: "easeOut", delay: 0.2 }}
 						viewport={{ once: true }}
-						className="pointer-events-none absolute inset-0 bg-gradient-to-tr from-primary/20 via-transparent to-accent/20"
+						className="pointer-events-none absolute inset-0 bg-linear-to-tr from-primary/20 via-transparent to-accent/20"
 					/>
 
 					<div className="relative z-10 flex flex-col items-center justify-between gap-2 sm:gap-4">
@@ -91,8 +91,8 @@ export function FinalCTA() {
 									Get Started
 									<ArrowRight className="w-5 h-5 transition-transform group-hover:translate-x-1" />
 								</Link> */}
-								<Link href="/waitlist">
-									Join Waitlist
+								<Link href="/login">
+									Get Started
 									<ArrowRight className="h-5 w-5 transition-transform group-hover:translate-x-1" />
 								</Link>
 							</Button>

@@ -1,6 +1,5 @@
 "use server";
 
-import { cacheLife } from "next/cache";
 import { prisma } from "@/lib/db";
 import type { BlogItem } from "./types";
 
@@ -21,8 +20,6 @@ function articleToBlogItem(article: {
 	received_at: Date;
 }): BlogItem {
 	// Use first tag as category, default to 'guide' if no tags
-	const category = (article.tags[0] as "story" | "product" | "guide") ?? "guide";
-
 	return {
 		id: article.id,
 		title: article.title,
@@ -31,11 +28,11 @@ function articleToBlogItem(article: {
 		cover: article.image_url ?? undefined,
 		date: article.created_at,
 		lastModified: article.received_at,
-		category,
+		category: article.tags[0],
 		// Default author values (can be enhanced later if needed)
 		author: "Reviseo Team",
 		authorImage: undefined,
-		authorLinkedIn: "https://linkedin.com/company/reviseo",
+		authorLinkedIn: "https://linkedin.com/company/reviseoapp",
 		authorRole: "Content Team",
 		seeMore: [], // Related articles can be added later
 	};
@@ -46,8 +43,8 @@ function articleToBlogItem(article: {
  * Cached for 24 hours
  */
 export async function getAllArticles(): Promise<BlogItem[]> {
-	"use cache";
-	cacheLife("days");
+	// "use cache";
+	// cacheLife("days");
 
 	const articles = await prisma.article.findMany({
 		orderBy: {
@@ -65,8 +62,8 @@ export async function getAllArticles(): Promise<BlogItem[]> {
 export async function getCategorisedArticles(): Promise<
 	Record<string, BlogItem[]>
 > {
-	"use cache";
-	cacheLife("days");
+	// "use cache";
+	// cacheLife("days");
 
 	const allArticles = await getAllArticles();
 	const categorisedArticles: Record<string, BlogItem[]> = {};
@@ -89,8 +86,8 @@ export async function getCategorisedArticles(): Promise<
 export async function getArticleData(
 	idOrSlug: string,
 ): Promise<(BlogItem & { contentHtml: string; content: string }) | null> {
-	"use cache";
-	cacheLife("days");
+	// "use cache";
+	// cacheLife("days");
 
 	// Try to find by id first, then by slug
 	const article = await prisma.article.findFirst({

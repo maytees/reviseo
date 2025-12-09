@@ -13,7 +13,6 @@ import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Separator } from "@/components/ui/separator";
 import { getAllArticles, getArticleData } from "@/lib/blog";
-import { categoryMap } from "@/lib/types";
 
 export async function generateStaticParams() {
 	const articles = await getAllArticles();
@@ -123,11 +122,7 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 								<p className="text-left font-bold text-muted-foreground text-sm uppercase tracking-widest">
 									Category
 								</p>
-								<Badge
-									variant={categoryMap[articleData.category]}
-									appearance={"outline"}
-									className="w-fit"
-								>
+								<Badge variant={"info2"} appearance={"light"} className="w-fit">
 									{articleData.category.at(0)?.toUpperCase() +
 										articleData.category.substring(1)}
 								</Badge>

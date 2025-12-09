@@ -7,7 +7,6 @@ import { Footer } from "@/components/landing/Footer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { getAllArticles } from "@/lib/blog";
-import { categoryMap } from "@/lib/types";
 
 export const metadata: Metadata = {
 	title: "Blog",
@@ -48,10 +47,7 @@ const BlogPage = async () => {
 									src={article.cover ? article.cover : "/excalidraw-light.png"}
 								/>
 								<div className="mt-2 flex flex-row justify-between">
-									<Badge
-										variant={categoryMap[article.category]}
-										appearance={"outline"}
-									>
+									<Badge variant={"info2"} appearance={"light"}>
 										{article.category.at(0)?.toUpperCase() +
 											article.category.substring(1)}
 									</Badge>

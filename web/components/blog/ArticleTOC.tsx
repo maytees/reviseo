@@ -81,7 +81,7 @@ export function ArticleTOC({
 
 	return (
 		<nav className="sticky top-42 hidden h-fit max-w-xs xl:block">
-			<div className="rounded-xl border border-border/50 bg-background/60 p-4 backdrop-blur supports-[backdrop-filter]:bg-background/40">
+			<div className="rounded-xl border border-border/50 bg-background/60 p-4 backdrop-blur supports-backdrop-filter:bg-background/40">
 				<h2 className="mb-2 font-bold text-muted-foreground text-sm uppercase tracking-wide">
 					On this page
 				</h2>

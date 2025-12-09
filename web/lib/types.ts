@@ -47,7 +47,7 @@ export type BlogItem = {
 	title: string;
 	date: Date;
 	lastModified: Date;
-	category: "story" | "product" | "guide";
+	category: string;
 	author: string;
 	authorImage?: string;
 	description?: string;
@@ -56,15 +56,6 @@ export type BlogItem = {
 	cover?: string;
 	slug?: string;
 	authorRole?: string;
-};
-
-export const categoryMap: Record<
-	"story" | "product" | "guide",
-	BadgeVariantsType
-> = {
-	story: "info",
-	product: "success",
-	guide: "warning",
 };
 
 export type Browser =

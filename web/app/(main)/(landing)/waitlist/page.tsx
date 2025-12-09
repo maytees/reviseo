@@ -173,7 +173,7 @@ const WaitlistPage = () => {
 				initial={{ opacity: 0 }}
 				animate={{ opacity: 1 }}
 				transition={{ duration: 1, ease: "easeIn" }}
-				className="mask-contain mask-alpha -z-50 absolute h-[100vh] w-[100dvw] [mask-image:linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)]"
+				className="mask-contain mask-alpha -z-50 mask-[linear-gradient(to_bottom,black_0%,black_80%,transparent_100%)] absolute h-screen w-dvw"
 			>
 				<Noise
 					patternSize={250}
@@ -301,13 +301,13 @@ const WaitlistPage = () => {
 										</InputWrapper>
 									</FormControl>
 									<Button
-										type="submit"
+										type="button"
 										className="relative"
 										variant={"inset"}
 										disabled={isPending}
 										size={"lg"}
 									>
-										Join Waitlist
+										Get Started
 										<BorderBeam
 											delay={0}
 											duration={1.5}
