@@ -5,7 +5,6 @@ import Link from "next/link";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
-import { Badge } from "@/components/ui/badge";
 import { getAllArticles } from "@/lib/blog";
 
 export const metadata: Metadata = {
@@ -47,10 +46,10 @@ const BlogPage = async () => {
 									src={article.cover ? article.cover : "/excalidraw-light.png"}
 								/>
 								<div className="mt-2 flex flex-row justify-between">
-									<Badge variant={"info2"} appearance={"light"}>
+									{/* <Badge variant={"info2"} appearance={"light"}>
 										{article.category.at(0)?.toUpperCase() +
 											article.category.substring(1)}
-									</Badge>
+									</Badge> */}
 									<p className="text-muted-foreground text-xs">
 										{moment(article.date).format("MMM Do YY")}
 									</p>

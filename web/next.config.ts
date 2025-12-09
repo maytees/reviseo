@@ -58,6 +58,10 @@ const nextConfig: NextConfig = {
 				hostname: "localhost",
 				port: "3000",
 			},
+			{
+				protocol: "https",
+				hostname: "cdn.outrank.so",
+			},
 		],
 	},
 	// this shopws with the widget, which is why its false

@@ -28,10 +28,10 @@ function articleToBlogItem(article: {
 		cover: article.image_url ?? undefined,
 		date: article.created_at,
 		lastModified: article.received_at,
-		category: article.tags[0],
+		tags: article.tags,
 		// Default author values (can be enhanced later if needed)
 		author: "Reviseo Team",
-		authorImage: undefined,
+		authorImage: "https://www.reviseo.app/logo.svg",
 		authorLinkedIn: "https://linkedin.com/company/reviseoapp",
 		authorRole: "Content Team",
 		seeMore: [], // Related articles can be added later
@@ -53,29 +53,6 @@ export async function getAllArticles(): Promise<BlogItem[]> {
 	});
 
 	return articles.map(articleToBlogItem);
-}
-
-/**
- * Get articles grouped by category
- * Cached for 24 hours
- */
-export async function getCategorisedArticles(): Promise<
-	Record<string, BlogItem[]>
-> {
-	// "use cache";
-	// cacheLife("days");
-
-	const allArticles = await getAllArticles();
-	const categorisedArticles: Record<string, BlogItem[]> = {};
-
-	for (const article of allArticles) {
-		if (!categorisedArticles[article.category]) {
-			categorisedArticles[article.category] = [];
-		}
-		categorisedArticles[article.category].push(article);
-	}
-
-	return categorisedArticles;
 }
 
 /**

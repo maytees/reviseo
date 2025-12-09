@@ -120,12 +120,20 @@ const ArticlePage = async ({ params }: { params: { id: string } }) => {
 							</div>
 							<div className="mt-2 flex flex-row items-center justify-between">
 								<p className="text-left font-bold text-muted-foreground text-sm uppercase tracking-widest">
-									Category
+									Tags
 								</p>
-								<Badge variant={"info2"} appearance={"light"} className="w-fit">
-									{articleData.category.at(0)?.toUpperCase() +
-										articleData.category.substring(1)}
-								</Badge>
+							</div>
+							<div className="mt-2 flex flex-col gap-1 capitalize">
+								{articleData.tags.map((tag) => (
+									<Badge
+										key={tag}
+										variant={"outline"}
+										appearance={"light"}
+										className="w-fit"
+									>
+										{tag}
+									</Badge>
+								))}
 							</div>
 
 							{articleData.seeMore && articleData.seeMore.length > 0 && (

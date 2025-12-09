@@ -47,7 +47,7 @@ export type BlogItem = {
 	title: string;
 	date: Date;
 	lastModified: Date;
-	category: string;
+	tags: string[];
 	author: string;
 	authorImage?: string;
 	description?: string;
