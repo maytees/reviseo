@@ -20,7 +20,10 @@
 			"!web/.next",
 			"!web/.vscode",
 			"!web/node_modules",
-			"!web/public/cdn"
+			"!web/public/cdn",
+			"!web/prisma/generated",
+			"!web/certificates",
+			"!certificates"
 		]
 	},
 	"formatter": {

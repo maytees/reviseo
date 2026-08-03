@@ -4,7 +4,7 @@ import type { Metadata } from "next";
 import Image from "next/image";
 import Link from "next/link";
 import { notFound } from "next/navigation";
-import { SiLinkedin } from "react-icons/si";
+import { FaLinkedin as SiLinkedin } from "react-icons/fa";
 import { ArticleTOC } from "@/components/blog/ArticleTOC";
 import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";

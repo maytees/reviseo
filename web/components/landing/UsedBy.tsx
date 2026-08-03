@@ -7,7 +7,7 @@ import {
 	SiHtml5,
 	SiJavascript,
 	SiNextdotjs,
-	SiNuxtdotjs,
+	SiNuxt,
 	SiReact,
 	SiShopify,
 	SiSquarespace,
@@ -81,7 +81,7 @@ const UsedWith = () => {
 							{ name: "Angular", Icon: SiAngular, color: "text-[#DD0031]" },
 							{ name: "Svelte", Icon: SiSvelte, color: "text-[#FF3E00]" },
 							{ name: "Gatsby", Icon: SiGatsby, color: "text-[#663399]" },
-							{ name: "Nuxt", Icon: SiNuxtdotjs, color: "text-[#00DC82]" },
+							{ name: "Nuxt", Icon: SiNuxt, color: "text-[#00DC82]" },
 						].map(({ name, Icon, color }) => (
 							<div
 								className="flex h-32 w-32 flex-col items-center justify-center gap-2 px-4"
