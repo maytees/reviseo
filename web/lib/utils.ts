@@ -20,44 +20,6 @@ export type Prettify<T> = {
 	[K in keyof T]: T[K];
 } & {};
 
-/**
- * Checks if a user has the developer role.
- *
- * @param userId - The ID of the user to check.
- * @returns True if the user is a developer, false otherwise.
- */
-// export async function isDeveloper(userId: string): Promise<boolean> {
-// 	const user = await prisma.user.findUnique({
-// 		where: { id: userId },
-// 		select: { role: true },
-// 	});
-
-// 	if (!user) {
-// 		throw new Error("Invalid User ID");
-// 	}
-
-// 	return user.role === "developer";
-// }
-
-// /**
-//  * Checks if a user has the client role.
-//  *
-//  * @param userId - The ID of the user to check.
-//  * @returns True if the user is a client, false otherwise.
-//  */
-// export async function isClient(userId: string): Promise<boolean> {
-// 	const user = await prisma.user.findUnique({
-// 		where: { id: userId },
-// 		select: { role: true },
-// 	});
-
-// 	if (!user) {
-// 		throw new Error("Invalid User ID");
-// 	}
-
-// 	return user.role === "client";
-// }
-
 function objectToStringWithoutQuotedKeys(obj: Record<string, string>) {
 	const parts = [];
 	for (const key in obj) {
@@ -74,18 +36,12 @@ function objectToStringWithoutQuotedKeys(obj: Record<string, string>) {
 	return `{${parts.join(", ")}}`;
 }
 
-/**
- * Generates the Reviseo widget installation script
- * @param projectId - The unique project identifier
- * @param config - Optional widget configuration
- * @returns The complete script tag as a string
- */
-export function generateWidgetScript(
+/** The single source of truth for the widget loader snippet body. */
+function widgetSnippetBody(
 	projectId: string,
 	config?: { position?: string; theme?: string },
-): string {
-	const scriptSrc =
-		env.NEXT_PUBLIC_WIDGET_SCRIPT_URL || "./dist/widget.iife.js";
+): { configStr: string; scriptSrc: string } {
+	const scriptSrc = env.NEXT_PUBLIC_WIDGET_SCRIPT_URL;
 
 	const configObj = {
 		projectId,
@@ -93,50 +49,50 @@ export function generateWidgetScript(
 		...(config?.theme && { theme: config.theme }),
 	};
 
-	const configStr = objectToStringWithoutQuotedKeys(configObj);
-
-	return `<script>window.ReviseoConfig = ${configStr}, function (e, t) { if (e.__Reviseo) return; e.__Reviseo = {}; const i = t.createElement("script"); i.src = "${scriptSrc}"; const n = t.getElementsByTagName("script")[0]; n.parentNode.insertBefore(i, n) }(window, document);</script>`;
+	return { configStr: objectToStringWithoutQuotedKeys(configObj), scriptSrc };
 }
 
 /**
- * Generates a minified version (removes unnecessary spaces)
+ * Loader body without <script> tags — for frameworks that inject scripts
+ * programmatically (next/script, Nuxt app.head, etc).
+ */
+export function generateWidgetScriptInnerJs(
+	projectId: string,
+	config?: { position?: string; theme?: string },
+): string {
+	const { configStr, scriptSrc } = widgetSnippetBody(projectId, config);
+
+	return `window.ReviseoConfig = ${configStr};
+(function (e, t) {
+  if (e.__Reviseo) return;
+  e.__Reviseo = {};
+  const i = t.createElement("script");
+  i.src = "${scriptSrc}";
+  const n = t.getElementsByTagName("script")[0];
+  n.parentNode.insertBefore(i, n);
+})(window, document);`;
+}
+
+/**
+ * Generates a minified widget installation snippet (for copy-paste).
  */
 export function generateWidgetScriptMinified(
 	projectId: string,
 	config?: { position?: string; theme?: string },
 ): string {
-	const scriptSrc =
-		env.NEXT_PUBLIC_WIDGET_SCRIPT_URL || "./dist/widget.iife.js";
-
-	const configObj = {
-		projectId,
-		...(config?.position && { position: config.position }),
-		...(config?.theme && { theme: config.theme }),
-	};
-
-	const configStr = objectToStringWithoutQuotedKeys(configObj);
+	const { configStr, scriptSrc } = widgetSnippetBody(projectId, config);
 
 	return `<script>window.ReviseoConfig=${configStr},function(e,t){if(e.__Reviseo)return;e.__Reviseo={};const i=t.createElement("script");i.src="${scriptSrc}";const n=t.getElementsByTagName("script")[0];n.parentNode.insertBefore(i,n)}(window,document);</script>`;
 }
 
 /**
- * Generates a formatted version with proper indentation
+ * Generates a formatted widget installation snippet (for display).
  */
 export function generateWidgetScriptFormatted(
 	projectId: string,
 	config?: { position?: string; theme?: string },
 ): string {
-	const scriptSrc =
-		env.NEXT_PUBLIC_WIDGET_SCRIPT_URL || "./dist/widget.iife.js";
-
-	const configObj = {
-		projectId,
-		...(config?.position && { position: config.position }),
-		...(config?.theme && { theme: config.theme }),
-	};
-
-	// const configStr = JSON.stringify(configObj, null, 2).replace(/\n/g, "\n  ");
-	const configStr = objectToStringWithoutQuotedKeys(configObj);
+	const { configStr, scriptSrc } = widgetSnippetBody(projectId, config);
 
 	return `<script>
   window.ReviseoConfig = ${configStr},
@@ -149,18 +105,4 @@ export function generateWidgetScriptFormatted(
     n.parentNode.insertBefore(i, n)
   }(window, document);
 </script>`;
-}
-
-export function fetchSetSiteScreenshot(websiteUrl: string, websiteId: string) {
-	fetch(`${env.BETTER_AUTH_URL}/api/s3/screenshot/upload`, {
-		method: "POST",
-		headers: { "Content-Type": "application/json" },
-		body: JSON.stringify({
-			url: websiteUrl,
-			websiteId,
-		}),
-	}).catch((error) => {
-		// Log error but don't block the response
-		console.error("Failed to trigger screenshot:", error);
-	});
 }

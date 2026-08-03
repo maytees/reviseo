@@ -6,8 +6,10 @@ import {
 	HeartHandshake,
 	Home,
 	Moon,
+	PersonStanding,
 	Settings,
 	Sun,
+	UsersRound,
 } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
@@ -28,6 +30,7 @@ import {
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
 import { NavUser } from "./nav-user";
+import { OrgSwitcher } from "./org-switcher";
 
 const data = {
 	navMain: [
@@ -40,6 +43,16 @@ const data = {
 			title: "Websites",
 			url: "/dashboard/websites",
 			icon: Globe,
+		},
+		{
+			title: "Clients",
+			url: "/dashboard/clients",
+			icon: PersonStanding,
+		},
+		{
+			title: "Team",
+			url: "/dashboard/team",
+			icon: UsersRound,
 		},
 		{
 			title: "Settings",
@@ -92,6 +105,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 							</Link>
 						</SidebarMenuButton>
 					</SidebarMenuItem>
+					<OrgSwitcher />
 				</SidebarMenu>
 			</SidebarHeader>
 

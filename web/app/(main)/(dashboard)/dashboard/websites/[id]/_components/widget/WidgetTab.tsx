@@ -1,21 +1,9 @@
 "use client";
 
-import {
-	SiHtml5,
-	SiShopify,
-	SiVite,
-	SiWordpress,
-} from "@icons-pack/react-simple-icons";
 import moment from "moment";
 import { useId, useState } from "react";
 import { toast } from "sonner";
 import VerifyInstallation from "@/app/(main)/(landing)/(onboarding)/onboarding/_components/VerifyInstallation";
-import {
-	Accordion,
-	AccordionContent,
-	AccordionItem,
-	AccordionTrigger,
-} from "@/components/ui/accordion";
 import { Badge } from "@/components/ui/badge";
 import { Label } from "@/components/ui/label";
 import {
@@ -41,6 +29,7 @@ import {
 	CodeBlockHeader,
 	CodeBlockItem,
 } from "@/components/ui/shadcn-io/code-block";
+import WidgetInstallGuides from "@/components/widget-install-guides";
 import type { WidgetPosition, WidgetTheme } from "@/lib/types";
 import { generateWidgetScriptFormatted } from "@/lib/utils";
 
@@ -205,237 +194,15 @@ export default function WidgetTab({
 				<CardHeader>
 					<CardTitle>Installation Guides</CardTitle>
 					<CardDescription>
-						Platform-specific instructions for installing the widget
+						Platform-specific instructions — every snippet below already
+						includes this website's project ID
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
-					<Accordion type="single" collapsible className="w-full">
-						{/* Vanilla HTML */}
-						<AccordionItem value="vanilla">
-							<AccordionTrigger>
-								<div className="flex items-center gap-2">
-									<SiHtml5 className="size-4 text-[#E34F26]" />
-									<span>Vanilla HTML</span>
-								</div>
-							</AccordionTrigger>
-							<AccordionContent className="space-y-3">
-								<p className="text-muted-foreground text-sm">
-									Add the widget script to the bottom of the{" "}
-									<code className="rounded bg-background px-1.5 py-0.5 text-xs">
-										&lt;head&gt;
-									</code>{" "}
-									tag in every page, or in your global header component if you
-									have one.
-								</p>
-								<CodeBlock
-									data={[
-										{
-											language: "html",
-											filename: "index.html",
-											code: `<!DOCTYPE html>
-<html>
-  <head>
-    <title>Your Website</title>
-    <!-- Other head elements -->
-
-    <!-- Reviseo Widget -->
-    ${widgetScript}
-  </head>
-  <body>
-    <!-- Your content -->
-  </body>
-</html>`,
-										},
-									]}
-									defaultValue="html"
-								>
-									<CodeBlockHeader>
-										<CodeBlockFilename value="html">
-											index.html
-										</CodeBlockFilename>
-										<CodeBlockCopyButton
-											onCopy={handleCopy}
-											onError={handleCopyError}
-										/>
-									</CodeBlockHeader>
-									<CodeBlockBody>
-										{(item) => (
-											<CodeBlockItem
-												key={item.language}
-												value={item.language}
-												lineNumbers={false}
-											>
-												<CodeBlockContent language="html">
-													{item.code}
-												</CodeBlockContent>
-											</CodeBlockItem>
-										)}
-									</CodeBlockBody>
-								</CodeBlock>
-							</AccordionContent>
-						</AccordionItem>
-
-						{/* Vite */}
-						<AccordionItem value="vite">
-							<AccordionTrigger>
-								<div className="flex items-center gap-2">
-									<SiVite className="size-4 text-[#646CFF]" />
-									<span>Vite</span>
-								</div>
-							</AccordionTrigger>
-							<AccordionContent className="space-y-3">
-								<p className="text-muted-foreground text-sm">
-									Add the widget script to your{" "}
-									<code className="rounded bg-background px-1.5 py-0.5 text-xs">
-										index.html
-									</code>{" "}
-									file in the{" "}
-									<code className="rounded bg-background px-1.5 py-0.5 text-xs">
-										&lt;head&gt;
-									</code>{" "}
-									section, similar to the Vanilla HTML approach.
-								</p>
-								<CodeBlock
-									data={[
-										{
-											language: "html",
-											filename: "index.html",
-											code: widgetScript,
-										},
-									]}
-									defaultValue="html"
-								>
-									<CodeBlockHeader>
-										<CodeBlockFilename value="html">
-											index.html
-										</CodeBlockFilename>
-										<CodeBlockCopyButton
-											onCopy={handleCopy}
-											onError={handleCopyError}
-										/>
-									</CodeBlockHeader>
-									<CodeBlockBody>
-										{(item) => (
-											<CodeBlockItem
-												key={item.language}
-												value={item.language}
-												lineNumbers={false}
-											>
-												<CodeBlockContent language="html">
-													{item.code}
-												</CodeBlockContent>
-											</CodeBlockItem>
-										)}
-									</CodeBlockBody>
-								</CodeBlock>
-							</AccordionContent>
-						</AccordionItem>
-
-						{/* React */}
-						{/* <AccordionItem value="react">
-							<AccordionTrigger>
-								<div className="flex items-center gap-2">
-									<SiReact className="text-[#61DAFB] size-4" />
-									<span>React</span>
-								</div>
-							</AccordionTrigger>
-							<AccordionContent className="space-y-3">
-								<div className="flex items-center gap-2 p-3 border rounded-lg bg-amber-500/10 border-amber-500/20">
-									<Badge variant="warning" size="sm">
-										Coming Soon
-									</Badge>
-									<p className="text-sm text-muted-foreground">
-										React component guide is under development
-									</p>
-								</div>
-							</AccordionContent>
-						</AccordionItem> */}
-
-						{/* WordPress */}
-						<AccordionItem value="wordpress">
-							<AccordionTrigger>
-								<div className="flex items-center gap-2">
-									<SiWordpress className="size-4 text-[#21759B]" />
-									<span>WordPress</span>
-								</div>
-							</AccordionTrigger>
-							<AccordionContent className="space-y-3">
-								<p className="text-muted-foreground text-sm">
-									Use a JavaScript insertion plugin to add the widget script to
-									your WordPress site. Popular options include "Insert Headers
-									and Footers" or "WPCode".
-								</p>
-								<div className="flex items-center gap-2 rounded-lg border border-blue-500/20 bg-blue-500/10 p-3">
-									<Badge variant="info" size="sm">
-										Tutorial Coming Soon
-									</Badge>
-									<p className="text-muted-foreground text-sm">
-										Detailed WordPress tutorial is in progress
-									</p>
-								</div>
-							</AccordionContent>
-						</AccordionItem>
-
-						{/* Shopify */}
-						<AccordionItem value="shopify">
-							<AccordionTrigger>
-								<div className="flex items-center gap-2">
-									<SiShopify className="size-4 text-[#7AB55C]" />
-									<span>Shopify</span>
-								</div>
-							</AccordionTrigger>
-							<AccordionContent className="space-y-3">
-								<div className="flex items-center gap-2 rounded-lg border border-amber-500/20 bg-amber-500/10 p-3">
-									<Badge variant="warning" size="sm">
-										Coming Soon
-									</Badge>
-									<p className="text-muted-foreground text-sm">
-										Shopify installation guide is under development
-									</p>
-								</div>
-							</AccordionContent>
-						</AccordionItem>
-
-						{/* Vue */}
-						{/* <AccordionItem value="vue">
-							<AccordionTrigger>
-								<div className="flex items-center gap-2">
-									<SiVuedotjs className="text-[#4FC08D] size-4" />
-									<span>Vue</span>
-								</div>
-							</AccordionTrigger>
-							<AccordionContent className="space-y-3">
-								<div className="flex items-center gap-2 p-3 border rounded-lg bg-amber-500/10 border-amber-500/20">
-									<Badge variant="warning" size="sm">
-										Coming Soon
-									</Badge>
-									<p className="text-sm text-muted-foreground">
-										Vue component guide is under development
-									</p>
-								</div>
-							</AccordionContent>
-						</AccordionItem> */}
-
-						{/* Svelte */}
-						{/* <AccordionItem value="svelte">
-							<AccordionTrigger>
-								<div className="flex items-center gap-2">
-									<SiSvelte className="text-[#FF3E00] size-4" />
-									<span>Svelte</span>
-								</div>
-							</AccordionTrigger>
-							<AccordionContent className="space-y-3">
-								<div className="flex items-center gap-2 p-3 border rounded-lg bg-amber-500/10 border-amber-500/20">
-									<Badge variant="warning" size="sm">
-										Coming Soon
-									</Badge>
-									<p className="text-sm text-muted-foreground">
-										Svelte component guide is under development
-									</p>
-								</div>
-							</AccordionContent>
-						</AccordionItem> */}
-					</Accordion>
+					<WidgetInstallGuides
+						projectId={projectId}
+						config={{ position, theme }}
+					/>
 				</CardContent>
 			</Card>
 		</div>
