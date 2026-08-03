@@ -199,12 +199,19 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 	const healthTimeoutRef = useRef<number>();
 
 	const browserInfo = useUserAgent();
+	// Keep latest browserInfo readable from the (mount-once) message handler
+	// without re-running the effect — re-running would append a second modal
+	// iframe.
+	const browserInfoRef = useRef(browserInfo);
+	browserInfoRef.current = browserInfo;
 
 	useEffect(() => {
-		// Health check timeout
+		// Health check timeout (generous: first load may compile/hydrate slowly)
 		healthTimeoutRef.current = window.setTimeout(() => {
-			console.error("Reviseo widget failed health check. Not showing iframe.");
-		}, 5000);
+			console.warn(
+				"Reviseo widget did not finish its health check yet. The trigger stays hidden until it does.",
+			);
+		}, 15000);
 
 		// Preload modal iframe (hidden)
 		const modalIframe = document.createElement("iframe");
@@ -277,7 +284,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 								url: window.location.href,
 								viewportHeight: window.innerHeight,
 								viewportWidth: window.innerWidth,
-								browserInfo,
+								browserInfo: browserInfoRef.current,
 								projectId,
 							},
 							WIDGET_ORIGIN,
@@ -305,8 +312,9 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 						exclude: ["#reviseo-container"],
 						scale: 0.5,
 						quality: 1,
+						// No external CORS proxy: never route customer page
+						// resources through a third-party service.
 						embedFonts: true,
-						useProxy: "https://proxy.corsfix.com/?",
 					});
 
 					const cropped = await cropImageFromDataURL(
@@ -338,8 +346,10 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 			if (healthTimeoutRef.current) {
 				clearTimeout(healthTimeoutRef.current);
 			}
+			modalIframe.remove();
 		};
-	}, [browserInfo]);
+		// Mount-once: modal iframe + listener must not be duplicated.
+	}, [projectId]);
 
 	return (
 		<div

@@ -18,13 +18,23 @@ const TriggerButton = () => {
 		window.parent.postMessage({ type: "OPEN_FORM" }, "*");
 	};
 
-	// Listen for HEALTH_OK from parent
+	// Handshake with the parent loader. Retries HEALTH_CHECK until the
+	// parent acknowledges — a single message can race the parent's listener
+	// attachment and silently kill the widget.
 	useEffect(() => {
 		const parent = window.parent;
 		const origin = "*";
+		let acknowledged = false;
+		let attempts = 0;
 
-		// Send initial health check
-		parent.postMessage({ type: "HEALTH_CHECK" }, origin);
+		const sendHealthCheck = () => {
+			if (acknowledged || attempts >= 30) return;
+			attempts++;
+			parent.postMessage({ type: "HEALTH_CHECK" }, origin);
+		};
+
+		sendHealthCheck();
+		const retryInterval = window.setInterval(sendHealthCheck, 1000);
 
 		const handleMessage = (event: MessageEvent) => {
 			if (event.data?.type === "HEALTH_OK") {
@@ -32,6 +42,9 @@ const TriggerButton = () => {
 					setHealthy(false);
 					return;
 				}
+
+				acknowledged = true;
+				clearInterval(retryInterval);
 
 				setProjectId(event.data.projectId);
 				setHealthy(true); // healthy means parent is valid
@@ -41,7 +54,10 @@ const TriggerButton = () => {
 		};
 
 		window.addEventListener("message", handleMessage);
-		return () => window.removeEventListener("message", handleMessage);
+		return () => {
+			clearInterval(retryInterval);
+			window.removeEventListener("message", handleMessage);
+		};
 	}, []);
 
 	// When projectId is received → validate with backend
