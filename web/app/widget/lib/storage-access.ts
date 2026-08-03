@@ -55,3 +55,25 @@ export async function ensureStorageAccess(): Promise<boolean> {
 	if (await hasStorageAccess()) return true;
 	return requestStorageAccess();
 }
+
+/**
+ * Whether the storage-access permission is already granted for this
+ * embed — queryable WITHOUT a user gesture, which makes fully silent
+ * reconnection possible: when granted, `requestStorageAccess()` resolves
+ * gesture-free and cookies start flowing.
+ *
+ * Chromium & Firefox support the query; Safari doesn't (returns false via
+ * catch → widget simply stays hidden there until cookies work another way).
+ */
+export async function storageAccessPermissionGranted(): Promise<boolean> {
+	if (typeof navigator === "undefined" || !navigator.permissions) return false;
+	try {
+		const status = await navigator.permissions.query({
+			// Not in TS's PermissionName union yet
+			name: "storage-access" as PermissionName,
+		});
+		return status.state === "granted";
+	} catch {
+		return false;
+	}
+}
