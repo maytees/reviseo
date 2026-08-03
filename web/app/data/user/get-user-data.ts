@@ -1,190 +1,63 @@
 import "server-only";
 
+import { cache } from "react";
 import { prisma as db } from "@/lib/db";
-import { requireUser } from "../require-user";
+import { requireMember } from "../require-member";
+import {
+	feedbackSelect,
+	userPublicSelect,
+	websiteOverviewSelect,
+} from "../selects";
 
-export async function getUserData() {
-	const user = await requireUser();
+/**
+ * Dashboard data for the signed-in member's active workspace:
+ * the user's public profile plus all websites owned by the organization.
+ * (Named developerWebsites for backwards compatibility with existing UI.)
+ */
+export const getUserData = cache(async () => {
+	const { user, organization, role } = await requireMember();
 
-	const data = await db.user.findUnique({
-		where: {
-			id: user.id,
-		},
-		select: {
-			id: true,
-			name: true,
-			email: true,
-			emailVerified: true,
-			image: true,
-			createdAt: true,
-			updatedAt: true,
-			emailNotifications: true,
-			hasCompletedOnboarding: true,
-			role: true,
-			developerWebsites: {
-				select: {
-					id: true,
-					url: true,
-					screenshotKey: true,
-					name: true,
-					invites: true,
-					projectId: true,
-					widgetInstalled: true,
-					verifiedAt: true,
-					developerId: true,
-					clientId: true,
-					createdAt: true,
-					updatedAt: true,
-					client: {
-						select: {
-							id: true,
-							name: true,
-							email: true,
-							emailVerified: true,
-							image: true,
-							createdAt: true,
-							updatedAt: true,
-							hasCompletedOnboarding: true,
-							role: true,
-						},
-					},
-					feedback: {
-						select: {
-							id: true,
-							websiteId: true,
-							authorId: true,
-							status: true,
-							pageUrl: true,
-							screenshotKey: true,
-							viewport: true,
-							priority: true,
-							timestamp: true,
-							author: true,
-							website: true,
-							browser: true,
-							browserVersion: true,
-							device: true,
-							os: true,
-							createdAt: true,
-							updatedAt: true,
-							title: true,
-							description: true,
-							type: true,
-						},
-					},
-				},
+	const [profile, orgWebsites, clientWebsites] = await Promise.all([
+		db.user.findUnique({
+			where: { id: user.id },
+			select: {
+				...userPublicSelect,
+				emailNotifications: true,
+				subscription: { select: { status: true } },
 			},
-			clientWebsites: {
-				select: {
-					id: true,
-					url: true,
-					screenshotKey: true,
-					name: true,
-					invites: true,
-					projectId: true,
-					widgetInstalled: true,
-					verifiedAt: true,
-					developerId: true,
-					clientId: true,
-					createdAt: true,
-					updatedAt: true,
-					client: {
-						select: {
-							id: true,
-							name: true,
-							email: true,
-							emailVerified: true,
-							image: true,
-							createdAt: true,
-							updatedAt: true,
-							hasCompletedOnboarding: true,
-							role: true,
-						},
-					},
-					feedback: {
-						select: {
-							id: true,
-							websiteId: true,
-							authorId: true,
-							status: true,
-							pageUrl: true,
-							screenshotKey: true,
-							viewport: true,
-							priority: true,
-							timestamp: true,
-							author: true,
-							website: true,
-							browser: true,
-							browserVersion: true,
-							device: true,
-							os: true,
-							createdAt: true,
-							updatedAt: true,
-							title: true,
-							description: true,
-							type: true,
-						},
-					},
-				},
-			},
-			feedback: {
-				select: {
-					id: true,
-					websiteId: true,
-					authorId: true,
-					status: true,
-					pageUrl: true,
-					screenshotKey: true,
-					viewport: true,
-					priority: true,
-					timestamp: true,
-					author: true,
-					website: true,
-					browser: true,
-					browserVersion: true,
-					device: true,
-					os: true,
-					createdAt: true,
-					updatedAt: true,
-					title: true,
-					description: true,
-					type: true,
-				},
-			},
-			sessions: {
-				select: {
-					id: true,
-					expiresAt: true,
-					token: true,
-					createdAt: true,
-					updatedAt: true,
-					ipAddress: true,
-					userAgent: true,
-					impersonatedBy: true,
-				},
-			},
-			accounts: {
-				select: {
-					id: true,
-					accountId: true,
-					providerId: true,
-					accessTokenExpiresAt: true,
-					refreshTokenExpiresAt: true,
-					scope: true,
-					createdAt: true,
-					updatedAt: true,
-				},
-			},
-			subscription: {
-				select: {
-					status: true,
-					// TODO: Get other fields
-				},
-			},
-		},
-	});
+		}),
+		db.website.findMany({
+			where: { organizationId: organization.id },
+			select: websiteOverviewSelect,
+			orderBy: { createdAt: "desc" },
+		}),
+		db.website.findMany({
+			where: { clientId: user.id },
+			select: websiteOverviewSelect,
+			orderBy: { createdAt: "desc" },
+		}),
+	]);
 
-	return data;
-}
+	if (!profile) return null;
+
+	return {
+		...profile,
+		organization,
+		orgRole: role,
+		developerWebsites: orgWebsites,
+		clientWebsites,
+	};
+});
 
 export type UserDataType = Awaited<ReturnType<typeof getUserData>>;
+
+/** Feedback authored by the signed-in user (client view). */
+export const getOwnFeedback = cache(async () => {
+	const { user } = await requireMember();
+
+	return db.feedback.findMany({
+		where: { authorId: user.id },
+		select: feedbackSelect,
+		orderBy: { createdAt: "desc" },
+	});
+});

@@ -171,6 +171,8 @@ export const INVITE_STATUS_BADGE_MAP: Record<InviteStatus, BadgeVariantsType> =
 		REVOKED: "destructive",
 	};
 
+// Mirrors app/data/selects.ts feedbackSelect (kept in lib/types because this
+// file is safely importable from client components).
 export type FeedbackSelectAllPayload = Prisma.FeedbackGetPayload<{
 	select: {
 		id: true;
@@ -181,8 +183,20 @@ export type FeedbackSelectAllPayload = Prisma.FeedbackGetPayload<{
 		viewport: true;
 		priority: true;
 		timestamp: true;
-		author: true;
-		website: true;
+		author: {
+			select: {
+				id: true;
+				name: true;
+				email: true;
+				emailVerified: true;
+				image: true;
+				createdAt: true;
+				updatedAt: true;
+				hasCompletedOnboarding: true;
+				role: true;
+			};
+		};
+		website: { select: { id: true; name: true; url: true } };
 		browser: true;
 		screenshotKey: true;
 		browserVersion: true;

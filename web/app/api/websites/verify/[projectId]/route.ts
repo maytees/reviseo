@@ -1,26 +1,38 @@
+import { NextResponse } from "next/server";
+import { getApiSession, userCanAccessWebsite } from "@/app/data/api-auth";
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
+import { isSafeExternalUrl } from "@/lib/screenshot";
 
+/** Verify the widget snippet is installed on the customer's site.
+ *  Only workspace members may trigger verification (it makes our server
+ *  fetch their URL and mutates widgetInstalled). */
 export async function POST(
 	_req: Request,
 	context: { params: Promise<{ projectId: string }> },
 ) {
+	const session = await getApiSession();
+	if (!session) {
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	}
+
 	const { projectId } = await context.params;
 
 	const existingWebsite = await prisma.website.findUnique({
-		where: {
-			projectId,
-		},
+		where: { projectId },
 	});
 
-	if (!existingWebsite) {
-		return Response.json(
-			{
-				error: "Could not find site",
-			},
-			{
-				status: 404,
-			},
+	if (
+		!existingWebsite ||
+		!(await userCanAccessWebsite(session.user.id, existingWebsite))
+	) {
+		return NextResponse.json({ error: "Could not find site" }, { status: 404 });
+	}
+
+	if (!isSafeExternalUrl(existingWebsite.url)) {
+		return NextResponse.json(
+			{ error: "Website URL is not reachable for verification" },
+			{ status: 400 },
 		);
 	}
 
@@ -29,99 +41,46 @@ export async function POST(
 			headers: {
 				"User-Agent": "ReviseoBot/1.0 (Installation Verification)",
 			},
+			signal: AbortSignal.timeout(15_000),
 		});
 		const html = await response.text();
 
 		// Remove all whitespace and newlines for comparison
 		const normalizedHtml = html.replace(/\s+/g, "");
 
-		// Use environment variable for the script source
-		const scriptSrc =
-			env.NEXT_PUBLIC_WIDGET_SCRIPT_URL || "./dist/widget.iife.js";
+		const scriptSrc = env.NEXT_PUBLIC_WIDGET_SCRIPT_URL;
 
-		// Check for all required parts of the script
-		const checks = [
-			// Script tag opening
-			normalizedHtml.includes("<script>"),
-			// Config object with projectId
-			normalizedHtml.includes(
-				`window.ReviseoConfig={projectId:"${existingWebsite.projectId}"`,
-			),
-			// IIFE parameters
-			normalizedHtml.includes("function(e,t){") ||
-				normalizedHtml.includes("(e,t)=>{"),
-			// Early return check
-			normalizedHtml.includes("if(e.__Reviseo)return;"),
-			// Reviseo object initialization
-			normalizedHtml.includes("e.__Reviseo={};"),
-			// Script element creation
-			normalizedHtml.includes('consti=t.createElement("script");'),
-			// Script source assignment
-			normalizedHtml.includes(`i.src="${scriptSrc}"`),
-			// Get first script tag
-			normalizedHtml.includes('constn=t.getElementsByTagName("script")[0];'),
-			// Insert before
-			normalizedHtml.includes("n.parentNode.insertBefore(i,n)"),
-			// IIFE invocation
-			normalizedHtml.includes("}(window,document);") ||
-				normalizedHtml.includes("})(window,document);"),
-			// Script tag closing
-			normalizedHtml.includes("</script>"),
-		];
+		// The two signals that actually matter: our config with this exact
+		// projectId, and a script tag pointing at our widget bundle. (The old
+		// 11-fragment IIFE match broke on minifiers/SPAs/tag managers.)
+		const hasConfig = normalizedHtml.includes(
+			`window.ReviseoConfig={projectId:"${existingWebsite.projectId}"`,
+		);
+		const hasScript = normalizedHtml.includes(scriptSrc.replace(/\s+/g, ""));
 
-		// All checks must pass
-		const isInstalled = checks.every((check) => check === true);
-
-		// Debug;
-		// const checksWithLabels = {
-		// 	hasScriptTag: normalizedHtml.includes("<script>"),
-		// 	hasConfig: normalizedHtml.includes(
-		// 		`window.ReviseoConfig={projectId:"${existingWebsite.projectId}"`,
-		// 	),
-		// 	hasIIFE: normalizedHtml.includes("(e,t)=>{"), //normalizedHtml.includes("function(e,t){") ||
-		// 	hasEarlyReturn: normalizedHtml.includes("if(e.__Reviseo)return;"),
-		// 	hasReviseoInit: normalizedHtml.includes("e.__Reviseo={};"),
-		// 	hasCreateElement: normalizedHtml.includes(
-		// 		'consti=t.createElement("script");',
-		// 	),
-		// 	hasScriptSrc: normalizedHtml.includes(`i.src="${scriptSrc}"`),
-		// 	hasGetByTagName: normalizedHtml.includes(
-		// 		'constn=t.getElementsByTagName("script")[0];',
-		// 	),
-		// 	hasInsertBefore: normalizedHtml.includes(
-		// 		"n.parentNode.insertBefore(i,n)",
-		// 	),
-		// 	hasIIFEInvoke:
-		// 		normalizedHtml.includes("}(window,document);") ||
-		// 		normalizedHtml.includes("})(window,document);"),
-		// 	hasClosingTag: normalizedHtml.includes("</script>"),
-		// };
-		// console.log("Installation checks:", checksWithLabels);
+		const isInstalled = hasConfig && hasScript;
 
 		await prisma.website.update({
-			where: {
-				projectId,
-			},
+			where: { projectId },
 			data: {
 				widgetInstalled: isInstalled,
 				verifiedAt: isInstalled ? new Date() : existingWebsite.verifiedAt,
 			},
 		});
 
-		return Response.json(
+		return NextResponse.json(
 			{
 				installed: isInstalled,
 				verifiedAt: isInstalled ? new Date() : null,
 			},
-			{
-				status: 200,
-			},
+			{ status: 200 },
 		);
 	} catch (error) {
-		return Response.json(
+		console.error("Verification fetch failed:", error);
+		return NextResponse.json(
 			{
 				installed: false,
-				error: `Could not verify installation: ${error}`,
+				error: "Could not reach your website to verify installation",
 			},
 			{ status: 500 },
 		);

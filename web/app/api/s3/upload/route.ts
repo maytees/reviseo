@@ -1,22 +1,37 @@
-import { PutObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import z from "zod";
+import { getApiSession } from "@/app/data/api-auth";
 import { env } from "@/lib/env";
-import { S3 } from "@/lib/s3client";
+import { presignUpload, publicProfilePictureUrl } from "@/lib/storage";
 
-const uploadImageSchema = z.object({
+const AVATAR_CONTENT_TYPES = [
+	"image/jpeg",
+	"image/png",
+	"image/webp",
+	"image/gif",
+] as const;
+
+const uploadAvatarSchema = z.object({
 	fileName: z.string().min(1, { message: "Filename is required" }),
-	contentType: z.string().min(1, { message: "Content type is required" }),
-	size: z.number().min(1, { message: "Size is required" }),
-	isImage: z.boolean(),
+	contentType: z.enum(AVATAR_CONTENT_TYPES),
+	// Avatars: 4MB max
+	size: z
+		.number()
+		.min(1)
+		.max(4 * 1024 * 1024),
 });
 
+/** Presigned upload for the signed-in user's profile picture. */
 export async function POST(request: Request) {
+	const session = await getApiSession();
+	if (!session) {
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	}
+
 	try {
 		const body = await request.json();
-		const validationResult = uploadImageSchema.safeParse(body);
+		const validationResult = uploadAvatarSchema.safeParse(body);
 
 		if (!validationResult.success) {
 			return NextResponse.json(
@@ -26,26 +41,27 @@ export async function POST(request: Request) {
 		}
 
 		const { fileName, contentType, size } = validationResult.data;
-		const uniqueKey = `${uuidv4()}-${fileName}`;
+		// Key is namespaced by user id so one user can't guess-overwrite others.
+		const uniqueKey = `${session.user.id}/${uuidv4()}-${fileName.replace(/[^a-zA-Z0-9._-]/g, "")}`;
 
-		const command = new PutObjectCommand({
-			Bucket: env.NEXT_PUBLIC_S3_BUCKET_NAME_PROFILE_PICTURES,
-			Key: uniqueKey,
-			ContentType: contentType,
-			ContentLength: size,
+		const preSignedUrl = await presignUpload({
+			bucket: env.NEXT_PUBLIC_S3_BUCKET_NAME_PROFILE_PICTURES,
+			key: uniqueKey,
+			contentType,
+			size,
 		});
 
-		const preSignedUrl = await getSignedUrl(S3, command, { expiresIn: 360 }); // Expire sin 6 minutes
-
-		const response = {
-			preSignedUrl,
-			key: uniqueKey,
-		};
-
-		return NextResponse.json(response, { status: 200 });
+		return NextResponse.json(
+			{
+				preSignedUrl,
+				key: uniqueKey,
+				publicUrl: publicProfilePictureUrl(uniqueKey),
+			},
+			{ status: 200 },
+		);
 	} catch {
 		return NextResponse.json(
-			{ error: "Failed to upload file" },
+			{ error: "Failed to create upload" },
 			{ status: 500 },
 		);
 	}

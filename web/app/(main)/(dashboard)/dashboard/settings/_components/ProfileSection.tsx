@@ -22,7 +22,6 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/old-card";
-import { env } from "@/lib/env";
 import type { FileWithPreview } from "@/lib/hooks/useFileUpload";
 import { tryCatch } from "@/lib/try-catch";
 import { updateUserAvatar, updateUserProfile } from "../actions";
@@ -85,48 +84,22 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
 			const uploadToast = toast.loading("Uploading avatar...");
 
 			try {
-				// Step 0: Delete old profile picture if it exists
-				if (
-					user.image?.includes(env.NEXT_PUBLIC_S3_BUCKET_NAME_PROFILE_PICTURES)
-				) {
-					try {
-						// Extract the key from the old image URL
-						const oldKey = user.image.split("/").pop();
-						if (oldKey) {
-							await fetch("/api/s3/delete", {
-								method: "DELETE",
-								headers: { "Content-Type": "application/json" },
-								body: JSON.stringify({
-									key: oldKey,
-									bucket: env.NEXT_PUBLIC_S3_BUCKET_NAME_PROFILE_PICTURES,
-								}),
-							});
-						}
-					} catch (error) {
-						// Don't fail the upload if deletion fails, just log it
-						console.error("Failed to delete old profile picture:", error);
-					}
-				}
-
 				// Step 1: Get presigned URL from API
 				const presignedResponse = await fetch("/api/s3/upload", {
 					method: "POST",
 					headers: { "Content-Type": "application/json" },
 					body: JSON.stringify({
-						fileName: file.file.name + user.name,
+						fileName: file.file.name,
 						contentType: file.file.type,
 						size: file.file.size,
-						isImage: true,
 					}),
 				});
 
 				if (!presignedResponse.ok) {
-					throw new Error(
-						`Failed to get upload URL ${JSON.stringify(presignedResponse)}`,
-					);
+					throw new Error("Failed to get upload URL");
 				}
 
-				const { preSignedUrl, key } = await presignedResponse.json();
+				const { preSignedUrl, publicUrl } = await presignedResponse.json();
 
 				// Step 2: Upload file to S3 using presigned URL
 				const uploadResponse = await fetch(preSignedUrl, {
@@ -138,13 +111,11 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
 				});
 
 				if (!uploadResponse.ok) {
-					throw new Error(`Failed to upload avatar to S3 ${uploadResponse}`);
+					throw new Error("Failed to upload avatar");
 				}
 
-				// Step 3: Construct public URL (bucket is public)
-				const publicUrl = `https://${env.NEXT_PUBLIC_S3_BUCKET_NAME_PROFILE_PICTURES}.t3.storage.dev/${key}`;
-
-				// Step 4: Update user profile with Better Auth
+				// Step 3: Update profile — the server action also cleans up the
+				// previous avatar object.
 				const { data: result, error } = await tryCatch(
 					updateUserAvatar(publicUrl),
 				);
@@ -171,7 +142,7 @@ export default function ProfileSection({ user }: ProfileSectionProps) {
 				setIsUploadingAvatar(false);
 			}
 		},
-		[router, user.image, user.name],
+		[router],
 	);
 
 	if (!isMounted) return null;

@@ -1,132 +1,74 @@
 "use server";
 
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
-import { requireUser } from "@/app/data/require-user";
+import { revalidatePath } from "next/cache";
+import { requireMember } from "@/app/data/require-member";
 import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
+import { deleteObject } from "@/lib/storage";
 import type { ApiResponse } from "@/lib/types";
 import type { FeedbackStatus } from "@/prisma/generated/client/enums";
 
+/** Load feedback only when its website belongs to the caller's active org. */
+async function getAuthorizedFeedback(feedbackId: string) {
+	const { organization } = await requireMember();
+
+	return prisma.feedback.findFirst({
+		where: {
+			id: feedbackId,
+			website: { organizationId: organization.id },
+		},
+		select: { id: true, websiteId: true, screenshotKey: true },
+	});
+}
+
 export async function updateFeedbackStatus(
 	id: string,
-	// TODO: Is website id really necessary??
-	websiteId: string,
 	value: FeedbackStatus,
 ): Promise<ApiResponse> {
-	await requireUser();
-
 	try {
-		// Verify the website belongs to the user
-		const existingFeedback = await prisma.feedback.findUnique({
-			where: {
-				id,
-				websiteId,
-			},
-		});
+		const feedback = await getAuthorizedFeedback(id);
 
-		if (!existingFeedback) {
-			return {
-				status: "error",
-				message: "Could not find feedback with id",
-			};
+		if (!feedback) {
+			return { status: "error", message: "Feedback not found" };
 		}
 
-		const update = await prisma.feedback.update({
-			where: {
-				id,
-				websiteId,
-			},
-			data: {
-				status: value,
-			},
+		await prisma.feedback.update({
+			where: { id },
+			data: { status: value },
 		});
 
-		if (!update) {
-			return {
-				status: "error",
-				message: `Failed to update: ${update}`,
-			};
-		}
+		revalidatePath(`/dashboard/websites/${feedback.websiteId}`);
 
 		return {
 			status: "success",
 			message: "Feedback status updated successfully!",
 		};
 	} catch (e) {
-		if (e instanceof PrismaClientKnownRequestError) {
-			switch (e.code) {
-				default:
-					return {
-						status: "error",
-						message: `Failed to update feedback: ${e.code}`,
-					};
-			}
-		}
-
 		console.error("Failed to update feedback status:\n", e);
-		return {
-			status: "error",
-			message: `Failed to update feedback status`,
-		};
+		return { status: "error", message: "Failed to update feedback status" };
 	}
 }
 
 export async function deleteFeedback(feedbackId: string): Promise<ApiResponse> {
-	await requireUser();
-
 	try {
-		const existingFeedback = await prisma.feedback.findUnique({
-			where: {
-				id: feedbackId,
-			},
-		});
+		const feedback = await getAuthorizedFeedback(feedbackId);
 
-		if (!existingFeedback) {
-			return {
-				status: "error",
-				message: "Feedback not found",
-			};
+		if (!feedback) {
+			return { status: "error", message: "Feedback not found" };
 		}
 
-		try {
-			await fetch(`${env.BETTER_AUTH_URL}/api/s3/annotations/delete`, {
-				method: "DELETE",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					key: existingFeedback.screenshotKey,
-				}),
-			});
-		} catch (error) {
-			console.error("Failed to delete feedback screenshot from s3: ", error);
-		}
+		await deleteObject(
+			env.NEXT_PUBLIC_S3_BUCKET_NAME_ANNOTATIONS,
+			feedback.screenshotKey,
+		);
 
-		// Update the website
-		await prisma.feedback.delete({
-			where: {
-				id: feedbackId,
-			},
-		});
+		await prisma.feedback.delete({ where: { id: feedbackId } });
 
-		return {
-			status: "success",
-			message: "Feedback deleted successfully",
-		};
-		// biome-ignore lint/suspicious/noExplicitAny: prisma 7
-	} catch (e: any) {
-		if (e instanceof PrismaClientKnownRequestError) {
-			switch (e.code) {
-				default:
-					return {
-						status: "error",
-						message: `Failed to update feedback: ${e.code}`,
-					};
-			}
-		}
+		revalidatePath(`/dashboard/websites/${feedback.websiteId}`);
 
+		return { status: "success", message: "Feedback deleted successfully" };
+	} catch (e) {
 		console.error("Failed to delete feedback:\n", e);
-		return {
-			status: "error",
-			message: `Failed to delete feedback`,
-		};
+		return { status: "error", message: "Failed to delete feedback" };
 	}
 }

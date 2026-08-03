@@ -24,7 +24,7 @@ const SelectStatus = ({ feedback }: { feedback: FeedbackSelectAllPayload }) => {
 		startTransition(async () => {
 			// TODO: rename all those stupid actions from onboarding
 			const { data: result, error } = await tryCatch(
-				updateFeedbackStatus(feedback.id, feedback.websiteId, value),
+				updateFeedbackStatus(feedback.id, value),
 			);
 
 			if (error) {

@@ -3,6 +3,8 @@
 import { headers } from "next/headers";
 import { requireUser } from "@/app/data/require-user";
 import { auth } from "@/lib/auth";
+import { env } from "@/lib/env";
+import { deleteObject, publicProfilePictureUrl } from "@/lib/storage";
 import type { ApiResponse } from "@/lib/types";
 
 export async function updateUserProfile(name: string): Promise<ApiResponse> {
@@ -74,9 +76,31 @@ export async function toggleEmailNotifications(
 }
 
 export async function updateUserAvatar(imageUrl: string): Promise<ApiResponse> {
-	await requireUser();
+	const user = await requireUser();
+
+	// Only accept URLs pointing at our own profile-pictures bucket, prefixed
+	// with the caller's user id (matches the presign route's key scheme).
+	const expectedPrefix = publicProfilePictureUrl(`${user.id}/`);
+	if (!imageUrl.startsWith(expectedPrefix)) {
+		return {
+			status: "error" as const,
+			message: "Invalid avatar URL",
+		};
+	}
 
 	try {
+		// Clean up the previous avatar object if it lived in our bucket.
+		const bucketBase = publicProfilePictureUrl("");
+		if (user.image?.startsWith(bucketBase)) {
+			const oldKey = user.image.slice(bucketBase.length);
+			if (oldKey && oldKey !== imageUrl.slice(bucketBase.length)) {
+				await deleteObject(
+					env.NEXT_PUBLIC_S3_BUCKET_NAME_PROFILE_PICTURES,
+					oldKey,
+				);
+			}
+		}
+
 		// Update user image using Better Auth's updateUser API
 		await auth.api.updateUser({
 			headers: await headers(),

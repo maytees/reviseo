@@ -1,17 +1,19 @@
 "use server";
 
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import { addDays } from "date-fns";
 import { v4 } from "uuid";
-import { requireUser } from "@/app/data/require-user";
+import {
+	createWebsite,
+	updateWebsite,
+} from "@/app/(main)/(dashboard)/dashboard/websites/actions";
+import { getAuthorizedWebsite } from "@/app/data/require-member";
 import { prisma } from "@/lib/db";
 import ClientInviteEmail from "@/lib/email/client-invite-email";
 import { env } from "@/lib/env";
-import { getDomain } from "@/lib/getDomain";
 import { resend } from "@/lib/resend";
 import type { ApiResponse } from "@/lib/types";
-import { fetchSetSiteScreenshot } from "@/lib/utils";
 import type { ClientFormData, WebsiteFormData } from "@/lib/validations";
+import { clientSchema } from "@/lib/validations";
 
 export async function inviteClient({
 	clientName,
@@ -21,38 +23,29 @@ export async function inviteClient({
 	websiteUrl,
 }: ClientFormData &
 	WebsiteFormData & { websiteId: string }): Promise<ApiResponse> {
-	const user = await requireUser();
-	const token = v4();
-
-	if (user.email === clientEmail) {
-		return {
-			status: "error",
-			message: "Cannot invite yourself!",
-		};
+	const validation = clientSchema.safeParse({ clientName, clientEmail });
+	if (!validation.success) {
+		return { status: "error", message: "Invalid client details" };
 	}
 
+	const authorized = await getAuthorizedWebsite(websiteId);
+	if (!authorized) {
+		return { status: "error", message: "Could not find website" };
+	}
+	const { user, website } = authorized;
+
+	if (user.email === clientEmail) {
+		return { status: "error", message: "Cannot invite yourself!" };
+	}
+
+	// TODO: Allow multiple clients
+	if (website.clientId) {
+		return { status: "error", message: "Website already has client!" };
+	}
+
+	const token = v4();
+
 	try {
-		const website = await prisma.website.findUnique({
-			where: {
-				id: websiteId,
-			},
-		});
-
-		if (!website) {
-			return {
-				status: "error",
-				message: "Could not find website",
-			};
-		}
-
-		// TODO: Allow multiple clients
-		if (website.clientId) {
-			return {
-				status: "error",
-				message: "Website already has client!",
-			};
-		}
-
 		// Create invite
 		const invite = await prisma.invite.create({
 			data: {
@@ -71,11 +64,10 @@ export async function inviteClient({
 			subject: "Reviseo - You have an invite!",
 			react: ClientInviteEmail({
 				clientName,
-				inviteUrl: `${env.BETTER_AUTH_URL}/invite?token=${token}&clientName=${clientName}`,
-				// TODO: Fix fields
+				inviteUrl: `${env.BETTER_AUTH_URL}/invite?token=${token}&clientName=${encodeURIComponent(clientName)}`,
 				developerName: user.name,
-				websiteName,
-				websiteUrl,
+				websiteName: website.name || websiteName,
+				websiteUrl: website.url || websiteUrl,
 			}),
 		});
 
@@ -86,168 +78,22 @@ export async function inviteClient({
 			};
 
 		// Delete invite, since invite didn't send
-		await prisma.invite.delete({
-			where: {
-				id: invite.id,
-			},
-		});
+		await prisma.invite.delete({ where: { id: invite.id } });
 
-		return {
-			status: "error",
-			message: "Failed to send email",
-		};
+		return { status: "error", message: "Failed to send email" };
 	} catch (e) {
 		console.error("Failed to send email:\n", e);
-
-		return {
-			status: "error",
-			message: `Failed to create invite`,
-		};
+		return { status: "error", message: "Failed to create invite" };
 	}
 }
 
-export async function createWebsiteOnboarding({
-	websiteName,
-	websiteUrl,
-}: WebsiteFormData): Promise<
-	ApiResponse<{
-		projectId: string;
-		websiteId: string;
-	}>
-> {
-	const user = await requireUser();
-	const url = getDomain(websiteUrl);
-
-	try {
-		const newWebsite = await prisma.website.create({
-			data: {
-				name: websiteName,
-				url: websiteUrl,
-				developerId: user.id,
-			},
-		});
-
-		// Trigger screenshot generation asynchronously (fire and forget)
-		fetchSetSiteScreenshot(websiteUrl, newWebsite.id);
-
-		return {
-			status: "success",
-			data: {
-				projectId: newWebsite.projectId,
-				websiteId: newWebsite.id,
-			},
-			message: "Created website successfully",
-		};
-	} catch (e) {
-		if (e instanceof PrismaClientKnownRequestError) {
-			switch (e.code) {
-				case "P2002": {
-					return {
-						status: "error",
-						message: `Website domain ${url} already taken!`,
-					};
-				}
-				default:
-					return {
-						status: "error",
-						message: `Failed to create website: ${e.code}`,
-					};
-			}
-		}
-
-		console.error("Failed to create website:\n", e);
-		return {
-			status: "error",
-			message: `Failed to create website`,
-		};
-	}
+// Thin wrappers so onboarding steps share the central website actions.
+export async function createWebsiteOnboarding(input: WebsiteFormData) {
+	return createWebsite(input);
 }
 
-export async function updateWebsiteOnboarding({
-	websiteId,
-	websiteName,
-	websiteUrl,
-}: WebsiteFormData & { websiteId: string }): Promise<ApiResponse> {
-	const user = await requireUser();
-	const url = getDomain(websiteUrl);
-
-	// TODO: instead of getting params like that use zod validation for
-	// server side form validation
-
-	try {
-		// Verify the website belongs to the user
-		const existingWebsite = await prisma.website.findFirst({
-			where: {
-				id: websiteId,
-				developerId: user.id,
-			},
-		});
-
-		if (!existingWebsite) {
-			return {
-				status: "error",
-				message: "Website not found or unauthorized",
-			};
-		}
-
-		// If URL changed, delete old screenshot and take a new one
-		if (existingWebsite.url !== websiteUrl) {
-			// Delete old screenshot if it exists
-			if (existingWebsite.screenshotKey) {
-				try {
-					await fetch(`${env.BETTER_AUTH_URL}/api/s3/screenshot/delete`, {
-						method: "DELETE",
-						headers: { "Content-Type": "application/json" },
-						body: JSON.stringify({
-							key: existingWebsite.screenshotKey,
-						}),
-					});
-				} catch (error) {
-					console.error("Failed to delete old screenshot:", error);
-					// Continue even if deletion fails
-				}
-			}
-
-			// Take new screenshot
-			fetchSetSiteScreenshot(websiteUrl, websiteId);
-		}
-
-		// Update the website
-		await prisma.website.update({
-			where: {
-				id: websiteId,
-			},
-			data: {
-				name: websiteName,
-				url: websiteUrl,
-			},
-		});
-
-		return {
-			status: "success",
-			message: "Website updated successfully",
-		};
-	} catch (e: unknown) {
-		if (e instanceof PrismaClientKnownRequestError) {
-			switch (e.code) {
-				case "P2002": {
-					return {
-						status: "error",
-						message: `Website domain ${url} already taken!`,
-					};
-				}
-				default:
-					return {
-						status: "error",
-						message: `Failed to update website: ${e.code}`,
-					};
-			}
-		}
-
-		console.error("Failed to update website:\n", e);
-		return {
-			status: "error",
-			message: `Failed to update website`,
-		};
-	}
+export async function updateWebsiteOnboarding(
+	input: WebsiteFormData & { websiteId: string },
+) {
+	return updateWebsite(input);
 }

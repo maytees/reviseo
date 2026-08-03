@@ -1,7 +1,7 @@
 "use client";
 
 import { GithubIcon, Loader, Loader2, Send } from "lucide-react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useEffect, useId, useState, useTransition } from "react";
 import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
@@ -16,8 +16,16 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 
+/** Only allow same-origin relative paths as post-login redirect targets. */
+function safeNext(raw: string | null): string | null {
+	if (!raw) return null;
+	return raw.startsWith("/") && !raw.startsWith("//") ? raw : null;
+}
+
 export function LoginForm() {
 	const router = useRouter();
+	const searchParams = useSearchParams();
+	const next = safeNext(searchParams.get("next"));
 	const emailId = useId();
 	const [githubPending, startGithubTransition] = useTransition();
 	const [emailPending, startEmailTransition] = useTransition();
@@ -38,8 +46,7 @@ export function LoginForm() {
 		startGithubTransition(async () => {
 			await authClient.signIn.social({
 				provider: "github",
-				// TODO: Get callback url via slug if user purchased something
-				callbackURL: !isClientInvite ? "/dashboard" : "/invite",
+				callbackURL: next ?? (!isClientInvite ? "/dashboard" : "/invite"),
 				fetchOptions: {
 					onSuccess: () => {
 						toast.success("Signed in with Github, you will be redirected...");
@@ -63,7 +70,7 @@ export function LoginForm() {
 						toast.success("Email sent");
 						setIsSuccess(true);
 						router.push(
-							`/verify-request?email=${email}${isClientInvite ? "&ci=true" : ""}`,
+							`/verify-request?email=${encodeURIComponent(email)}${isClientInvite ? "&ci=true" : ""}${next ? `&next=${encodeURIComponent(next)}` : ""}`,
 						);
 					},
 					onError: () => {

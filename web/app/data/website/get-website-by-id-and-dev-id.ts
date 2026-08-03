@@ -1,73 +1,24 @@
 import "server-only";
 
+import { cache } from "react";
 import { prisma as db } from "@/lib/db";
-import { requireUser } from "../require-user";
+import { requireMember } from "../require-member";
+import { websiteSelect } from "../selects";
 
-// id -> website id
-// developer -> developer id
-export async function getWebsiteByIdAndDevId(id: string) {
-	const user = await requireUser();
+/** A website by id, scoped to the caller's active organization. */
+export const getWebsiteByIdAndDevId = cache(async (id: string) => {
+	const { organization } = await requireMember();
 
-	const data = await db.website.findUnique({
+	const data = await db.website.findFirst({
 		where: {
 			id,
-			developerId: user.id,
+			organizationId: organization.id,
 		},
-		select: {
-			id: true,
-			url: true,
-			screenshotKey: true,
-			name: true,
-			invites: true,
-			projectId: true,
-			widgetInstalled: true,
-			verifiedAt: true,
-			developerId: true,
-			clientId: true,
-			createdAt: true,
-			updatedAt: true,
-			client: {
-				select: {
-					id: true,
-					name: true,
-					email: true,
-					emailVerified: true,
-					image: true,
-					createdAt: true,
-					updatedAt: true,
-					hasCompletedOnboarding: true,
-					role: true,
-				},
-			},
-			feedback: {
-				select: {
-					id: true,
-					websiteId: true,
-					authorId: true,
-					status: true,
-					pageUrl: true,
-					screenshotKey: true,
-					viewport: true,
-					priority: true,
-					timestamp: true,
-					author: true,
-					website: true,
-					browser: true,
-					browserVersion: true,
-					device: true,
-					os: true,
-					createdAt: true,
-					updatedAt: true,
-					title: true,
-					description: true,
-					type: true,
-				},
-			},
-		},
+		select: websiteSelect,
 	});
 
 	return data;
-}
+});
 
 export type WebsiteDataType = Awaited<
 	ReturnType<typeof getWebsiteByIdAndDevId>

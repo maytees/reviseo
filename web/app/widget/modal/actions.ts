@@ -1,6 +1,5 @@
 "use server";
 
-import { PrismaClientKnownRequestError } from "@prisma/client/runtime/client";
 import moment from "moment";
 import { requireUser } from "@/app/data/require-user";
 import { prisma } from "@/lib/db";
@@ -13,7 +12,6 @@ import { type FeedbackFormData, feedbackFormSchema } from "@/lib/validations";
 // Parent website URL, e.g clientsite.com
 export async function submitFeedbackForm(
 	pageUrl: string,
-	authorId: string,
 	values: FeedbackFormData,
 	projectId: string,
 	screenshotKey: string,
@@ -23,74 +21,53 @@ export async function submitFeedbackForm(
 ): Promise<ApiResponse> {
 	const user = await requireUser();
 
-	if (authorId !== user.id) {
-		return {
-			status: "error",
-			message: "Missmatched accounts author != user",
-		};
-	}
-
 	const validation = feedbackFormSchema.safeParse(values);
 
 	if (!validation.success) {
-		return {
-			status: "error",
-			message: "Invalid form data",
-		};
+		return { status: "error", message: "Invalid form data" };
 	}
 
 	const { description, priority, title, type } = validation.data;
 
 	try {
 		const existingWebsite = await prisma.website.findUnique({
-			where: {
-				projectId,
-				// url: websiteUrl,
-			},
+			where: { projectId },
 			select: {
 				clientId: true,
 				name: true,
 				id: true,
-				developerId: true,
+				organizationId: true,
 				developer: {
-					select: {
-						email: true,
-						name: true,
-						emailNotifications: true,
-					},
-				},
-				client: {
-					select: {
-						email: true,
-					},
+					select: { email: true, name: true, emailNotifications: true },
 				},
 			},
 		});
 
-		if (
-			existingWebsite?.clientId !== user.id &&
-			existingWebsite?.developerId !== user.id
-		) {
-			console.error(user.id);
-			console.error(existingWebsite?.clientId, "client id");
-			console.error(existingWebsite?.developerId, "dev id");
-			console.error(
-				existingWebsite?.clientId !== user.id &&
-					existingWebsite?.developerId !== user.id,
-				"is condition",
-			);
-			return {
-				status: "error",
-				message: "Could not find valid website (1)",
-			};
+		if (!existingWebsite) {
+			return { status: "error", message: "Could not find valid website" };
 		}
 
-		if (!existingWebsite) {
-			console.error(projectId, pageUrl, user.id);
+		// Authorized submitters: the website's feedback client, or any member
+		// of the workspace that owns the website.
+		const isClient = existingWebsite.clientId === user.id;
+		const isMember = !isClient
+			? Boolean(
+					await prisma.member.findUnique({
+						where: {
+							organizationId_userId: {
+								organizationId: existingWebsite.organizationId,
+								userId: user.id,
+							},
+						},
+						select: { id: true },
+					}),
+				)
+			: false;
 
+		if (!isClient && !isMember) {
 			return {
 				status: "error",
-				message: "Could not find valid website",
+				message: "You don't have access to submit feedback for this website",
 			};
 		}
 
@@ -108,16 +85,8 @@ export async function submitFeedbackForm(
 				browserVersion: browserInfo?.browserVersion,
 				device: browserInfo?.device,
 				timestamp,
-				author: {
-					connect: {
-						id: authorId,
-					},
-				},
-				website: {
-					connect: {
-						id: existingWebsite.id,
-					},
-				},
+				author: { connect: { id: user.id } },
+				website: { connect: { id: existingWebsite.id } },
 			},
 		});
 
@@ -146,25 +115,9 @@ export async function submitFeedbackForm(
 			}
 		}
 
-		return {
-			status: "success",
-			message: "Successfully submitted feedback",
-		};
+		return { status: "success", message: "Successfully submitted feedback" };
 	} catch (e) {
-		if (e instanceof PrismaClientKnownRequestError) {
-			switch (e.code) {
-				default:
-					return {
-						status: "error",
-						message: `Failed to update website: ${e.code}`,
-					};
-			}
-		}
-
-		console.error("Failed to delete website:\n", e);
-		return {
-			status: "error",
-			message: `Failed to delete website`,
-		};
+		console.error("Failed to submit feedback:\n", e);
+		return { status: "error", message: "Failed to submit feedback" };
 	}
 }

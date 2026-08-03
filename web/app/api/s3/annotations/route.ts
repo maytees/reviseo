@@ -1,23 +1,28 @@
-import { PutObjectCommand } from "@aws-sdk/client-s3";
-import { getSignedUrl } from "@aws-sdk/s3-request-presigner";
 import { NextResponse } from "next/server";
 import { v4 as uuidv4 } from "uuid";
 import z from "zod";
-import { requireUser } from "@/app/data/require-user";
+import { getApiSession, userCanAccessWebsite } from "@/app/data/api-auth";
+import { prisma } from "@/lib/db";
 import { env } from "@/lib/env";
-import { S3 } from "@/lib/s3client";
+import { presignUpload } from "@/lib/storage";
 
 const uploadAnnotationSchema = z.object({
 	fileName: z.string().min(1, { message: "Filename is required" }),
-	contentType: z.literal("image/svg+xml"), // Or z.enum(["image/jpeg", "image/jpg"])
+	contentType: z.literal("image/svg+xml"),
+	// Annotation SVGs embed the page screenshot as base64 — allow up to 15MB.
 	size: z
 		.number()
 		.min(1)
-		.max(5 * 1024 * 1024), // 5MB max for example
+		.max(15 * 1024 * 1024),
+	// The widget project the annotation belongs to (authorization scope).
+	projectId: z.string().min(1),
 });
 
 export async function POST(request: Request) {
-	await requireUser();
+	const session = await getApiSession();
+	if (!session) {
+		return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+	}
 
 	try {
 		const body = await request.json();
@@ -25,36 +30,36 @@ export async function POST(request: Request) {
 
 		if (!validation.success) {
 			return NextResponse.json(
-				{
-					error: validation.error.message,
-				},
-				{
-					status: 400,
-				},
+				{ error: validation.error.message },
+				{ status: 400 },
 			);
 		}
 
-		const { fileName, contentType, size } = validation.data;
+		const { fileName, contentType, size, projectId } = validation.data;
 
-		const uniqueKey = `${uuidv4()}-${fileName}`;
-		const command = new PutObjectCommand({
-			Bucket: env.NEXT_PUBLIC_S3_BUCKET_NAME_ANNOTATIONS,
-			Key: uniqueKey,
-			ContentType: contentType,
-			ContentLength: size,
+		// Only the website's client or a member of the owning workspace may
+		// upload annotations for it.
+		const website = await prisma.website.findUnique({
+			where: { projectId },
+			select: { organizationId: true, clientId: true },
 		});
 
-		const preSignedUrl = await getSignedUrl(S3, command, { expiresIn: 360 }); // Expire sin 6 minutes
+		if (!website || !(await userCanAccessWebsite(session.user.id, website))) {
+			return NextResponse.json({ error: "Not found" }, { status: 404 });
+		}
 
-		const response = {
-			preSignedUrl,
+		const uniqueKey = `${uuidv4()}-${fileName.replace(/[^a-zA-Z0-9._-]/g, "")}`;
+		const preSignedUrl = await presignUpload({
+			bucket: env.NEXT_PUBLIC_S3_BUCKET_NAME_ANNOTATIONS,
 			key: uniqueKey,
-		};
+			contentType,
+			size,
+		});
 
-		return NextResponse.json(response, { status: 200 });
+		return NextResponse.json({ preSignedUrl, key: uniqueKey }, { status: 200 });
 	} catch {
 		return NextResponse.json(
-			{ error: "Failed to upload annotation" },
+			{ error: "Failed to create annotation upload" },
 			{ status: 500 },
 		);
 	}

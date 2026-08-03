@@ -41,7 +41,7 @@ enum InviteStatus {
 model Website {
   id        String @id @default(cuid())
   name      String
-  url       String @unique
+  url       String
   projectId String @unique @default(uuid())
 
   widgetInstalled Boolean   @default(false)
@@ -49,6 +49,11 @@ model Website {
 
   screenshotKey String?
 
+  // The workspace (agency or personal) that owns this website.
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+
+  // The member who created the website (notification target).
   developerId String
   developer   User   @relation("DeveloperWebsites", fields: [developerId], references: [id], onDelete: Cascade)
 
@@ -62,7 +67,8 @@ model Website {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 
-  @@unique([developerId, url])
+  @@unique([organizationId, url])
+  @@index([organizationId])
   @@index([developerId])
   @@index([clientId])
 }
@@ -165,8 +171,63 @@ model User {
   feedback          Feedback[]
   subscription      Subscription?
 
+  // Organization (agency workspace) relations
+  members     Member[]
+  invitations Invitation[]
+
   @@unique([email])
   @@map("user")
+}
+
+// =====================
+// Better Auth organization plugin (agency workspaces)
+// =====================
+
+model Organization {
+  id        String   @id
+  name      String
+  slug      String   @unique
+  logo      String?
+  metadata  String?
+  createdAt DateTime
+
+  members     Member[]
+  invitations Invitation[]
+  websites    Website[]
+
+  @@map("organization")
+}
+
+model Member {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  userId         String
+  user           User         @relation(fields: [userId], references: [id], onDelete: Cascade)
+  // "owner" | "admin" | "member"
+  role           String       @default("member")
+  createdAt      DateTime
+
+  @@unique([organizationId, userId])
+  @@index([userId])
+  @@map("member")
+}
+
+model Invitation {
+  id             String       @id
+  organizationId String
+  organization   Organization @relation(fields: [organizationId], references: [id], onDelete: Cascade)
+  email          String
+  role           String?
+  // "pending" | "accepted" | "rejected" | "canceled"
+  status         String       @default("pending")
+  expiresAt      DateTime
+  inviterId      String
+  user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
+
+  @@index([organizationId])
+  @@index([email])
+  @@map("invitation")
 }
 
 model Session {
@@ -181,6 +242,9 @@ model Session {
   user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 
   impersonatedBy String?
+
+  // Organization plugin: the org this session is currently acting in
+  activeOrganizationId String?
 
   @@unique([token])
   @@map("session")

@@ -27,6 +27,10 @@ export function VerifyRequest() {
 	const params = useSearchParams();
 	const email = params.get("email") as string;
 	const isClientInvite = params.get("ci") as string | null;
+	const rawNext = params.get("next");
+	// Only same-origin relative paths
+	const next =
+		rawNext?.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
 	const isOtpCompleted = otp.length === 6;
 
 	function verifyOtp() {
@@ -37,7 +41,9 @@ export function VerifyRequest() {
 				fetchOptions: {
 					onSuccess: () => {
 						toast.success("Email verified");
-						router.push(`${!isClientInvite ? "/onboarding" : "/invite"}`);
+						router.push(
+							next ?? `${!isClientInvite ? "/onboarding" : "/invite"}`,
+						);
 					},
 					onError: (error: ErrorContext) => {
 						toast.error(error.error.message);
