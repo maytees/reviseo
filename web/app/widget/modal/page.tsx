@@ -59,10 +59,17 @@ import { tryCatch } from "@/lib/try-catch";
 import { type BrowserInfo, PRIORITY_CONFIG, TYPE_CONFIG } from "@/lib/types";
 import { type FeedbackFormData, feedbackFormSchema } from "@/lib/validations";
 import ExCanvas from "../_components/ExCanvas";
+import { ensureStorageAccess } from "../lib/storage-access";
 import { submitFeedbackForm } from "./actions";
 
+type SessionData = Awaited<ReturnType<typeof authClient.getSession>>["data"];
+
 const ReviseoModal = () => {
-	const { data: session } = authClient.useSession();
+	const { data: hookSession } = authClient.useSession();
+	// Session fetched manually after a Storage Access grant (cross-site
+	// iframes) — the hook's initial fetch may predate cookie access.
+	const [grantedSession, setGrantedSession] = useState<SessionData>(null);
+	const session = hookSession ?? grantedSession;
 	const [open, setOpen] = useState(false);
 	const [step, setStep] = useState<"canvas" | "form">("canvas");
 	const [submitted, setSubmitted] = useState(false);
@@ -299,6 +306,14 @@ const ReviseoModal = () => {
 					// Modal is being shown, request fresh data
 					setOpen(true);
 					setSubmitted(false);
+					// Cross-site: the trigger already acquired the Storage Access
+					// permission with a user gesture, so this resolves without a
+					// prompt and lets this document's requests carry cookies too.
+					void (async () => {
+						await ensureStorageAccess();
+						const { data } = await authClient.getSession();
+						if (data) setGrantedSession(data);
+					})();
 					window.parent.postMessage({ type: "REQUEST_PAGE_DATA" }, "*");
 					window.parent.postMessage({ type: "REQUEST_PAGE_SCREENSHOT" }, "*");
 					setLoading(true);
