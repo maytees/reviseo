@@ -9,7 +9,6 @@ import {
 import { prisma } from "@/lib/db";
 import { isPrismaError } from "@/lib/db-errors";
 import { env } from "@/lib/env";
-import { captureAndStoreSiteScreenshot } from "@/lib/screenshot";
 import { deleteObject } from "@/lib/storage";
 import type { ApiResponse } from "@/lib/types";
 import { websiteSchema } from "@/lib/validations";
@@ -36,8 +35,8 @@ export async function createWebsite(input: {
 			},
 		});
 
-		// Fire-and-forget site preview capture
-		void captureAndStoreSiteScreenshot(websiteUrl, newWebsite.id);
+		// Site-preview screenshot capture is currently disabled (puppeteer
+		// removed) — new websites show the fallback preview.
 
 		revalidatePath("/dashboard");
 		revalidatePath("/dashboard/websites");
@@ -86,10 +85,17 @@ export async function updateWebsite(input: {
 			data: { name: websiteName, url: websiteUrl },
 		});
 
-		// URL changed → replace the preview screenshot (old one is cleaned up
-		// inside captureAndStoreSiteScreenshot after the new one lands).
-		if (urlChanged) {
-			void captureAndStoreSiteScreenshot(websiteUrl, input.websiteId);
+		// URL changed → drop the stale preview (recapture disabled: puppeteer
+		// removed; the site falls back to the placeholder preview).
+		if (urlChanged && authorized.website.screenshotKey) {
+			await deleteObject(
+				env.NEXT_PUBLIC_S3_BUCKET_NAME_SITE_SCREENSHOTS,
+				authorized.website.screenshotKey,
+			);
+			await prisma.website.update({
+				where: { id: input.websiteId },
+				data: { screenshotKey: null },
+			});
 		}
 
 		revalidatePath("/dashboard");

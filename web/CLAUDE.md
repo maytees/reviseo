@@ -20,7 +20,7 @@ Reviseo is a visual feedback collection platform for web agencies and freelancer
 - **Storage**: S3-compatible (Tigris/T3 in prod, MinIO locally) for screenshots, annotations, avatars
 - **UI**: Radix UI, Tailwind 4, shadcn/ui
 - **Email**: Resend (stubbed to console logs in development)
-- **Screenshot**: Puppeteer (`@sparticuz/chromium` on Vercel)
+- **Screenshot**: site-preview capture currently disabled (puppeteer removed — see lib/screenshot.ts note); widget screenshots are client-side via snapdom
 
 ## Local development
 

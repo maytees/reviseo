@@ -70,9 +70,6 @@ const nextConfig: NextConfig = {
 	},
 	// this shopws with the widget, which is why its false
 	devIndicators: false,
-	outputFileTracingIncludes: {
-		"/app/api/**": ["./node_modules/@sparticuz/chromium/bin/**"],
-	},
 };
 
 export default nextConfig;
