@@ -18,7 +18,8 @@
         if (e.__Reviseo) return;
         e.__Reviseo = {};
         const i = t.createElement("script");
-        i.src = "./dist/widget.iife.js";
+        // Cache-buster keeps local rebuilds fresh in the browser
+        i.src = "./dist/widget.iife.js?v=" + Date.now();
         const n = t.getElementsByTagName("script")[0];
         n.parentNode.insertBefore(i, n)
       }(window, document);

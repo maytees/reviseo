@@ -87,8 +87,7 @@ export default async function ClientDashboard() {
 								</EmptyMedia>
 								<EmptyTitle>No websites yet</EmptyTitle>
 								<EmptyDescription>
-									When a developer adds you to a website, it will show up
-									here.
+									When a developer adds you to a website, it will show up here.
 								</EmptyDescription>
 							</EmptyHeader>
 						</Empty>
@@ -101,12 +100,16 @@ export default async function ClientDashboard() {
 								<div className="flex flex-col gap-0.5">
 									<span className="font-medium">{website.name}</span>
 									<span className="text-muted-foreground text-xs">
-										Managed by {website.developer.name || website.developer.email}
+										Managed by{" "}
+										{website.developer.name || website.developer.email}
 									</span>
 								</div>
 								<Button asChild variant="outline" size="sm">
 									<Link
-										href={website.url}
+										// #reviseo-connect marks the client's browser so the
+										// widget can offer its connect button there even when
+										// third-party cookies are blocked.
+										href={`${website.url}#reviseo-connect`}
 										target="_blank"
 										rel="noopener noreferrer"
 									>
@@ -157,8 +160,7 @@ export default async function ClientDashboard() {
 										<span className="truncate font-medium">{item.title}</span>
 										<span className="flex items-center gap-1.5 text-muted-foreground text-xs">
 											<MessageCircle className="size-3" />
-											{item.website.name} ·{" "}
-											{moment(item.createdAt).fromNow()}
+											{item.website.name} · {moment(item.createdAt).fromNow()}
 										</span>
 									</div>
 									<div className="flex shrink-0 items-center gap-2">

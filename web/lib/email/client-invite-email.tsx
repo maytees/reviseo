@@ -72,7 +72,9 @@ export default function ClientInviteEmail({
 										{websiteName}
 									</Text>
 									<Link
-										href={websiteUrl}
+										// Marks the client's browser for the widget's connect
+										// button (works around blocked third-party cookies)
+										href={`${websiteUrl}#reviseo-connect`}
 										className="break-all font-mono text-[#9c40ff] text-[14px] leading-[20px]"
 									>
 										{websiteUrl}

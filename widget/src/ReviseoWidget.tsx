@@ -193,6 +193,35 @@ function cropImageFromDataURL(dataURL, cropX, cropY, cropWidth, cropHeight) {
 const WIDGET_ORIGIN =
 	import.meta.env.VITE_WIDGET_ORIGIN || "http://localhost:3000";
 
+const CLIENT_HINT_KEY = "__reviseo_client";
+const CLIENT_HINT_FRAGMENT = "reviseo-connect";
+
+/**
+ * Client hint: invite emails and the client dashboard link to the customer
+ * site with a `#reviseo-connect` fragment. Seeing it once marks THIS
+ * browser (in the customer site's own first-party localStorage — never
+ * partitioned) as belonging to a Reviseo client. Only hinted browsers may
+ * show the widget's connect button when cookies are blocked; the public
+ * never has the hint and never sees any UI.
+ */
+function readClientHint(): boolean {
+	try {
+		if (window.location.hash.includes(CLIENT_HINT_FRAGMENT)) {
+			localStorage.setItem(CLIENT_HINT_KEY, "1");
+			// Strip our marker from the URL bar
+			history.replaceState(
+				null,
+				"",
+				window.location.pathname + window.location.search,
+			);
+			return true;
+		}
+		return localStorage.getItem(CLIENT_HINT_KEY) === "1";
+	} catch {
+		return false;
+	}
+}
+
 export default function ReviseoWidget({ projectId }: { projectId: string }) {
 	const containerRef = useRef<HTMLDivElement>(null);
 	const triggerIframeRef = useRef<HTMLIFrameElement>(null);
@@ -233,7 +262,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 				case "HEALTH_CHECK":
 					// Respond to health check
 					triggerIframeRef.current?.contentWindow?.postMessage(
-						{ type: "HEALTH_OK", projectId },
+						{ type: "HEALTH_OK", projectId, clientHint: readClientHint() },
 						WIDGET_ORIGIN,
 					);
 					break;
