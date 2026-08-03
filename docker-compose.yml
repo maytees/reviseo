@@ -1,0 +1,59 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: reviseo-postgres
+    restart: unless-stopped
+    environment:
+      POSTGRES_USER: reviseo
+      POSTGRES_PASSWORD: reviseo_local_dev
+      POSTGRES_DB: reviseo
+    ports:
+      - "5432:5432"
+    volumes:
+      - reviseo_pgdata:/var/lib/postgresql/data
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U reviseo -d reviseo"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  minio:
+    image: minio/minio:latest
+    container_name: reviseo-minio
+    restart: unless-stopped
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: reviseo
+      MINIO_ROOT_PASSWORD: reviseo_local_dev
+    ports:
+      - "9000:9000" # S3 API
+      - "9001:9001" # Web console
+    volumes:
+      - reviseo_minio:/data
+    healthcheck:
+      test: ["CMD", "mc", "ready", "local"]
+      interval: 5s
+      timeout: 5s
+      retries: 10
+
+  # One-shot job: creates the buckets the app expects, then exits.
+  minio-init:
+    image: minio/mc:latest
+    container_name: reviseo-minio-init
+    depends_on:
+      minio:
+        condition: service_healthy
+    entrypoint: >
+      /bin/sh -c "
+      mc alias set local http://minio:9000 reviseo reviseo_local_dev &&
+      mc mb -p local/reviseo-uploads &&
+      mc mb -p local/reviseo-annotations &&
+      mc mb -p local/reviseo-site-screenshots &&
+      mc mb -p local/reviseo-profile-pictures &&
+      mc anonymous set download local/reviseo-profile-pictures &&
+      echo 'MinIO buckets ready.'
+      "
+
+volumes:
+  reviseo_pgdata:
+  reviseo_minio:

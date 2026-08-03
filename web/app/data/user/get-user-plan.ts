@@ -32,12 +32,19 @@ export async function getUserCurrentPlan() {
 		| "starter-yearly"
 		| "professional-monthly"
 		| "professional-yearly"
-	> = {
-		[env.POLAR_STARTER_PLAN_PRODUCT_ID]: "starter-monthly",
-		[env.POLAR_STARTER_YEARLY_PLAN_PRODUCT_ID]: "starter-yearly",
-		[env.POLAR_PROFESSIONAL_PLAN_PRODUCT_ID]: "professional-monthly",
-		[env.POLAR_PROFESSIONAL_YEARLY_PLAN_PRODUCT_ID]: "professional-yearly",
-	};
+	> = {};
+	// Billing product IDs are optional (unset in local dev = billing disabled).
+	if (env.POLAR_STARTER_PLAN_PRODUCT_ID)
+		subscriptionMap[env.POLAR_STARTER_PLAN_PRODUCT_ID] = "starter-monthly";
+	if (env.POLAR_STARTER_YEARLY_PLAN_PRODUCT_ID)
+		subscriptionMap[env.POLAR_STARTER_YEARLY_PLAN_PRODUCT_ID] =
+			"starter-yearly";
+	if (env.POLAR_PROFESSIONAL_PLAN_PRODUCT_ID)
+		subscriptionMap[env.POLAR_PROFESSIONAL_PLAN_PRODUCT_ID] =
+			"professional-monthly";
+	if (env.POLAR_PROFESSIONAL_YEARLY_PLAN_PRODUCT_ID)
+		subscriptionMap[env.POLAR_PROFESSIONAL_YEARLY_PLAN_PRODUCT_ID] =
+			"professional-yearly";
 
 	const subscription = subscriptionMap[data?.planId as string] ?? null;
 

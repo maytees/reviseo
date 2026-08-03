@@ -2,6 +2,10 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
 	// cacheComponents: true,
+	turbopack: {
+		// Silence multi-lockfile workspace-root inference warning
+		root: __dirname,
+	},
 	images: {
 		remotePatterns: [
 			{

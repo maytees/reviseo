@@ -22,3 +22,6 @@ dist-ssr
 *.njsproj
 *.sln
 *.sw?
+
+# Environment (VITE_WIDGET_ORIGIN is baked into builds)
+.env
