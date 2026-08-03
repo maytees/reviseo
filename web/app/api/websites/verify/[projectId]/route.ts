@@ -50,15 +50,31 @@ export async function POST(
 
 		const scriptSrc = env.NEXT_PUBLIC_WIDGET_SCRIPT_URL;
 
-		// The two signals that actually matter: our config with this exact
-		// projectId, and a script tag pointing at our widget bundle. (The old
-		// 11-fragment IIFE match broke on minifiers/SPAs/tag managers.)
+		// The signals that actually matter: this exact projectId (via the
+		// window.ReviseoConfig snippet OR the data-project-id attribute of a
+		// one-tag install) plus a script tag pointing at our widget bundle.
+		// (The old 11-fragment IIFE match broke on minifiers/SPAs/tag
+		// managers.)
 		const hasConfig = normalizedHtml.includes(
 			`window.ReviseoConfig={projectId:"${existingWebsite.projectId}"`,
 		);
+		const hasDataAttr = normalizedHtml.includes(
+			`data-project-id="${existingWebsite.projectId}"`,
+		);
 		const hasScript = normalizedHtml.includes(scriptSrc.replace(/\s+/g, ""));
 
-		const isInstalled = hasConfig && hasScript;
+		const htmlDetected = (hasConfig || hasDataAttr) && hasScript;
+
+		// Runtime-injected installs (next/script, tag managers, SPAs) never
+		// show the snippet in server HTML — the widget's install heartbeat
+		// (/api/widget/ping) covers those. A recent heartbeat counts.
+		const heartbeatDetected =
+			existingWebsite.widgetInstalled &&
+			existingWebsite.verifiedAt !== null &&
+			existingWebsite.verifiedAt >
+				new Date(Date.now() - 7 * 24 * 60 * 60 * 1000);
+
+		const isInstalled = htmlDetected || heartbeatDetected;
 
 		await prisma.website.update({
 			where: { projectId },

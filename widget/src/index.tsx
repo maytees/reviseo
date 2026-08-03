@@ -3,18 +3,20 @@
 import { render } from "preact";
 import ReviseoWidget from "./ReviseoWidget";
 
-// TODO: Add where to put widget, e.g 'bottom-left', 'bottom-right'
+// Project id sources, in order:
+// 1. window.ReviseoConfig (the standard install snippet)
+// 2. data-project-id on the <script> tag (simple one-tag install:
+//    <script src="https://reviseo.app/cdn/reviseo.js" data-project-id="…">)
 const config = window.ReviseoConfig;
+const scriptEl = document.currentScript as HTMLScriptElement | null;
+const projectId = config?.projectId || scriptEl?.dataset.projectId;
 
-if (!config.projectId) {
-	console.error("Reviseo: Missing ReviseoConfig");
+if (!projectId) {
+	console.error(
+		"Reviseo: no project id found. Either install the snippet that sets " +
+			'window.ReviseoConfig, or add data-project-id="YOUR_PROJECT_ID" to ' +
+			"the script tag. Get either from your Reviseo dashboard's Widget tab.",
+	);
 } else {
-	// const reviseoRoot = document.createElement("div");
-	// reviseoRoot.id = "reviseo-container";
-	// reviseoRoot.style.zIndex = "2147483640";
-	// reviseoRoot.style.position = "fixed";
-
-	// document.body.appendChild(reviseoRoot);
-
-	render(<ReviseoWidget projectId={config.projectId} />, document.body);
+	render(<ReviseoWidget projectId={projectId} />, document.body);
 }

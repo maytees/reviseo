@@ -98,6 +98,15 @@ const TriggerButton = () => {
 				setClientHint(event.data.clientHint === true);
 				setHealthy(true); // healthy means parent is valid
 
+				// Install heartbeat — lets runtime-injected installs
+				// (next/script, tag managers) pass verification even though
+				// their snippet never appears in the server-rendered HTML.
+				void fetch("/api/widget/ping", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({ projectId: event.data.projectId }),
+				}).catch(() => {});
+
 				parent.postMessage({ type: "READY" }, origin);
 			}
 		};
