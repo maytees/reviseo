@@ -9,11 +9,13 @@ import type {
 import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	ArrowLeftIcon,
+	CheckCircle2Icon,
 	ChevronRightIcon,
 	ClockIcon,
 	GlobeIcon,
 	Grid2X2,
 } from "lucide-react";
+import { motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -25,6 +27,7 @@ import {
 	useTransition,
 } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
+import { toast } from "sonner";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -51,6 +54,7 @@ import {
 } from "@/components/ui/select";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
+import { useConfetti } from "@/lib/hooks/use-confetti";
 import { tryCatch } from "@/lib/try-catch";
 import { type BrowserInfo, PRIORITY_CONFIG, TYPE_CONFIG } from "@/lib/types";
 import { type FeedbackFormData, feedbackFormSchema } from "@/lib/validations";
@@ -61,8 +65,10 @@ const ReviseoModal = () => {
 	const { data: session } = authClient.useSession();
 	const [open, setOpen] = useState(false);
 	const [step, setStep] = useState<"canvas" | "form">("canvas");
+	const [submitted, setSubmitted] = useState(false);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [isPending, startTransition] = useTransition();
+	const { triggerConfetti } = useConfetti();
 	const [excalidrawApi, setExcalidrawApi] =
 		useState<ExcalidrawImperativeAPI | null>(null);
 	const [initialData, setInitialData] = useState<{
@@ -142,108 +148,127 @@ const ReviseoModal = () => {
 		name: "description",
 	});
 
+	/** Hide the iframe (parent) and reset every piece of per-session state so
+	 *  the next open starts fresh. */
+	const closeAndReset = () => {
+		setOpen(false);
+		setSubmitted(false);
+		setStep("canvas");
+		setInitialData(undefined);
+		sceneData.current = null;
+		form.reset();
+		setScreenshotMetadata({ timestamp: new Date(), url: null });
+		window.parent.postMessage({ type: "CLOSE_FORM" }, "*");
+	};
+
 	function onSubmit(data: FeedbackFormData) {
 		startTransition(async () => {
-			const { exportToSvg } = await import("@excalidraw/excalidraw");
-			if (!excalidrawApi) {
-				return;
-			}
+			try {
+				const { exportToSvg } = await import("@excalidraw/excalidraw");
+				if (!excalidrawApi) {
+					return;
+				}
 
-			const dat = sceneData.current;
+				const dat = sceneData.current;
 
-			if (!dat) {
-				console.error("No Data");
-				return;
-			}
+				if (!dat) {
+					toast.error("Nothing to submit yet — the screenshot hasn't loaded.");
+					return;
+				}
 
-			const { elements, files, appState } = dat;
+				const { elements, files, appState } = dat;
 
-			if (!elements || !initialData) {
-				return;
-			}
+				if (!elements || !initialData) {
+					toast.error("Nothing to submit yet — the screenshot hasn't loaded.");
+					return;
+				}
 
-			const svg = await exportToSvg({
-				elements,
-				appState: { ...appState },
-				files,
-				exportPadding: 0,
-			});
+				if (!screenshotMetadata.url || !screenshotMetadata.projectId) {
+					toast.error("Missing page data. Close the widget and try again.");
+					return;
+				}
 
-			const svgString = svg.outerHTML;
+				if (!session?.user.id) {
+					toast.error("You're signed out. Sign in and try again.");
+					return;
+				}
 
-			const svgBlob = new Blob([svgString], { type: "image/svg+xml" });
+				const svg = await exportToSvg({
+					elements,
+					appState: { ...appState },
+					files,
+					exportPadding: 0,
+				});
 
-			const presignedResponse = await fetch("/api/s3/annotations", {
-				method: "POST",
-				headers: { "Content-Type": "application/json" },
-				body: JSON.stringify({
-					fileName: "annotation.jpeg",
-					contentType: "image/svg+xml",
-					size: svgBlob.size,
-				}),
-			});
+				const svgBlob = new Blob([svg.outerHTML], {
+					type: "image/svg+xml",
+				});
 
-			if (!presignedResponse.ok) {
-				throw new Error("Failed to get presigned URL");
-			}
+				const presignedResponse = await fetch("/api/s3/annotations", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						fileName: "annotation.svg",
+						contentType: "image/svg+xml",
+						size: svgBlob.size,
+						projectId: screenshotMetadata.projectId,
+					}),
+				});
 
-			const { preSignedUrl, key } = await presignedResponse.json();
+				if (!presignedResponse.ok) {
+					toast.error(
+						presignedResponse.status === 400
+							? "Screenshot too large to upload — try annotating a smaller area."
+							: "Couldn't start the upload. Please try again.",
+					);
+					return;
+				}
 
-			const uploadResponse = await fetch(preSignedUrl, {
-				method: "PUT",
-				body: svgBlob, // ← Your blob goes here!
-				headers: {
-					"Content-Type": "image/svg+xml",
-				},
-			});
+				const { preSignedUrl, key } = await presignedResponse.json();
 
-			if (!uploadResponse.ok) {
-				throw new Error("Upload to S3 failed");
-			}
-
-			if (!screenshotMetadata.url || !screenshotMetadata.projectId) {
-				return;
-			}
-
-			if (!session?.user.id) {
-				return;
-			}
-
-			const { data: result, error } = await tryCatch(
-				submitFeedbackForm(
-					screenshotMetadata.url,
-					session?.user.id,
-					data,
-					screenshotMetadata.projectId,
-					key,
-					screenshotMetadata.viewport,
-					screenshotMetadata.timestamp,
-					screenshotMetadata.browserInfo,
-				),
-			);
-
-			if (error) {
-				console.error(error);
-				window.parent.postMessage(
-					{
-						type: "An unexpected error occurred. Please try again.",
+				const uploadResponse = await fetch(preSignedUrl, {
+					method: "PUT",
+					body: svgBlob,
+					headers: {
+						"Content-Type": "image/svg+xml",
 					},
-					"*",
-				);
-				return;
-			}
+				});
 
-			if (result.status === "success") {
-				window.parent.postMessage({ type: "CLOSE_FORM" }, "*");
-				form.reset();
-			} else if (result.status === "error") {
-				console.error(result.message);
-				window.parent.postMessage(
-					{
-						type: result.message,
-					},
-					"*",
+				if (!uploadResponse.ok) {
+					toast.error("Upload failed. Please try again.");
+					return;
+				}
+
+				const { data: result, error } = await tryCatch(
+					submitFeedbackForm(
+						screenshotMetadata.url,
+						data,
+						screenshotMetadata.projectId,
+						key,
+						screenshotMetadata.viewport,
+						screenshotMetadata.timestamp,
+						screenshotMetadata.browserInfo,
+					),
 				);
+
+				if (error) {
+					console.error(error);
+					toast.error("An unexpected error occurred. Please try again.");
+					return;
+				}
+
+				if (result.status === "success") {
+					// Show the success view (with confetti) instead of closing
+					// immediately — closeAndReset runs on Done or auto-close.
+					setSubmitted(true);
+					triggerConfetti();
+				} else {
+					console.error(result.message);
+					toast.error(result.message);
+				}
+			} catch (err) {
+				console.error(err);
+				toast.error("Something went wrong submitting your feedback.");
 			}
 		});
 	}
@@ -255,6 +280,17 @@ const ReviseoModal = () => {
 		}
 	}, [open]);
 
+	// Auto-close a few seconds after a successful submit (cleared if the
+	// user closes manually first — closeAndReset flips `submitted`).
+	useEffect(() => {
+		if (!submitted) return;
+		const timer = window.setTimeout(() => {
+			closeAndReset();
+		}, 5000);
+		return () => window.clearTimeout(timer);
+		// biome-ignore lint/correctness/useExhaustiveDependencies: closeAndReset is stable enough for this effect
+	}, [submitted]);
+
 	// Listen for SHOW_MODAL message and request data only when opening
 	useEffect(() => {
 		const handleMessage = (event: MessageEvent) => {
@@ -262,6 +298,7 @@ const ReviseoModal = () => {
 				case "SHOW_MODAL":
 					// Modal is being shown, request fresh data
 					setOpen(true);
+					setSubmitted(false);
 					window.parent.postMessage({ type: "REQUEST_PAGE_DATA" }, "*");
 					window.parent.postMessage({ type: "REQUEST_PAGE_SCREENSHOT" }, "*");
 					setLoading(true);
@@ -292,324 +329,380 @@ const ReviseoModal = () => {
 	return (
 		<Fragment>
 			{session?.user && (
-				<Dialog modal={false} open={open} onOpenChange={setOpen}>
+				<Dialog
+					modal={false}
+					open={open}
+					onOpenChange={(o) => {
+						if (!o) closeAndReset();
+					}}
+				>
 					<DialogContent
 						onEscapeKeyDown={(e) => e.preventDefault()}
 						className="overflow-y-scroll bg-card transition-all duration-500 ease-in-out"
 						variant={"fullscreen"}
 					>
-						<DialogTitle>Submit Feedback</DialogTitle>
-						<DialogDescription>
-							Draw on the screenshot to show the developer(s) what you'd like
-							changed, then provide details about your feedback.
-						</DialogDescription>
-						{/* Mobile Stepper - Only visible on small screens */}
-						<div className="mt-3 flex items-center gap-2 md:hidden">
-							<div
-								className={`flex h-8 w-8 items-center justify-center rounded-full font-medium text-sm ${step === "canvas" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
-							>
-								1
-							</div>
-							<ChevronRightIcon className="size-4 text-muted-foreground" />
-							<div
-								className={`flex h-8 w-8 items-center justify-center rounded-full font-medium text-sm ${step === "form" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
-							>
-								2
-							</div>
-							<span className="ml-2 font-medium text-sm">
-								{step === "canvas" ? "Annotate" : "Details"}
-							</span>
-						</div>
-
-						{/* Main Content Layout */}
-						<div className="mt-3 flex h-full flex-col gap-3 md:flex-row">
-							{/* Canvas - Always visible on desktop, conditional on mobile */}
-							<div
-								className={`min-h-0 flex-1 rounded-2xl border border-border ${step === "form" ? "hidden md:flex" : "flex"}`}
-							>
-								<ExCanvas
-									initialData={initialData}
-									setInitialData={setInitialData}
-									// excalidrawApi={excalidrawApi}
-									setExcalidrawApi={setExcalidrawApi}
-									imageUrl={screenshotMetadata.image}
-									pending={loading || isPending}
-									sceneData={sceneData}
-									// setElements={setElements}
-									// setAppState={setAppState}
-									// setFiles={setFiles}
-								/>
-							</div>
-
-							{/* Form - Side panel on desktop, full screen on mobile */}
-							<Card
-								className={`flex flex-col md:min-w-sm md:max-w-xs ${step === "canvas" ? "hidden md:flex" : "flex flex-1 overflow-y-scroll"} min-h-0`}
-							>
-								<CardContent className="flex min-h-0 flex-1 flex-col overflow-y-scroll md:overflow-visible">
-									<form
-										className="flex h-full flex-col"
-										onSubmit={form.handleSubmit(onSubmit)}
-										id={formId}
-									>
-										<FieldGroup className="flex min-h-0 flex-1 flex-col gap-4">
-											<Controller
-												name="title"
-												control={form.control}
-												render={({ field, fieldState }) => (
-													<Field data-invalid={fieldState.invalid}>
-														<div className="flex items-center justify-between">
-															<FieldLabel htmlFor={titleId}>Title</FieldLabel>
-															<span className="text-muted-foreground text-xs">
-																{titleValue?.length || 0}/800
-															</span>
-														</div>
-														<Input
-															{...field}
-															id={titleId}
-															disabled={loading || isPending}
-															aria-invalid={fieldState.invalid}
-															placeholder="e.g., Make the header bigger"
-															autoComplete="off"
-														/>
-														{fieldState.invalid && (
-															<FieldError errors={[fieldState.error]} />
-														)}
-													</Field>
-												)}
-											/>
-											<Controller
-												name="description"
-												control={form.control}
-												render={({ field, fieldState }) => (
-													<Field
-														className="flex min-h-0 flex-1 flex-col"
-														data-invalid={fieldState.invalid}
-													>
-														<div className="flex items-center justify-between">
-															<FieldLabel htmlFor={descriptionId}>
-																Details (optional)
-															</FieldLabel>
-															<span className="text-muted-foreground text-xs">
-																{descriptionValue?.length || 0}/6000
-															</span>
-														</div>
-														<Textarea
-															disabled={loading || isPending}
-															{...field}
-															id={descriptionId}
-															aria-invalid={fieldState.invalid}
-															placeholder="Add any extra context or notes..."
-															autoComplete="off"
-															className="flex-1 resize-none"
-														/>
-														{<FieldError errors={[fieldState.error]} />}
-													</Field>
-												)}
-											/>
-											<div className="grid grid-cols-1 gap-3 md:grid-cols-2">
-												<Controller
-													name="priority"
-													control={form.control}
-													render={({ field, fieldState }) => (
-														<Field data-invalid={fieldState.invalid}>
-															<FieldLabel htmlFor={priorityId}>
-																Priority
-															</FieldLabel>
-															<Select
-																disabled={isPending || loading}
-																value={field.value}
-																onValueChange={field.onChange}
-															>
-																<SelectTrigger
-																	id={priorityId}
-																	aria-invalid={fieldState.invalid}
-																	className="w-full"
-																>
-																	<SelectValue placeholder="Select priority" />
-																</SelectTrigger>
-																<SelectContent>
-																	{Object.entries(PRIORITY_CONFIG).map(
-																		([key, config]) => {
-																			const Icon = config.icon;
-																			return (
-																				<SelectItem key={key} value={key}>
-																					<div className="flex items-center gap-2">
-																						<Icon
-																							className={`size-4 ${config.color}`}
-																						/>
-																						<span>{config.label}</span>
-																					</div>
-																				</SelectItem>
-																			);
-																		},
-																	)}
-																</SelectContent>
-															</Select>
-															{fieldState.invalid && (
-																<FieldError errors={[fieldState.error]} />
-															)}
-														</Field>
-													)}
-												/>
-												<Controller
-													name="type"
-													control={form.control}
-													render={({ field, fieldState }) => (
-														<Field data-invalid={fieldState.invalid}>
-															<FieldLabel htmlFor={typeId}>Type</FieldLabel>
-															<Select
-																disabled={isPending || loading}
-																value={field.value}
-																onValueChange={field.onChange}
-															>
-																<SelectTrigger
-																	id={typeId}
-																	aria-invalid={fieldState.invalid}
-																	className="w-full"
-																>
-																	<SelectValue placeholder="Select type" />
-																</SelectTrigger>
-																<SelectContent>
-																	{Object.entries(TYPE_CONFIG).map(
-																		([key, config]) => {
-																			const Icon = config.icon;
-																			return (
-																				<SelectItem key={key} value={key}>
-																					<div className="flex items-center gap-2">
-																						<Icon
-																							className={`size-4 ${config.color}`}
-																						/>
-																						<span>{config.label}</span>
-																					</div>
-																				</SelectItem>
-																			);
-																		},
-																	)}
-																</SelectContent>
-															</Select>
-															{fieldState.invalid && (
-																<FieldError errors={[fieldState.error]} />
-															)}
-														</Field>
-													)}
-												/>
-											</div>
-										</FieldGroup>
-										<div className="mt-4 flex flex-col gap-2">
-											{/* Mobile: Back button when on form step */}
-											{step === "form" && (
-												<Button
-													disabled={loading || isPending}
-													type="button"
-													variant="outline"
-													onClick={() => setStep("canvas")}
-													className="w-full md:hidden"
-												>
-													<ArrowLeftIcon className="mr-2 size-4" />
-													Back to Canvas
-												</Button>
-											)}
-											{/* Desktop: Close button, Mobile: conditional */}
-											<DialogClose asChild>
-												<Button
-													disabled={loading || isPending}
-													type="button"
-													variant="outline"
-													// className={step === "canvas" ? "hidden" : ""}
-													onClick={() => setOpen(false)}
-												>
-													Close
-												</Button>
-											</DialogClose>
-											<Button
-												disabled={loading || isPending}
-												type="submit"
-												form={formId}
-											>
-												Submit feedback
-											</Button>
-										</div>
-									</form>
-								</CardContent>
-							</Card>
-						</div>
-
-						{/* Mobile: Continue button when on canvas step */}
-						{step === "canvas" && (
-							<Button
-								disabled={loading || isPending}
-								onClick={() => setStep("form")}
-								className="mt-3 w-full md:hidden"
-								size="lg"
-							>
-								Continue to Details
-								<ChevronRightIcon className="ml-2 size-4" />
-							</Button>
-						)}
-
-						<DialogFooter className="flex-col gap-3 border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
-							{/* Screenshot Metadata */}
-							<div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
-								<div className="flex min-w-fit items-center gap-1.5">
-									<ClockIcon className="size-3.5 text-muted-foreground" />
+						{submitted ? (
+							<div className="flex h-full flex-col items-center justify-center gap-6 text-center">
+								<DialogTitle className="sr-only">
+									Feedback Submitted
+								</DialogTitle>
+								<DialogDescription className="sr-only">
+									Your feedback was submitted successfully.
+								</DialogDescription>
+								<motion.div
+									initial={{ scale: 0, rotate: -30 }}
+									animate={{ scale: 1, rotate: 0 }}
+									transition={{ type: "spring", stiffness: 260, damping: 16 }}
+									className="flex size-20 items-center justify-center rounded-full bg-emerald-500/10"
+								>
+									<CheckCircle2Icon className="size-11 text-emerald-500" />
+								</motion.div>
+								<motion.div
+									initial={{ opacity: 0, y: 8 }}
+									animate={{ opacity: 1, y: 0 }}
+									transition={{ delay: 0.15 }}
+									className="flex flex-col gap-2"
+								>
+									<h2 className="font-bold font-caudex text-3xl">
+										Feedback sent!
+									</h2>
+									<p className="max-w-sm text-muted-foreground">
+										The team has been notified and will review your feedback
+										shortly. Thanks for helping make this site better.
+									</p>
+								</motion.div>
+								<motion.div
+									initial={{ opacity: 0 }}
+									animate={{ opacity: 1 }}
+									transition={{ delay: 0.3 }}
+									className="flex flex-col items-center gap-2"
+								>
+									<Button size="lg" onClick={closeAndReset}>
+										Done
+									</Button>
 									<span className="text-muted-foreground text-xs">
-										{formatDate(screenshotMetadata.timestamp)} at{" "}
-										{formatTime(screenshotMetadata.timestamp)}
+										Closing automatically in a few seconds…
+									</span>
+								</motion.div>
+							</div>
+						) : (
+							<>
+								<DialogTitle>Submit Feedback</DialogTitle>
+								<DialogDescription>
+									Draw on the screenshot to show the developer(s) what you'd
+									like changed, then provide details about your feedback.
+								</DialogDescription>
+								{/* Mobile Stepper - Only visible on small screens */}
+								<div className="mt-3 flex items-center gap-2 md:hidden">
+									<div
+										className={`flex h-8 w-8 items-center justify-center rounded-full font-medium text-sm ${step === "canvas" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+									>
+										1
+									</div>
+									<ChevronRightIcon className="size-4 text-muted-foreground" />
+									<div
+										className={`flex h-8 w-8 items-center justify-center rounded-full font-medium text-sm ${step === "form" ? "bg-primary text-primary-foreground" : "bg-muted text-muted-foreground"}`}
+									>
+										2
+									</div>
+									<span className="ml-2 font-medium text-sm">
+										{step === "canvas" ? "Annotate" : "Details"}
 									</span>
 								</div>
-								<div className="flex max-w-3xs items-center gap-1.5">
-									<GlobeIcon className="size-3.5 text-muted-foreground" />
-									{screenshotMetadata.url ? (
-										<span
-											className="truncate text-muted-foreground text-xs"
-											title={screenshotMetadata.url}
-										>
-											{getUrlPath(screenshotMetadata.url)}
-										</span>
-									) : (
-										<span className="truncate text-muted-foreground text-xs">
-											No URL Data
-										</span>
-									)}
-								</div>
-								<div className="flex max-w-3xs items-center gap-1.5">
-									<Grid2X2 className="size-3.5 text-muted-foreground" />
-									{screenshotMetadata.viewport ? (
-										<span
-											className="truncate text-muted-foreground text-xs"
-											title={screenshotMetadata.viewport}
-										>
-											{getUrlPath(screenshotMetadata.viewport)}
-										</span>
-									) : (
-										<span className="truncate text-muted-foreground text-xs">
-											No Viewport Data
-										</span>
-									)}
-								</div>
-							</div>
-							{/* Reviseo Branding */}
-							<div className="flex items-center gap-1.5">
-								<Image
-									src="/logo.svg"
-									loading="eager"
-									alt="Reviseo Logo"
-									width={16}
-									height={16}
-								/>
-								<span className="text-muted-foreground text-xs">
-									Powered by{" "}
-									<Link
-										href="https://reviseo.app"
-										target="_blank"
-										rel="noopener noreferrer"
-										className="font-medium text-foreground hover:underline"
+
+								{/* Main Content Layout */}
+								<div className="mt-3 flex h-full flex-col gap-3 md:flex-row">
+									{/* Canvas - Always visible on desktop, conditional on mobile */}
+									<div
+										className={`min-h-0 flex-1 rounded-2xl border border-border ${step === "form" ? "hidden md:flex" : "flex"}`}
 									>
-										Reviseo
-									</Link>
-								</span>
-							</div>
-						</DialogFooter>
+										<ExCanvas
+											initialData={initialData}
+											setInitialData={setInitialData}
+											// excalidrawApi={excalidrawApi}
+											setExcalidrawApi={setExcalidrawApi}
+											imageUrl={screenshotMetadata.image}
+											pending={loading || isPending}
+											sceneData={sceneData}
+											// setElements={setElements}
+											// setAppState={setAppState}
+											// setFiles={setFiles}
+										/>
+									</div>
+
+									{/* Form - Side panel on desktop, full screen on mobile */}
+									<Card
+										className={`flex flex-col md:min-w-sm md:max-w-xs ${step === "canvas" ? "hidden md:flex" : "flex flex-1 overflow-y-scroll"} min-h-0`}
+									>
+										<CardContent className="flex min-h-0 flex-1 flex-col overflow-y-scroll md:overflow-visible">
+											<form
+												className="flex h-full flex-col"
+												onSubmit={form.handleSubmit(onSubmit)}
+												id={formId}
+											>
+												<FieldGroup className="flex min-h-0 flex-1 flex-col gap-4">
+													<Controller
+														name="title"
+														control={form.control}
+														render={({ field, fieldState }) => (
+															<Field data-invalid={fieldState.invalid}>
+																<div className="flex items-center justify-between">
+																	<FieldLabel htmlFor={titleId}>
+																		Title
+																	</FieldLabel>
+																	<span className="text-muted-foreground text-xs">
+																		{titleValue?.length || 0}/800
+																	</span>
+																</div>
+																<Input
+																	{...field}
+																	id={titleId}
+																	disabled={loading || isPending}
+																	aria-invalid={fieldState.invalid}
+																	placeholder="e.g., Make the header bigger"
+																	autoComplete="off"
+																/>
+																{fieldState.invalid && (
+																	<FieldError errors={[fieldState.error]} />
+																)}
+															</Field>
+														)}
+													/>
+													<Controller
+														name="description"
+														control={form.control}
+														render={({ field, fieldState }) => (
+															<Field
+																className="flex min-h-0 flex-1 flex-col"
+																data-invalid={fieldState.invalid}
+															>
+																<div className="flex items-center justify-between">
+																	<FieldLabel htmlFor={descriptionId}>
+																		Details (optional)
+																	</FieldLabel>
+																	<span className="text-muted-foreground text-xs">
+																		{descriptionValue?.length || 0}/6000
+																	</span>
+																</div>
+																<Textarea
+																	disabled={loading || isPending}
+																	{...field}
+																	id={descriptionId}
+																	aria-invalid={fieldState.invalid}
+																	placeholder="Add any extra context or notes..."
+																	autoComplete="off"
+																	className="flex-1 resize-none"
+																/>
+																{<FieldError errors={[fieldState.error]} />}
+															</Field>
+														)}
+													/>
+													<div className="grid grid-cols-1 gap-3 md:grid-cols-2">
+														<Controller
+															name="priority"
+															control={form.control}
+															render={({ field, fieldState }) => (
+																<Field data-invalid={fieldState.invalid}>
+																	<FieldLabel htmlFor={priorityId}>
+																		Priority
+																	</FieldLabel>
+																	<Select
+																		disabled={isPending || loading}
+																		value={field.value}
+																		onValueChange={field.onChange}
+																	>
+																		<SelectTrigger
+																			id={priorityId}
+																			aria-invalid={fieldState.invalid}
+																			className="w-full"
+																		>
+																			<SelectValue placeholder="Select priority" />
+																		</SelectTrigger>
+																		<SelectContent>
+																			{Object.entries(PRIORITY_CONFIG).map(
+																				([key, config]) => {
+																					const Icon = config.icon;
+																					return (
+																						<SelectItem key={key} value={key}>
+																							<div className="flex items-center gap-2">
+																								<Icon
+																									className={`size-4 ${config.color}`}
+																								/>
+																								<span>{config.label}</span>
+																							</div>
+																						</SelectItem>
+																					);
+																				},
+																			)}
+																		</SelectContent>
+																	</Select>
+																	{fieldState.invalid && (
+																		<FieldError errors={[fieldState.error]} />
+																	)}
+																</Field>
+															)}
+														/>
+														<Controller
+															name="type"
+															control={form.control}
+															render={({ field, fieldState }) => (
+																<Field data-invalid={fieldState.invalid}>
+																	<FieldLabel htmlFor={typeId}>Type</FieldLabel>
+																	<Select
+																		disabled={isPending || loading}
+																		value={field.value}
+																		onValueChange={field.onChange}
+																	>
+																		<SelectTrigger
+																			id={typeId}
+																			aria-invalid={fieldState.invalid}
+																			className="w-full"
+																		>
+																			<SelectValue placeholder="Select type" />
+																		</SelectTrigger>
+																		<SelectContent>
+																			{Object.entries(TYPE_CONFIG).map(
+																				([key, config]) => {
+																					const Icon = config.icon;
+																					return (
+																						<SelectItem key={key} value={key}>
+																							<div className="flex items-center gap-2">
+																								<Icon
+																									className={`size-4 ${config.color}`}
+																								/>
+																								<span>{config.label}</span>
+																							</div>
+																						</SelectItem>
+																					);
+																				},
+																			)}
+																		</SelectContent>
+																	</Select>
+																	{fieldState.invalid && (
+																		<FieldError errors={[fieldState.error]} />
+																	)}
+																</Field>
+															)}
+														/>
+													</div>
+												</FieldGroup>
+												<div className="mt-4 flex flex-col gap-2">
+													{/* Mobile: Back button when on form step */}
+													{step === "form" && (
+														<Button
+															disabled={loading || isPending}
+															type="button"
+															variant="outline"
+															onClick={() => setStep("canvas")}
+															className="w-full md:hidden"
+														>
+															<ArrowLeftIcon className="mr-2 size-4" />
+															Back to Canvas
+														</Button>
+													)}
+													{/* Desktop: Close button, Mobile: conditional */}
+													<DialogClose asChild>
+														<Button
+															disabled={loading || isPending}
+															type="button"
+															variant="outline"
+															// className={step === "canvas" ? "hidden" : ""}
+															onClick={() => setOpen(false)}
+														>
+															Close
+														</Button>
+													</DialogClose>
+													<Button
+														disabled={loading || isPending}
+														type="submit"
+														form={formId}
+													>
+														Submit feedback
+													</Button>
+												</div>
+											</form>
+										</CardContent>
+									</Card>
+								</div>
+
+								{/* Mobile: Continue button when on canvas step */}
+								{step === "canvas" && (
+									<Button
+										disabled={loading || isPending}
+										onClick={() => setStep("form")}
+										className="mt-3 w-full md:hidden"
+										size="lg"
+									>
+										Continue to Details
+										<ChevronRightIcon className="ml-2 size-4" />
+									</Button>
+								)}
+
+								<DialogFooter className="flex-col gap-3 border-border pt-4 sm:flex-row sm:items-center sm:justify-between">
+									{/* Screenshot Metadata */}
+									<div className="flex flex-col gap-2 sm:flex-row sm:gap-4">
+										<div className="flex min-w-fit items-center gap-1.5">
+											<ClockIcon className="size-3.5 text-muted-foreground" />
+											<span className="text-muted-foreground text-xs">
+												{formatDate(screenshotMetadata.timestamp)} at{" "}
+												{formatTime(screenshotMetadata.timestamp)}
+											</span>
+										</div>
+										<div className="flex max-w-3xs items-center gap-1.5">
+											<GlobeIcon className="size-3.5 text-muted-foreground" />
+											{screenshotMetadata.url ? (
+												<span
+													className="truncate text-muted-foreground text-xs"
+													title={screenshotMetadata.url}
+												>
+													{getUrlPath(screenshotMetadata.url)}
+												</span>
+											) : (
+												<span className="truncate text-muted-foreground text-xs">
+													No URL Data
+												</span>
+											)}
+										</div>
+										<div className="flex max-w-3xs items-center gap-1.5">
+											<Grid2X2 className="size-3.5 text-muted-foreground" />
+											{screenshotMetadata.viewport ? (
+												<span
+													className="truncate text-muted-foreground text-xs"
+													title={screenshotMetadata.viewport}
+												>
+													{getUrlPath(screenshotMetadata.viewport)}
+												</span>
+											) : (
+												<span className="truncate text-muted-foreground text-xs">
+													No Viewport Data
+												</span>
+											)}
+										</div>
+									</div>
+									{/* Reviseo Branding */}
+									<div className="flex items-center gap-1.5">
+										<Image
+											src="/logo.svg"
+											loading="eager"
+											alt="Reviseo Logo"
+											width={16}
+											height={16}
+										/>
+										<span className="text-muted-foreground text-xs">
+											Powered by{" "}
+											<Link
+												href="https://reviseo.app"
+												target="_blank"
+												rel="noopener noreferrer"
+												className="font-medium text-foreground hover:underline"
+											>
+												Reviseo
+											</Link>
+										</span>
+									</div>
+								</DialogFooter>
+							</>
+						)}
 					</DialogContent>
 				</Dialog>
 			)}
