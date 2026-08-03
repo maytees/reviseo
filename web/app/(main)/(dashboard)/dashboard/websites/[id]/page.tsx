@@ -70,8 +70,8 @@ const WebsitePage = async ({
 							size={"sm"}
 							className="text-muted-foreground text-xs"
 						>
-							{moment(website.verifiedAt).fromNow()
-								? moment(website.verifiedAt).fromNow()
+							{website.verifiedAt
+								? `Verified ${moment(website.verifiedAt).fromNow()}`
 								: "Not Verified"}
 						</Badge>
 						<VerifyInstallation

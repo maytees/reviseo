@@ -7,15 +7,19 @@ import { FinalCTA } from "@/components/landing/FinalCTA";
 import { Footer } from "@/components/landing/Footer";
 import Hero from "@/components/landing/Hero";
 import { HowItWorks } from "@/components/landing/HowItWorks";
-import { Navbar } from "@/components/landing/Navbar";
 import Noise from "@/components/landing/Noise";
 import Problems from "@/components/landing/Problems";
 import UsedWith from "@/components/landing/UsedBy";
 import { ShootingStars } from "@/components/ui/shadcn-io/shooting-stars";
 
+// NOTE: these sections are intentionally NOT code-split with next/dynamic —
+// lazy boundaries shift React's useId counter between server and client,
+// causing hydration mismatches in the accordion/SVG ids below the fold.
+
 export default function Home() {
 	return (
 		<div className="relative min-h-screen min-h-scren w-full overflow-x-hidden">
+			{/* Two star layers (was six — each is its own rAF animation loop) */}
 			<ShootingStars
 				starColor="#9E00FF"
 				className="-z-30"
@@ -27,36 +31,8 @@ export default function Home() {
 				starColor="#FF0099"
 				className="-z-30"
 				trailColor="#FFB800"
-				minDelay={500}
+				minDelay={800}
 				maxDelay={4000}
-			/>
-			<ShootingStars
-				starColor="#00FF9E"
-				className="-z-30"
-				trailColor="#00B8FF"
-				minDelay={200}
-				maxDelay={3500}
-			/>
-			<ShootingStars
-				starColor="#FF6B35"
-				className="-z-30"
-				trailColor="#FFC857"
-				minDelay={600}
-				maxDelay={3200}
-			/>
-			<ShootingStars
-				starColor="#7B2CBF"
-				className="-z-30"
-				trailColor="#C77DFF"
-				minDelay={300}
-				maxDelay={4200}
-			/>
-			<ShootingStars
-				starColor="#06FFA5"
-				className="-z-30"
-				trailColor="#00D9FF"
-				minDelay={450}
-				maxDelay={3800}
 			/>
 			{/* Hero Section Gradient */}
 			<motion.div
@@ -102,7 +78,9 @@ export default function Home() {
 					patternSize={250}
 					patternScaleX={1}
 					patternScaleY={1}
-					patternRefreshInterval={2}
+					// Repaint every 8 frames instead of 2 — indistinguishable
+					// visually, ~4x less canvas churn.
+					patternRefreshInterval={8}
 					patternAlpha={13}
 				/>
 			</motion.div>

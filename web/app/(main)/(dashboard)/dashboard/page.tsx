@@ -31,9 +31,14 @@ export default async function DashboardPage() {
 
 	if (!userData) return notFound();
 
-	// Aggregate all feedback from developer's websites
-	const allFeedback = userData.developerWebsites.flatMap(
-		(website) => website.feedback,
+	// Recent feedback (each website contributes its latest entries)
+	const allFeedback = userData.developerWebsites
+		.flatMap((website) => website.feedback)
+		.sort((a, b) => b.createdAt.getTime() - a.createdAt.getTime());
+	// True total from counts, not loaded rows
+	const totalFeedback = userData.developerWebsites.reduce(
+		(acc, website) => acc + website._count.feedback,
+		0,
 	);
 
 	// if (userData.subscription?.status !== "active") return redirect("/pricing");
@@ -43,7 +48,7 @@ export default async function DashboardPage() {
 			<div className="flex flex-col gap-0.5">
 				<div className="flex items-center justify-between">
 					<h1 className="font-bold font-caudex text-3xl">
-						Welcome, {userData.name}
+						{userData.name ? `Welcome, ${userData.name}` : "Welcome back"}
 					</h1>
 				</div>
 				<div className="flex-1">
@@ -98,9 +103,7 @@ export default async function DashboardPage() {
 								</CardTitle>
 							</CardHeader>
 							<CardContent>
-								<div className="font-bold text-3xl">
-									{allFeedback.length || "0"}
-								</div>
+								<div className="font-bold text-3xl">{totalFeedback}</div>
 							</CardContent>
 						</Card>
 					</div>

@@ -3,7 +3,7 @@
 import { motion } from "framer-motion";
 import { Check, Sparkles, Zap } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch, SwitchIndicator, SwitchWrapper } from "@/components/ui/switch";
@@ -103,7 +103,16 @@ export function Pricing({
 }) {
 	const [billingPeriod, setBillingPeriod] = useState<BillingPeriod>("monthly");
 	const router = useRouter();
-	const { data: session, isPending } = authClient.useSession();
+	const { data: session, isPending: sessionPending } = authClient.useSession();
+
+	// Hydration guard: useSession resolves client-side only, so its pending
+	// state can differ between the server HTML and the first client render.
+	// Treat the session as pending until after mount so both renders match.
+	const [hydrated, setHydrated] = useState(false);
+	useEffect(() => {
+		setHydrated(true);
+	}, []);
+	const isPending = !hydrated || sessionPending;
 
 	// Helper function to determine button state for each plan
 	const getButtonConfig = (planSlug: string) => {
@@ -201,7 +210,7 @@ export function Pricing({
 				<span
 					className={`font-inter text-sm transition-colors ${
 						billingPeriod === "monthly"
-							? "text-foreground font-medium"
+							? "font-medium text-foreground"
 							: "text-muted-foreground"
 					}`}
 				>
@@ -222,7 +231,7 @@ export function Pricing({
 				<span
 					className={`font-inter text-sm transition-colors ${
 						billingPeriod === "yearly"
-							? "text-foreground font-medium"
+							? "font-medium text-foreground"
 							: "text-muted-foreground"
 					}`}
 				>
