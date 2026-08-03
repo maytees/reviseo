@@ -16,7 +16,9 @@ const prisma = new PrismaClient({ adapter });
 async function main() {
 	const users = await prisma.user.findMany({
 		where: {
-			role: { not: "client" },
+			// Everyone except feedback clients — including legacy rows where
+			// role is NULL (Prisma's `not:` filter would silently skip those).
+			OR: [{ role: null }, { role: { not: "client" } }],
 			members: { none: {} },
 		},
 		select: { id: true, name: true, email: true },
