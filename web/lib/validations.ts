@@ -55,6 +55,33 @@ export const textEditsSubmissionSchema = z.object({
 		.max(30, "Too many edits in one batch — submit and start a new one"),
 });
 
+// Style-edit tool (widget): one batch of suggested style changes.
+export const styleChangeSchema = z.object({
+	// Longhand kebab-case CSS property, e.g. "font-size"
+	property: z
+		.string()
+		.min(1)
+		.max(40)
+		.regex(/^[a-z-]+$/),
+	before: z.string().max(200),
+	after: z.string().min(1).max(200),
+});
+
+export const styleEditItemSchema = z.object({
+	selector: z.string().min(1).max(1000),
+	elementTag: z.string().max(50).optional(),
+	pageUrl: z.string().url().max(2000),
+	changes: z.array(styleChangeSchema).min(1).max(20),
+});
+
+export const styleEditsSubmissionSchema = z.object({
+	note: z.string().max(6000).optional(),
+	edits: z
+		.array(styleEditItemSchema)
+		.min(1, "No style changes to submit")
+		.max(30, "Too many changes in one batch — submit and start a new one"),
+});
+
 // Waitlist form
 export const waitlistSchema = z.object({
 	email: z.email(),
@@ -66,3 +93,6 @@ export type FeedbackFormData = z.infer<typeof feedbackFormSchema>;
 export type WaitlistFormData = z.infer<typeof waitlistSchema>;
 export type TextEditItem = z.infer<typeof textEditItemSchema>;
 export type TextEditsSubmission = z.infer<typeof textEditsSubmissionSchema>;
+export type StyleChange = z.infer<typeof styleChangeSchema>;
+export type StyleEditItem = z.infer<typeof styleEditItemSchema>;
+export type StyleEditsSubmission = z.infer<typeof styleEditsSubmissionSchema>;

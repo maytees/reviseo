@@ -49,6 +49,17 @@ export const feedbackSelect = {
 		},
 		orderBy: { createdAt: "asc" as const },
 	},
+	styleEdits: {
+		select: {
+			id: true,
+			selector: true,
+			elementTag: true,
+			pageUrl: true,
+			changes: true,
+			status: true,
+		},
+		orderBy: { createdAt: "asc" as const },
+	},
 } satisfies Prisma.FeedbackSelect;
 
 export const websiteSelect = {

@@ -4,6 +4,7 @@ import type { ColumnDef } from "@tanstack/react-table";
 import {
 	ArrowUpDown,
 	MoreHorizontal,
+	PaletteIcon,
 	TextCursorInputIcon,
 	Trash,
 } from "lucide-react";
@@ -48,8 +49,12 @@ export const columns: ColumnDef<Feedback>[] = [
 				<div onClick={(e) => e.stopPropagation()}>
 					{screenshotKey ? (
 						<ScreenshotPreview app_url={""} screenshotKey={screenshotKey} />
+					) : row.original.type === "STYLE_EDIT" ? (
+						// Edit-tool feedback has no screenshot — themed tile instead.
+						<div className="flex aspect-video h-auto w-full items-center justify-center rounded bg-fuchsia-500/10 lg:w-20">
+							<PaletteIcon className="size-5 text-fuchsia-500" />
+						</div>
 					) : (
-						// TEXT_EDIT feedback has no screenshot — themed tile instead.
 						<div className="flex aspect-video h-auto w-full items-center justify-center rounded bg-violet-500/10 lg:w-20">
 							<TextCursorInputIcon className="size-5 text-violet-500" />
 						</div>

@@ -87,6 +87,44 @@ export async function updateTextEditStatus(
 	}
 }
 
+/** Mark one suggested style change applied/rejected/pending. Org-scoped. */
+export async function updateStyleEditStatus(
+	styleEditId: string,
+	value: TextEditStatus,
+): Promise<ApiResponse> {
+	try {
+		const { organization } = await requireMember();
+
+		const updated = await prisma.styleEdit.updateMany({
+			where: {
+				id: styleEditId,
+				feedback: { website: { organizationId: organization.id } },
+			},
+			data: { status: value },
+		});
+
+		if (updated.count === 0) {
+			return { status: "error", message: "Style change not found" };
+		}
+
+		const edit = await prisma.styleEdit.findUnique({
+			where: { id: styleEditId },
+			select: { feedback: { select: { websiteId: true } } },
+		});
+		if (edit) {
+			revalidatePath(`/dashboard/websites/${edit.feedback.websiteId}`);
+		}
+
+		return { status: "success", message: "Style change status updated" };
+	} catch (e) {
+		console.error("Failed to update style edit status:\n", e);
+		return {
+			status: "error",
+			message: "Failed to update style change status",
+		};
+	}
+}
+
 export async function deleteFeedback(feedbackId: string): Promise<ApiResponse> {
 	try {
 		const feedback = await getAuthorizedFeedback(feedbackId);

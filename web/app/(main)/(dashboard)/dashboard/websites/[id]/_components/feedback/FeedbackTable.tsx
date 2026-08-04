@@ -33,6 +33,8 @@ import { useEffect, useState } from "react";
 import { FaEdgeLegacy, FaMicrosoft } from "react-icons/fa";
 import { SiFirefoxbrowser } from "react-icons/si";
 import type { WebsiteDataTypeNonNullable } from "@/app/data/website/get-website-by-id-and-dev-id";
+import StyleEditList from "@/components/style-edit-list";
+import TextEditList from "@/components/text-edit-list";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -56,7 +58,6 @@ import {
 	TYPE_BADGE_MAP,
 	TYPE_CONFIG,
 } from "@/lib/types";
-import TextEditList from "@/components/text-edit-list";
 import ScreenshotPreview from "../../../../_components/ScreenshotPreview";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
@@ -220,6 +221,21 @@ const FeedbackTable = ({
 									</div>
 								</div>
 								<TextEditList edits={selectedFeedback.textEdits} />
+							</>
+						) : selectedFeedback.type === "STYLE_EDIT" ? (
+							<>
+								<div className="my-2 flex w-full flex-row items-center justify-between">
+									<div>
+										<h2 className="font-semibold text-lg">
+											Suggested Style Changes
+										</h2>
+										<p className="text-muted-foreground text-xs">
+											Review each change, copy it as CSS, then mark it applied
+											or rejected
+										</p>
+									</div>
+								</div>
+								<StyleEditList edits={selectedFeedback.styleEdits} />
 							</>
 						) : (
 							selectedFeedback.screenshotKey && (

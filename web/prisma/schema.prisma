@@ -25,6 +25,7 @@ enum FeedbackType {
   BUG
   IMPROVEMENT
   TEXT_EDIT
+  STYLE_EDIT
 }
 
 // Per-edit lifecycle inside a TEXT_EDIT feedback: the developer marks each
@@ -100,7 +101,8 @@ model Feedback {
   // Optional: TEXT_EDIT feedback has no screenshot.
   screenshotKey String?
 
-  textEdits TextEdit[]
+  textEdits  TextEdit[]
+  styleEdits StyleEdit[]
 
   browser        String?
   browserVersion String?
@@ -130,6 +132,27 @@ model TextEdit {
   originalText  String
   suggestedText String
   pageUrl       String
+
+  status TextEditStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+
+  @@index([feedbackId])
+}
+
+// One element's suggested style changes from the widget's style-edit tool.
+// A STYLE_EDIT feedback groups the batch a client submitted in one session.
+model StyleEdit {
+  id         String   @id @default(cuid())
+  feedbackId String
+  feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+
+  selector   String
+  elementTag String?
+  pageUrl    String
+
+  // [{ property, before, after }] — longhand CSS properties only
+  changes Json
 
   status TextEditStatus @default(PENDING)
 

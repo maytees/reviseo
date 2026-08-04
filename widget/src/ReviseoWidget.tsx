@@ -1,6 +1,8 @@
 import { snapdom } from "@zumer/snapdom";
 import { useEffect, useRef } from "preact/hooks";
+import { readStoredRecords } from "./edit-shared";
 import { useUserAgent } from "./hooks/useBrowserInfo";
+import { STYLE_EDITS_STORAGE_KEY, StyleEditEngine } from "./style-edit";
 import { TEXT_EDITS_STORAGE_KEY, TextEditEngine } from "./text-edit";
 
 /** Remove all HTML comments (prevents invalid XML like "--") */
@@ -196,13 +198,14 @@ const WIDGET_ORIGIN =
 
 const CLIENT_HINT_KEY = "__reviseo_client";
 const CLIENT_HINT_FRAGMENT = "reviseo-connect";
-// First-party flag: this browser already saw the text-edit onboarding card.
+// First-party flags: this browser already saw the mode's onboarding card.
 const TEXT_ONBOARDING_KEY = "__reviseo_text_onboarding";
+const STYLE_ONBOARDING_KEY = "__reviseo_style_onboarding";
 
 // Trigger iframe sizes: collapsed = just the round button; expanded = room
 // for the speed-dial circles and their tooltips.
 const TRIGGER_COLLAPSED = { width: "64px", height: "64px" };
-const TRIGGER_EXPANDED = { width: "240px", height: "240px" };
+const TRIGGER_EXPANDED = { width: "260px", height: "300px" };
 
 /**
  * Client hint: invite emails and the client dashboard link to the customer
@@ -243,6 +246,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 	browserInfoRef.current = browserInfo;
 
 	const textEngineRef = useRef<TextEditEngine | null>(null);
+	const styleEngineRef = useRef<StyleEditEngine | null>(null);
 
 	useEffect(() => {
 		// Health check timeout (generous: first load may compile/hydrate slowly)
@@ -275,23 +279,27 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 			trigger.style.height = size.height;
 		};
 
-		// Pending (unsubmitted) edit count — drives the red badge on the
-		// trigger button / speed-dial circle.
-		const pendingEditCount = () => {
-			const engine = textEngineRef.current;
-			if (engine) return engine.getEdits().length;
-			try {
-				const raw = sessionStorage.getItem(TEXT_EDITS_STORAGE_KEY);
-				const parsed = raw ? JSON.parse(raw) : [];
-				return Array.isArray(parsed) ? parsed.length : 0;
-			} catch {
-				return 0;
-			}
+		// Pending (unsubmitted) edit counts per mode — drive the red badges on
+		// the trigger button / speed-dial circles.
+		const pendingCounts = () => {
+			const text = textEngineRef.current
+				? textEngineRef.current.getEdits().length
+				: readStoredRecords(TEXT_EDITS_STORAGE_KEY).length;
+			const style = styleEngineRef.current
+				? styleEngineRef.current.getEdits().length
+				: readStoredRecords(STYLE_EDITS_STORAGE_KEY).length;
+			return { text, style, total: text + style };
 		};
 
 		const sendEditCount = () => {
+			const counts = pendingCounts();
 			triggerIframeRef.current?.contentWindow?.postMessage(
-				{ type: "EDIT_COUNT", count: pendingEditCount() },
+				{
+					type: "EDIT_COUNT",
+					count: counts.total,
+					text: counts.text,
+					style: counts.style,
+				},
 				WIDGET_ORIGIN,
 			);
 		};
@@ -305,12 +313,47 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 			modal.contentWindow?.postMessage(message, WIDGET_ORIGIN);
 		};
 
+		const anyModeActive = () =>
+			Boolean(
+				textEngineRef.current?.isActive() || styleEngineRef.current?.isActive(),
+			);
+
+		const startStyleMode = () => {
+			if (!styleEngineRef.current) {
+				styleEngineRef.current = new StyleEditEngine();
+			}
+			const engine = styleEngineRef.current;
+			if (engine.isActive() || anyModeActive()) return;
+
+			if (triggerIframeRef.current) {
+				triggerIframeRef.current.style.display = "none";
+			}
+			setTriggerSize(TRIGGER_COLLAPSED);
+
+			engine.start({
+				onEditsChanged: () => sendEditCount(),
+				onReview: (edits) => {
+					showModal({
+						type: "SHOW_STYLE_REVIEW",
+						edits,
+						url: window.location.href,
+					});
+				},
+				onExit: () => {
+					if (triggerIframeRef.current) {
+						triggerIframeRef.current.style.display = "block";
+					}
+					sendEditCount();
+				},
+			});
+		};
+
 		const startTextMode = () => {
 			if (!textEngineRef.current) {
 				textEngineRef.current = new TextEditEngine();
 			}
 			const engine = textEngineRef.current;
-			if (engine.isActive()) return;
+			if (engine.isActive() || anyModeActive()) return;
 
 			// The banner owns the screen during text mode; the trigger returns
 			// when the mode ends.
@@ -388,6 +431,41 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 					// the page. The modal keeps showing its success view until
 					// it closes itself (CLOSE_FORM).
 					textEngineRef.current?.clearAfterSubmit();
+					sendEditCount();
+					break;
+
+				case "STYLE_MODE_START": {
+					let seen = false;
+					try {
+						seen = localStorage.getItem(STYLE_ONBOARDING_KEY) === "1";
+					} catch {}
+					if (seen) {
+						startStyleMode();
+					} else {
+						showModal({ type: "SHOW_STYLE_GUIDE" });
+					}
+					break;
+				}
+
+				case "STYLE_GUIDE_DONE": {
+					try {
+						localStorage.setItem(STYLE_ONBOARDING_KEY, "1");
+					} catch {}
+					const styleModal = document.getElementById("reviseo-modal");
+					if (styleModal) styleModal.style.display = "none";
+					startStyleMode();
+					break;
+				}
+
+				case "STYLE_EDIT_REMOVED":
+					if (typeof event.data.id === "string") {
+						styleEngineRef.current?.removeEdit(event.data.id);
+						sendEditCount();
+					}
+					break;
+
+				case "STYLE_SUBMITTED":
+					styleEngineRef.current?.clearAfterSubmit();
 					sendEditCount();
 					break;
 
@@ -509,7 +587,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 		// mode's own Esc handling lives in the engine.)
 		const handlePageKeydown = (event: KeyboardEvent) => {
 			if (event.key !== "Escape" || !dialExpanded) return;
-			if (textEngineRef.current?.isActive()) return;
+			if (anyModeActive()) return;
 			triggerIframeRef.current?.contentWindow?.postMessage(
 				{ type: "COLLAPSE_DIAL" },
 				WIDGET_ORIGIN,
@@ -525,6 +603,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 				clearTimeout(healthTimeoutRef.current);
 			}
 			textEngineRef.current?.stop();
+			styleEngineRef.current?.stop();
 			modalIframe.remove();
 		};
 		// Mount-once: modal iframe + listener must not be duplicated.

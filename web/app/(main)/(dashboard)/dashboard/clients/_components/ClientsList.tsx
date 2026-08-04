@@ -50,8 +50,8 @@ export default function ClientsList({ websites }: { websites: Website[] }) {
 							</EmptyMedia>
 							<EmptyTitle>No clients yet</EmptyTitle>
 							<EmptyDescription>
-								Invite a client to one of your websites and they'll appear
-								here once they accept.
+								Invite a client to one of your websites and they'll appear here
+								once they accept.
 							</EmptyDescription>
 						</EmptyHeader>
 					</Empty>

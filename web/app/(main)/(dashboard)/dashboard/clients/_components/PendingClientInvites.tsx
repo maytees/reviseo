@@ -5,11 +5,11 @@ import moment from "moment";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
 import { toast } from "sonner";
-import type { UserDataType } from "@/app/data/user/get-user-data";
 import {
 	resendInvite,
 	revokeInvite,
 } from "@/app/(main)/(dashboard)/dashboard/websites/[id]/_components/client/actions";
+import type { UserDataType } from "@/app/data/user/get-user-data";
 import { Button } from "@/components/ui/button";
 import {
 	Card,

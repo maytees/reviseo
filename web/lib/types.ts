@@ -9,6 +9,7 @@ import {
 	ClockIcon,
 	InboxIcon,
 	type LucideIcon,
+	PaletteIcon,
 	PlayIcon,
 	SparklesIcon,
 	TextCursorInputIcon,
@@ -134,6 +135,11 @@ export const TYPE_CONFIG: Record<
 		icon: TextCursorInputIcon,
 		color: "text-violet-600",
 	},
+	STYLE_EDIT: {
+		label: "Style changes",
+		icon: PaletteIcon,
+		color: "text-fuchsia-600",
+	},
 } as const;
 
 export const STATUS_BADGE_MAP: Record<FeedbackStatus, BadgeVariantsType> = {
@@ -152,6 +158,7 @@ export const TYPE_BADGE_MAP: Record<FeedbackType, BadgeVariantsType> = {
 	BUG: "destructive",
 	IMPROVEMENT: "info",
 	TEXT_EDIT: "primary",
+	STYLE_EDIT: "info2",
 };
 
 export const TEXT_EDIT_STATUS_CONFIG = {
@@ -232,6 +239,17 @@ export type FeedbackSelectAllPayload = Prisma.FeedbackGetPayload<{
 				originalText: true;
 				suggestedText: true;
 				pageUrl: true;
+				status: true;
+			};
+			orderBy: { createdAt: "asc" };
+		};
+		styleEdits: {
+			select: {
+				id: true;
+				selector: true;
+				elementTag: true;
+				pageUrl: true;
+				changes: true;
 				status: true;
 			};
 			orderBy: { createdAt: "asc" };

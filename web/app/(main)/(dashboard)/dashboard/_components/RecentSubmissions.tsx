@@ -1,6 +1,7 @@
 import {
 	Globe,
 	MessageCircle,
+	PaletteIcon,
 	PersonStanding,
 	TextCursorInputIcon,
 } from "lucide-react";
@@ -69,8 +70,12 @@ const RecentSubmissions = async ({
 												app_url={env.BETTER_AUTH_URL}
 												screenshotKey={feedback.screenshotKey}
 											/>
+										) : feedback.type === "STYLE_EDIT" ? (
+											// Edit-tool feedback has no screenshot.
+											<div className="flex aspect-video h-auto w-full items-center justify-center rounded bg-fuchsia-500/10 lg:w-20">
+												<PaletteIcon className="size-5 text-fuchsia-500" />
+											</div>
 										) : (
-											// TEXT_EDIT feedback has no screenshot.
 											<div className="flex aspect-video h-auto w-full items-center justify-center rounded bg-violet-500/10 lg:w-20">
 												<TextCursorInputIcon className="size-5 text-violet-500" />
 											</div>

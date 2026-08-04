@@ -1,5 +1,10 @@
 "use client";
-import { CameraIcon, TextCursorInputIcon, XIcon } from "lucide-react";
+import {
+	CameraIcon,
+	PaletteIcon,
+	TextCursorInputIcon,
+	XIcon,
+} from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import { useEffect, useId, useState } from "react";
@@ -20,11 +25,19 @@ const DIAL_ACTIONS = [
 		key: "annotate",
 		label: "Annotate screenshot",
 		icon: CameraIcon,
+		message: "OPEN_FORM",
 	},
 	{
 		key: "text",
 		label: "Suggest text edits",
 		icon: TextCursorInputIcon,
+		message: "TEXT_MODE_START",
+	},
+	{
+		key: "style",
+		label: "Suggest style changes",
+		icon: PaletteIcon,
+		message: "STYLE_MODE_START",
 	},
 ] as const;
 
@@ -63,9 +76,12 @@ const TriggerButton = () => {
 	// expand/collapse lifecycle (EXPAND_TRIGGER before showing the dial,
 	// COLLAPSE_TRIGGER after the exit animation completes).
 	const [expanded, setExpanded] = useState(false);
-	// Unsubmitted text edits (loader-reported). Closed menu → red badge on
-	// the main button; open menu → badge moves to the text-edits circle.
+	// Unsubmitted edits (loader-reported). Closed menu → total on the main
+	// button; open menu → per-mode badges on their circles.
 	const [editCount, setEditCount] = useState(0);
+	const [modeCounts, setModeCounts] = useState<{ text: number; style: number }>(
+		{ text: 0, style: 0 },
+	);
 	const triggerId = useId();
 
 	const expand = () => {
@@ -75,15 +91,12 @@ const TriggerButton = () => {
 
 	const collapse = () => setExpanded(false);
 
-	const handleDialAction = (key: (typeof DIAL_ACTIONS)[number]["key"]) => {
+	const handleDialAction = (action: (typeof DIAL_ACTIONS)[number]) => {
 		// The loader takes over the screen either way — snap the iframe back
 		// immediately rather than waiting for the exit animation.
 		setExpanded(false);
 		window.parent.postMessage({ type: "COLLAPSE_TRIGGER" }, "*");
-		window.parent.postMessage(
-			{ type: key === "annotate" ? "OPEN_FORM" : "TEXT_MODE_START" },
-			"*",
-		);
+		window.parent.postMessage({ type: action.message }, "*");
 	};
 
 	/**
@@ -144,6 +157,10 @@ const TriggerButton = () => {
 				setEditCount(
 					typeof event.data.count === "number" ? event.data.count : 0,
 				);
+				setModeCounts({
+					text: typeof event.data.text === "number" ? event.data.text : 0,
+					style: typeof event.data.style === "number" ? event.data.style : 0,
+				});
 				return;
 			}
 
@@ -334,12 +351,15 @@ const TriggerButton = () => {
 										variant="secondary"
 										className="size-12 rounded-full border-2 border-border shadow-lg"
 										title={action.label}
-										onClick={() => handleDialAction(action.key)}
+										onClick={() => handleDialAction(action)}
 									>
 										<action.icon className="size-5" />
 									</Button>
-									{action.key === "text" && editCount > 0 && (
-										<EditCountBadge count={editCount} />
+									{action.key === "text" && modeCounts.text > 0 && (
+										<EditCountBadge count={modeCounts.text} />
+									)}
+									{action.key === "style" && modeCounts.style > 0 && (
+										<EditCountBadge count={modeCounts.style} />
 									)}
 								</div>
 							</motion.div>

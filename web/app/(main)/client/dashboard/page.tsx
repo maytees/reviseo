@@ -9,6 +9,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { requireUser } from "@/app/data/require-user";
 import { feedbackSelect } from "@/app/data/selects";
+import StyleEditList from "@/components/style-edit-list";
 import TextEditList from "@/components/text-edit-list";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -175,10 +176,13 @@ export default async function ClientDashboard() {
 											</Badge>
 										</div>
 									</div>
-									{/* Text-edit batches show their diffs inline so the
+									{/* Edit-tool batches show their changes inline so the
 									    client can track which suggestions were applied. */}
 									{item.type === "TEXT_EDIT" && item.textEdits.length > 0 && (
 										<TextEditList edits={item.textEdits} readOnly />
+									)}
+									{item.type === "STYLE_EDIT" && item.styleEdits.length > 0 && (
+										<StyleEditList edits={item.styleEdits} readOnly />
 									)}
 								</div>
 							);
