@@ -26,6 +26,7 @@ enum FeedbackType {
   IMPROVEMENT
   TEXT_EDIT
   STYLE_EDIT
+  IMAGE_EDIT
 }
 
 // Per-edit lifecycle inside a TEXT_EDIT feedback: the developer marks each
@@ -103,6 +104,7 @@ model Feedback {
 
   textEdits  TextEdit[]
   styleEdits StyleEdit[]
+  imageEdits ImageEdit[]
 
   browser        String?
   browserVersion String?
@@ -153,6 +155,30 @@ model StyleEdit {
 
   // [{ property, before, after }] — longhand CSS properties only
   changes Json
+
+  status TextEditStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+
+  @@index([feedbackId])
+}
+
+// One image replacement from the widget's image-edit tool. An IMAGE_EDIT
+// feedback groups the batch a client submitted in one session.
+model ImageEdit {
+  id         String   @id @default(cuid())
+  feedbackId String
+  feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+
+  selector String
+  pageUrl  String
+
+  // The image being replaced (absolute URL as rendered on the page).
+  originalSrc String
+  // Replacement: either an object in the image-edits bucket (uploads/paste)
+  // or a remote URL the client supplied.
+  newKey String?
+  newUrl String?
 
   status TextEditStatus @default(PENDING)
 

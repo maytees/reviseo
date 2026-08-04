@@ -60,6 +60,18 @@ export const feedbackSelect = {
 		},
 		orderBy: { createdAt: "asc" as const },
 	},
+	imageEdits: {
+		select: {
+			id: true,
+			selector: true,
+			pageUrl: true,
+			originalSrc: true,
+			newKey: true,
+			newUrl: true,
+			status: true,
+		},
+		orderBy: { createdAt: "asc" as const },
+	},
 } satisfies Prisma.FeedbackSelect;
 
 export const websiteSelect = {

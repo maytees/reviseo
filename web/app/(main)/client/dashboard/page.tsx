@@ -9,6 +9,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { requireUser } from "@/app/data/require-user";
 import { feedbackSelect } from "@/app/data/selects";
+import ImageEditList from "@/components/image-edit-list";
 import StyleEditList from "@/components/style-edit-list";
 import TextEditList from "@/components/text-edit-list";
 import { Badge } from "@/components/ui/badge";
@@ -183,6 +184,9 @@ export default async function ClientDashboard() {
 									)}
 									{item.type === "STYLE_EDIT" && item.styleEdits.length > 0 && (
 										<StyleEditList edits={item.styleEdits} readOnly />
+									)}
+									{item.type === "IMAGE_EDIT" && item.imageEdits.length > 0 && (
+										<ImageEditList edits={item.imageEdits} readOnly />
 									)}
 								</div>
 							);

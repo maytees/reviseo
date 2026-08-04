@@ -7,6 +7,7 @@ import {
 	CircleAlertIcon,
 	CircleDashedIcon,
 	ClockIcon,
+	ImageIcon,
 	InboxIcon,
 	type LucideIcon,
 	PaletteIcon,
@@ -140,6 +141,11 @@ export const TYPE_CONFIG: Record<
 		icon: PaletteIcon,
 		color: "text-fuchsia-600",
 	},
+	IMAGE_EDIT: {
+		label: "Image replacements",
+		icon: ImageIcon,
+		color: "text-cyan-600",
+	},
 } as const;
 
 export const STATUS_BADGE_MAP: Record<FeedbackStatus, BadgeVariantsType> = {
@@ -159,6 +165,7 @@ export const TYPE_BADGE_MAP: Record<FeedbackType, BadgeVariantsType> = {
 	IMPROVEMENT: "info",
 	TEXT_EDIT: "primary",
 	STYLE_EDIT: "info2",
+	IMAGE_EDIT: "secondary",
 };
 
 export const TEXT_EDIT_STATUS_CONFIG = {
@@ -250,6 +257,18 @@ export type FeedbackSelectAllPayload = Prisma.FeedbackGetPayload<{
 				elementTag: true;
 				pageUrl: true;
 				changes: true;
+				status: true;
+			};
+			orderBy: { createdAt: "asc" };
+		};
+		imageEdits: {
+			select: {
+				id: true;
+				selector: true;
+				pageUrl: true;
+				originalSrc: true;
+				newKey: true;
+				newUrl: true;
 				status: true;
 			};
 			orderBy: { createdAt: "asc" };

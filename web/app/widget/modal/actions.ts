@@ -10,6 +10,8 @@ import type { ApiResponse, BrowserInfo } from "@/lib/types";
 import {
 	type FeedbackFormData,
 	feedbackFormSchema,
+	type ImageEditsSubmission,
+	imageEditsSubmissionSchema,
 	type StyleEditsSubmission,
 	styleEditsSubmissionSchema,
 	type TextEditsSubmission,
@@ -400,5 +402,133 @@ export async function submitStyleEdits(
 	} catch (e) {
 		console.error("Failed to submit style edits:\n", e);
 		return { status: "error", message: "Failed to submit style changes" };
+	}
+}
+
+/** Submit a batch of image replacements captured by the widget's image-edit
+ *  tool. Creates one IMAGE_EDIT feedback grouping the edits. */
+export async function submitImageEdits(
+	projectId: string,
+	submission: ImageEditsSubmission,
+	browserInfo?: BrowserInfo,
+	viewport?: string,
+): Promise<ApiResponse> {
+	const user = await requireUser();
+
+	const validation = imageEditsSubmissionSchema.safeParse(submission);
+	if (!validation.success) {
+		return { status: "error", message: "Invalid image replacements" };
+	}
+
+	const { edits, note } = validation.data;
+
+	try {
+		const existingWebsite = await prisma.website.findUnique({
+			where: { projectId },
+			select: {
+				clientId: true,
+				name: true,
+				id: true,
+				organizationId: true,
+				developer: {
+					select: { email: true, name: true, emailNotifications: true },
+				},
+			},
+		});
+
+		if (!existingWebsite) {
+			return { status: "error", message: "Could not find valid website" };
+		}
+
+		const isClient = existingWebsite.clientId === user.id;
+		const isMember = !isClient
+			? Boolean(
+					await prisma.member.findUnique({
+						where: {
+							organizationId_userId: {
+								organizationId: existingWebsite.organizationId,
+								userId: user.id,
+							},
+						},
+						select: { id: true },
+					}),
+				)
+			: false;
+
+		if (!isClient && !isMember) {
+			return {
+				status: "error",
+				message: "You don't have access to submit feedback for this website",
+			};
+		}
+
+		const pageUrl = edits[0].pageUrl;
+		const pagePath = (() => {
+			try {
+				return new URL(pageUrl).pathname || "/";
+			} catch {
+				return pageUrl;
+			}
+		})();
+		const title =
+			edits.length === 1
+				? `Image replacement on ${pagePath}`
+				: `${edits.length} image replacements on ${pagePath}`;
+
+		const newFeedback = await prisma.feedback.create({
+			data: {
+				title,
+				type: "IMAGE_EDIT",
+				description: note || null,
+				priority: "LOW",
+				pageUrl,
+				viewport,
+				browser: browserInfo?.browser,
+				os: browserInfo?.os,
+				browserVersion: browserInfo?.browserVersion,
+				device: browserInfo?.device,
+				author: { connect: { id: user.id } },
+				website: { connect: { id: existingWebsite.id } },
+				imageEdits: {
+					create: edits.map((edit) => ({
+						selector: edit.selector,
+						pageUrl: edit.pageUrl,
+						originalSrc: edit.originalSrc,
+						newKey: edit.newKey,
+						newUrl: edit.newUrl,
+					})),
+				},
+			},
+		});
+
+		if (existingWebsite.developer.emailNotifications) {
+			const emailResponse = await resend.emails.send({
+				from: "Reviseo <info@reviseo.app>",
+				to: [existingWebsite.developer.email],
+				subject: `${existingWebsite.name} - New Image Replacements Suggested`,
+				react: FeedbackNotificationEmail({
+					developerName: existingWebsite.developer.name,
+					feedbackTitle: title,
+					feedbackType: "IMAGE_EDIT",
+					priority: "LOW",
+					pageUrl,
+					description: (note || title).substring(0, 249),
+					submittedAt: moment().format("MMMM Do YYYY, h:mm:ss a"),
+					websiteName: existingWebsite.name,
+					feedbackUrl: `${env.BETTER_AUTH_URL}/dashboard/websites/${existingWebsite.id}?open=${newFeedback.id}`,
+					allFeedbackUrl: `${env.BETTER_AUTH_URL}/dashboard/websites/${existingWebsite.id}`,
+					dashboardUrl: `${env.BETTER_AUTH_URL}/dashboard`,
+				}),
+			});
+
+			if (emailResponse.error) {
+				console.error(emailResponse);
+			}
+		}
+
+		return { status: "success", message: "Image replacements submitted" };
+	} catch (e) {
+		console.error("Failed to submit image edits:\n", e);
+		return { status: "error", message: "Failed to submit image replacements" };
 	}
 }

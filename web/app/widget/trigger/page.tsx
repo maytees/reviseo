@@ -1,6 +1,7 @@
 "use client";
 import {
 	CameraIcon,
+	ImageIcon,
 	PaletteIcon,
 	TextCursorInputIcon,
 	XIcon,
@@ -38,6 +39,12 @@ const DIAL_ACTIONS = [
 		label: "Suggest style changes",
 		icon: PaletteIcon,
 		message: "STYLE_MODE_START",
+	},
+	{
+		key: "image",
+		label: "Replace images",
+		icon: ImageIcon,
+		message: "IMAGE_MODE_START",
 	},
 ] as const;
 
@@ -79,9 +86,11 @@ const TriggerButton = () => {
 	// Unsubmitted edits (loader-reported). Closed menu → total on the main
 	// button; open menu → per-mode badges on their circles.
 	const [editCount, setEditCount] = useState(0);
-	const [modeCounts, setModeCounts] = useState<{ text: number; style: number }>(
-		{ text: 0, style: 0 },
-	);
+	const [modeCounts, setModeCounts] = useState<{
+		text: number;
+		style: number;
+		image: number;
+	}>({ text: 0, style: 0, image: 0 });
 	const triggerId = useId();
 
 	const expand = () => {
@@ -160,6 +169,7 @@ const TriggerButton = () => {
 				setModeCounts({
 					text: typeof event.data.text === "number" ? event.data.text : 0,
 					style: typeof event.data.style === "number" ? event.data.style : 0,
+					image: typeof event.data.image === "number" ? event.data.image : 0,
 				});
 				return;
 			}
@@ -360,6 +370,9 @@ const TriggerButton = () => {
 									)}
 									{action.key === "style" && modeCounts.style > 0 && (
 										<EditCountBadge count={modeCounts.style} />
+									)}
+									{action.key === "image" && modeCounts.image > 0 && (
+										<EditCountBadge count={modeCounts.image} />
 									)}
 								</div>
 							</motion.div>

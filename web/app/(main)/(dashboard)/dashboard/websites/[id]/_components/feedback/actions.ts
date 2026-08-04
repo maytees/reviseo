@@ -125,6 +125,44 @@ export async function updateStyleEditStatus(
 	}
 }
 
+/** Mark one image replacement applied/rejected/pending. Org-scoped. */
+export async function updateImageEditStatus(
+	imageEditId: string,
+	value: TextEditStatus,
+): Promise<ApiResponse> {
+	try {
+		const { organization } = await requireMember();
+
+		const updated = await prisma.imageEdit.updateMany({
+			where: {
+				id: imageEditId,
+				feedback: { website: { organizationId: organization.id } },
+			},
+			data: { status: value },
+		});
+
+		if (updated.count === 0) {
+			return { status: "error", message: "Image replacement not found" };
+		}
+
+		const edit = await prisma.imageEdit.findUnique({
+			where: { id: imageEditId },
+			select: { feedback: { select: { websiteId: true } } },
+		});
+		if (edit) {
+			revalidatePath(`/dashboard/websites/${edit.feedback.websiteId}`);
+		}
+
+		return { status: "success", message: "Image replacement status updated" };
+	} catch (e) {
+		console.error("Failed to update image edit status:\n", e);
+		return {
+			status: "error",
+			message: "Failed to update image replacement status",
+		};
+	}
+}
+
 export async function deleteFeedback(feedbackId: string): Promise<ApiResponse> {
 	try {
 		const feedback = await getAuthorizedFeedback(feedbackId);

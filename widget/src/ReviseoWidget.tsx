@@ -2,6 +2,7 @@ import { snapdom } from "@zumer/snapdom";
 import { useEffect, useRef } from "preact/hooks";
 import { readStoredRecords } from "./edit-shared";
 import { useUserAgent } from "./hooks/useBrowserInfo";
+import { IMAGE_EDITS_STORAGE_KEY, ImageEditEngine } from "./image-edit";
 import { STYLE_EDITS_STORAGE_KEY, StyleEditEngine } from "./style-edit";
 import { TEXT_EDITS_STORAGE_KEY, TextEditEngine } from "./text-edit";
 
@@ -201,11 +202,12 @@ const CLIENT_HINT_FRAGMENT = "reviseo-connect";
 // First-party flags: this browser already saw the mode's onboarding card.
 const TEXT_ONBOARDING_KEY = "__reviseo_text_onboarding";
 const STYLE_ONBOARDING_KEY = "__reviseo_style_onboarding";
+const IMAGE_ONBOARDING_KEY = "__reviseo_image_onboarding";
 
 // Trigger iframe sizes: collapsed = just the round button; expanded = room
 // for the speed-dial circles and their tooltips.
 const TRIGGER_COLLAPSED = { width: "64px", height: "64px" };
-const TRIGGER_EXPANDED = { width: "260px", height: "300px" };
+const TRIGGER_EXPANDED = { width: "260px", height: "360px" };
 
 /**
  * Client hint: invite emails and the client dashboard link to the customer
@@ -247,6 +249,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 
 	const textEngineRef = useRef<TextEditEngine | null>(null);
 	const styleEngineRef = useRef<StyleEditEngine | null>(null);
+	const imageEngineRef = useRef<ImageEditEngine | null>(null);
 
 	useEffect(() => {
 		// Health check timeout (generous: first load may compile/hydrate slowly)
@@ -288,7 +291,10 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 			const style = styleEngineRef.current
 				? styleEngineRef.current.getEdits().length
 				: readStoredRecords(STYLE_EDITS_STORAGE_KEY).length;
-			return { text, style, total: text + style };
+			const image = imageEngineRef.current
+				? imageEngineRef.current.getEdits().length
+				: readStoredRecords(IMAGE_EDITS_STORAGE_KEY).length;
+			return { text, style, image, total: text + style + image };
 		};
 
 		const sendEditCount = () => {
@@ -299,6 +305,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 					count: counts.total,
 					text: counts.text,
 					style: counts.style,
+					image: counts.image,
 				},
 				WIDGET_ORIGIN,
 			);
@@ -315,8 +322,49 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 
 		const anyModeActive = () =>
 			Boolean(
-				textEngineRef.current?.isActive() || styleEngineRef.current?.isActive(),
+				textEngineRef.current?.isActive() ||
+					styleEngineRef.current?.isActive() ||
+					imageEngineRef.current?.isActive(),
 			);
+
+		const startImageMode = () => {
+			if (!imageEngineRef.current) {
+				imageEngineRef.current = new ImageEditEngine();
+			}
+			const engine = imageEngineRef.current;
+			if (engine.isActive() || anyModeActive()) return;
+
+			if (triggerIframeRef.current) {
+				triggerIframeRef.current.style.display = "none";
+			}
+			setTriggerSize(TRIGGER_COLLAPSED);
+
+			engine.start({
+				onEditsChanged: () => sendEditCount(),
+				onPick: (ctx) => {
+					showModal({
+						type: "SHOW_IMAGE_PICKER",
+						originalSrc: ctx.originalSrc,
+						naturalWidth: ctx.naturalWidth,
+						naturalHeight: ctx.naturalHeight,
+						isExisting: ctx.isExisting,
+					});
+				},
+				onReview: (edits) => {
+					showModal({
+						type: "SHOW_IMAGE_REVIEW",
+						edits,
+						url: window.location.href,
+					});
+				},
+				onExit: () => {
+					if (triggerIframeRef.current) {
+						triggerIframeRef.current.style.display = "block";
+					}
+					sendEditCount();
+				},
+			});
+		};
 
 		const startStyleMode = () => {
 			if (!styleEngineRef.current) {
@@ -469,6 +517,69 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 					sendEditCount();
 					break;
 
+				case "IMAGE_MODE_START": {
+					let seen = false;
+					try {
+						seen = localStorage.getItem(IMAGE_ONBOARDING_KEY) === "1";
+					} catch {}
+					if (seen) {
+						startImageMode();
+					} else {
+						showModal({ type: "SHOW_IMAGE_GUIDE" });
+					}
+					break;
+				}
+
+				case "IMAGE_GUIDE_DONE": {
+					try {
+						localStorage.setItem(IMAGE_ONBOARDING_KEY, "1");
+					} catch {}
+					const imageModal = document.getElementById("reviseo-modal");
+					if (imageModal) imageModal.style.display = "none";
+					startImageMode();
+					break;
+				}
+
+				case "IMAGE_APPLY": {
+					const modal = document.getElementById("reviseo-modal");
+					if (modal) modal.style.display = "none";
+					if (typeof event.data.displayUrl === "string") {
+						imageEngineRef.current?.applyPick({
+							displayUrl: event.data.displayUrl,
+							key:
+								typeof event.data.key === "string" ? event.data.key : undefined,
+							url:
+								typeof event.data.url === "string" ? event.data.url : undefined,
+						});
+					}
+					sendEditCount();
+					break;
+				}
+
+				case "IMAGE_PICK_CANCELLED":
+					imageEngineRef.current?.cancelPick();
+					break;
+
+				case "IMAGE_PICK_REVERTED": {
+					const modal = document.getElementById("reviseo-modal");
+					if (modal) modal.style.display = "none";
+					imageEngineRef.current?.revertPick();
+					sendEditCount();
+					break;
+				}
+
+				case "IMAGE_EDIT_REMOVED":
+					if (typeof event.data.id === "string") {
+						imageEngineRef.current?.removeEdit(event.data.id);
+						sendEditCount();
+					}
+					break;
+
+				case "IMAGE_SUBMITTED":
+					imageEngineRef.current?.clearAfterSubmit();
+					sendEditCount();
+					break;
+
 				case "HEALTH_CHECK":
 					// Respond to health check
 					triggerIframeRef.current?.contentWindow?.postMessage(
@@ -604,6 +715,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 			}
 			textEngineRef.current?.stop();
 			styleEngineRef.current?.stop();
+			imageEngineRef.current?.stop();
 			modalIframe.remove();
 		};
 		// Mount-once: modal iframe + listener must not be duplicated.

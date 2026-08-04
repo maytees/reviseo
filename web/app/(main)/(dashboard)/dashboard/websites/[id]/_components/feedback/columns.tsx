@@ -3,6 +3,7 @@
 import type { ColumnDef } from "@tanstack/react-table";
 import {
 	ArrowUpDown,
+	ImageIcon,
 	MoreHorizontal,
 	PaletteIcon,
 	TextCursorInputIcon,
@@ -53,6 +54,10 @@ export const columns: ColumnDef<Feedback>[] = [
 						// Edit-tool feedback has no screenshot — themed tile instead.
 						<div className="flex aspect-video h-auto w-full items-center justify-center rounded bg-fuchsia-500/10 lg:w-20">
 							<PaletteIcon className="size-5 text-fuchsia-500" />
+						</div>
+					) : row.original.type === "IMAGE_EDIT" ? (
+						<div className="flex aspect-video h-auto w-full items-center justify-center rounded bg-cyan-500/10 lg:w-20">
+							<ImageIcon className="size-5 text-cyan-500" />
 						</div>
 					) : (
 						<div className="flex aspect-video h-auto w-full items-center justify-center rounded bg-violet-500/10 lg:w-20">

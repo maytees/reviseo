@@ -14,6 +14,8 @@ import {
 	ClockIcon,
 	GlobeIcon,
 	Grid2X2,
+	ImageIcon,
+	LinkIcon,
 	MousePointerClickIcon,
 	PaletteIcon,
 	PenLineIcon,
@@ -21,6 +23,7 @@ import {
 	SlidersHorizontalIcon,
 	TextCursorInputIcon,
 	Trash2Icon,
+	UploadIcon,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
@@ -69,6 +72,7 @@ import { type BrowserInfo, PRIORITY_CONFIG, TYPE_CONFIG } from "@/lib/types";
 import {
 	type FeedbackFormData,
 	feedbackFormSchema,
+	type ImageEditItem,
 	type StyleEditItem,
 	type TextEditItem,
 } from "@/lib/validations";
@@ -76,6 +80,7 @@ import ExCanvas from "../_components/ExCanvas";
 import { ensureStorageAccess } from "../lib/storage-access";
 import {
 	submitFeedbackForm,
+	submitImageEdits,
 	submitStyleEdits,
 	submitTextEdits,
 } from "./actions";
@@ -85,6 +90,24 @@ type SessionData = Awaited<ReturnType<typeof authClient.getSession>>["data"];
 /** Edit records forwarded by the loader (its ids, not database ids). */
 type ReviewEdit = TextEditItem & { id: string };
 type StyleReviewEdit = StyleEditItem & { id: string };
+type ImageReviewEdit = ImageEditItem & { id: string; previewUrl?: string };
+
+/** What the image picker is replacing (loader-provided). */
+type ImagePickContext = {
+	originalSrc: string;
+	naturalWidth: number;
+	naturalHeight: number;
+	isExisting: boolean;
+};
+
+/** The chosen replacement, before it's applied to the page. */
+type ImageChoice = {
+	displayUrl: string;
+	key?: string;
+	url?: string;
+	naturalWidth?: number;
+	naturalHeight?: number;
+};
 
 const ReviseoModal = () => {
 	const { data: hookSession } = authClient.useSession();
@@ -97,10 +120,22 @@ const ReviseoModal = () => {
 	// Which experience the dialog is showing: the screenshot feedback flow,
 	// the text-tool onboarding card, or the text-edit review list.
 	const [view, setView] = useState<
-		"feedback" | "guide" | "review" | "styleGuide" | "styleReview"
+		| "feedback"
+		| "guide"
+		| "review"
+		| "styleGuide"
+		| "styleReview"
+		| "imageGuide"
+		| "imagePicker"
+		| "imageReview"
 	>("feedback");
 	const [textEdits, setTextEdits] = useState<ReviewEdit[]>([]);
 	const [styleEdits, setStyleEdits] = useState<StyleReviewEdit[]>([]);
+	const [imageEdits, setImageEdits] = useState<ImageReviewEdit[]>([]);
+	const [imagePick, setImagePick] = useState<ImagePickContext | null>(null);
+	const [imageChoice, setImageChoice] = useState<ImageChoice | null>(null);
+	const [imageBusy, setImageBusy] = useState(false);
+	const [imageUrlInput, setImageUrlInput] = useState("");
 	const [textNote, setTextNote] = useState("");
 	const [submitted, setSubmitted] = useState(false);
 	const [loading, setLoading] = useState<boolean>(false);
@@ -195,6 +230,11 @@ const ReviseoModal = () => {
 		setView("feedback");
 		setTextEdits([]);
 		setStyleEdits([]);
+		setImageEdits([]);
+		setImagePick(null);
+		setImageChoice(null);
+		setImageBusy(false);
+		setImageUrlInput("");
 		setTextNote("");
 		setInitialData(undefined);
 		sceneData.current = null;
@@ -424,6 +464,211 @@ const ReviseoModal = () => {
 		});
 	};
 
+	const handleImageGuideDone = () => {
+		closeAndReset();
+		window.parent.postMessage({ type: "IMAGE_GUIDE_DONE" }, "*");
+	};
+
+	/** Upload a picked/pasted/dropped file and stage it as the choice. The
+	 *  page preview travels as a data URL — the customer page can't read our
+	 *  blob URLs or send our cookies. */
+	const handleImageFile = (file: File) => {
+		const allowed = [
+			"image/png",
+			"image/jpeg",
+			"image/webp",
+			"image/gif",
+			"image/svg+xml",
+		];
+		if (!allowed.includes(file.type)) {
+			toast.error("Use a PNG, JPEG, WebP, GIF, or SVG image.");
+			return;
+		}
+		if (file.size > 10 * 1024 * 1024) {
+			toast.error("Image is too large — 10MB max.");
+			return;
+		}
+		if (!screenshotMetadata.projectId) {
+			toast.error("Missing page data. Close the widget and try again.");
+			return;
+		}
+		const projectId = screenshotMetadata.projectId;
+
+		setImageBusy(true);
+		void (async () => {
+			try {
+				const presignedResponse = await fetch("/api/s3/image-edits", {
+					method: "POST",
+					headers: { "Content-Type": "application/json" },
+					body: JSON.stringify({
+						fileName: file.name || "pasted-image",
+						contentType: file.type,
+						size: file.size,
+						projectId,
+					}),
+				});
+				if (!presignedResponse.ok) {
+					toast.error("Couldn't start the upload. Please try again.");
+					return;
+				}
+				const { preSignedUrl, key } = await presignedResponse.json();
+
+				const uploadResponse = await fetch(preSignedUrl, {
+					method: "PUT",
+					body: file,
+					headers: { "Content-Type": file.type },
+				});
+				if (!uploadResponse.ok) {
+					toast.error("Upload failed. Please try again.");
+					return;
+				}
+
+				const dataUrl = await new Promise<string>((resolve, reject) => {
+					const reader = new FileReader();
+					reader.onload = () => resolve(reader.result as string);
+					reader.onerror = () => reject(reader.error);
+					reader.readAsDataURL(file);
+				});
+
+				const dims = await new Promise<{ w: number; h: number }>((resolve) => {
+					const img = new window.Image();
+					img.onload = () =>
+						resolve({ w: img.naturalWidth, h: img.naturalHeight });
+					img.onerror = () => resolve({ w: 0, h: 0 });
+					img.src = dataUrl;
+				});
+
+				setImageChoice({
+					displayUrl: dataUrl,
+					key,
+					naturalWidth: dims.w,
+					naturalHeight: dims.h,
+				});
+			} catch (err) {
+				console.error(err);
+				toast.error("Something went wrong uploading the image.");
+			} finally {
+				setImageBusy(false);
+			}
+		})();
+	};
+
+	const handleImageUrl = () => {
+		const url = imageUrlInput.trim();
+		if (!/^https?:\/\//.test(url)) {
+			toast.error("Enter a full image URL (https://…).");
+			return;
+		}
+		setImageBusy(true);
+		const img = new window.Image();
+		img.onload = () => {
+			setImageChoice({
+				displayUrl: url,
+				url,
+				naturalWidth: img.naturalWidth,
+				naturalHeight: img.naturalHeight,
+			});
+			setImageBusy(false);
+		};
+		img.onerror = () => {
+			// Not previewable here (hotlink protection etc.) — still usable.
+			setImageChoice({ displayUrl: url, url });
+			setImageBusy(false);
+		};
+		img.src = url;
+	};
+
+	const handleImageApply = () => {
+		if (!imageChoice) return;
+		window.parent.postMessage(
+			{
+				type: "IMAGE_APPLY",
+				displayUrl: imageChoice.displayUrl,
+				key: imageChoice.key,
+				url: imageChoice.url,
+			},
+			"*",
+		);
+		closeAndReset();
+	};
+
+	const handleImagePickCancel = () => {
+		window.parent.postMessage({ type: "IMAGE_PICK_CANCELLED" }, "*");
+		closeAndReset();
+	};
+
+	const handleImagePickRevert = () => {
+		window.parent.postMessage({ type: "IMAGE_PICK_REVERTED" }, "*");
+		closeAndReset();
+	};
+
+	/** Drop one image edit from the batch (the loader restores it). */
+	const handleRemoveImageEdit = (id: string) => {
+		window.parent.postMessage({ type: "IMAGE_EDIT_REMOVED", id }, "*");
+		const remaining = imageEdits.filter((e) => e.id !== id);
+		setImageEdits(remaining);
+		if (remaining.length === 0) closeAndReset();
+	};
+
+	const handleSubmitImageEdits = () => {
+		startTransition(async () => {
+			if (!screenshotMetadata.projectId) {
+				toast.error("Missing page data. Close the widget and try again.");
+				return;
+			}
+			if (!session?.user.id) {
+				toast.error("You're signed out. Sign in and try again.");
+				return;
+			}
+
+			const { data: result, error } = await tryCatch(
+				submitImageEdits(
+					screenshotMetadata.projectId,
+					{
+						note: textNote || undefined,
+						edits: imageEdits.map(
+							({ id: _id, previewUrl: _previewUrl, ...edit }) => edit,
+						),
+					},
+					screenshotMetadata.browserInfo,
+					screenshotMetadata.viewport,
+				),
+			);
+
+			if (error) {
+				console.error(error);
+				toast.error("An unexpected error occurred. Please try again.");
+				return;
+			}
+
+			if (result.status === "success") {
+				window.parent.postMessage({ type: "IMAGE_SUBMITTED" }, "*");
+				setSubmitted(true);
+				triggerConfetti();
+			} else {
+				console.error(result.message);
+				toast.error(result.message);
+			}
+		});
+	};
+
+	// Clipboard paste while the image picker is open.
+	useEffect(() => {
+		if (view !== "imagePicker") return;
+		const onPaste = (e: ClipboardEvent) => {
+			const file = [...(e.clipboardData?.items ?? [])]
+				.find((item) => item.type.startsWith("image/"))
+				?.getAsFile();
+			if (file) {
+				e.preventDefault();
+				handleImageFile(file);
+			}
+		};
+		window.addEventListener("paste", onPaste);
+		return () => window.removeEventListener("paste", onPaste);
+		// biome-ignore lint/correctness/useExhaustiveDependencies: handleImageFile is recreated per render but stable in behavior
+	}, [view]);
+
 	useEffect(() => {
 		if (!open) {
 			window.parent.postMessage({ type: "CLOSE_FORM" }, "*");
@@ -478,6 +723,49 @@ const ReviseoModal = () => {
 					setView("styleReview");
 					if (Array.isArray(event.data.edits)) {
 						setStyleEdits(event.data.edits);
+					}
+					recoverSession();
+					window.parent.postMessage({ type: "REQUEST_PAGE_DATA" }, "*");
+					break;
+				case "SHOW_IMAGE_GUIDE":
+					setOpen(true);
+					setSubmitted(false);
+					setLoading(false);
+					setView("imageGuide");
+					recoverSession();
+					break;
+				case "SHOW_IMAGE_PICKER":
+					setOpen(true);
+					setSubmitted(false);
+					setLoading(false);
+					setView("imagePicker");
+					setImagePick({
+						originalSrc:
+							typeof event.data.originalSrc === "string"
+								? event.data.originalSrc
+								: "",
+						naturalWidth:
+							typeof event.data.naturalWidth === "number"
+								? event.data.naturalWidth
+								: 0,
+						naturalHeight:
+							typeof event.data.naturalHeight === "number"
+								? event.data.naturalHeight
+								: 0,
+						isExisting: event.data.isExisting === true,
+					});
+					setImageChoice(null);
+					setImageUrlInput("");
+					recoverSession();
+					window.parent.postMessage({ type: "REQUEST_PAGE_DATA" }, "*");
+					break;
+				case "SHOW_IMAGE_REVIEW":
+					setOpen(true);
+					setSubmitted(false);
+					setLoading(false);
+					setView("imageReview");
+					if (Array.isArray(event.data.edits)) {
+						setImageEdits(event.data.edits);
 					}
 					recoverSession();
 					window.parent.postMessage({ type: "REQUEST_PAGE_DATA" }, "*");
@@ -540,9 +828,15 @@ const ReviseoModal = () => {
 					<DialogContent
 						onEscapeKeyDown={(e) => e.preventDefault()}
 						className={
-							submitted || view === "guide" || view === "styleGuide"
+							submitted ||
+							view === "guide" ||
+							view === "styleGuide" ||
+							view === "imageGuide" ||
+							view === "imagePicker"
 								? "rounded-2xl bg-card"
-								: view === "review" || view === "styleReview"
+								: view === "review" ||
+										view === "styleReview" ||
+										view === "imageReview"
 									? "flex max-h-[85vh] flex-col rounded-2xl bg-card sm:max-w-xl"
 									: "overflow-y-scroll bg-card transition-all duration-500 ease-in-out"
 						}
@@ -575,7 +869,9 @@ const ReviseoModal = () => {
 									className="flex flex-col gap-2"
 								>
 									<h2 className="font-bold font-caudex text-3xl">
-										{view === "review" || view === "styleReview"
+										{view === "review" ||
+										view === "styleReview" ||
+										view === "imageReview"
 											? "Suggestions sent!"
 											: "Feedback sent!"}
 									</h2>
@@ -584,7 +880,9 @@ const ReviseoModal = () => {
 											? "The team has been notified and will review your suggested copy changes shortly."
 											: view === "styleReview"
 												? "The team has been notified and will review your suggested style changes shortly."
-												: "The team has been notified and will review your feedback shortly. Thanks for helping make this site better."}
+												: view === "imageReview"
+													? "The team has been notified and will review your suggested image replacements shortly."
+													: "The team has been notified and will review your feedback shortly. Thanks for helping make this site better."}
 									</p>
 								</motion.div>
 								<motion.div
@@ -663,6 +961,317 @@ const ReviseoModal = () => {
 									</span>
 								</div>
 							</div>
+						) : view === "imageGuide" ? (
+							<div className="flex flex-col gap-6 px-1 py-3">
+								<div className="flex flex-col items-center gap-3 text-center">
+									<motion.div
+										initial={{ scale: 0, rotate: -15 }}
+										animate={{ scale: 1, rotate: 0 }}
+										transition={{ type: "spring", stiffness: 260, damping: 16 }}
+										className="flex size-14 items-center justify-center rounded-2xl bg-cyan-500/10"
+									>
+										<ImageIcon className="size-7 text-cyan-500" />
+									</motion.div>
+									<DialogTitle className="font-caudex text-2xl">
+										Replace images
+									</DialogTitle>
+									<DialogDescription className="max-w-sm">
+										Swap any image on the page for your own — the team sees
+										exactly which image goes where.
+									</DialogDescription>
+								</div>
+								<ol className="flex flex-col gap-4">
+									{(
+										[
+											[MousePointerClickIcon, "Click any image on the page"],
+											[
+												UploadIcon,
+												"Upload, paste, or link the replacement image",
+											],
+											[
+												SendIcon,
+												"See it in place, repeat, then review & submit",
+											],
+										] as const
+									).map(([Icon, label], i) => (
+										<motion.li
+											key={label}
+											initial={{ opacity: 0, x: -10 }}
+											animate={{ opacity: 1, x: 0 }}
+											transition={{ delay: 0.1 + i * 0.08 }}
+											className="flex items-center gap-3"
+										>
+											<span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted">
+												<Icon className="size-4 text-foreground" />
+											</span>
+											<span className="text-sm">
+												<span className="mr-1.5 font-semibold text-muted-foreground">
+													{i + 1}.
+												</span>
+												{label}
+											</span>
+										</motion.li>
+									))}
+								</ol>
+								<div className="flex flex-col items-center gap-2">
+									<Button
+										size="lg"
+										className="w-full"
+										onClick={handleImageGuideDone}
+									>
+										Got it — start replacing
+									</Button>
+									<span className="text-muted-foreground text-xs">
+										Press Esc anytime to exit image mode
+									</span>
+								</div>
+							</div>
+						) : view === "imagePicker" ? (
+							<>
+								<div className="space-y-1">
+									<DialogTitle>Replace this image</DialogTitle>
+									<DialogDescription>
+										Upload a file, paste from your clipboard, or link an image
+										URL.
+									</DialogDescription>
+								</div>
+								<div className="flex flex-col gap-4 py-1">
+									{/* Current vs replacement */}
+									<div className="flex items-center justify-center gap-3">
+										<div className="flex flex-col items-center gap-1.5">
+											<span className="text-muted-foreground text-xs">
+												Current
+											</span>
+											{/* biome-ignore lint/performance/noImgElement: arbitrary external source */}
+											<img
+												src={imagePick?.originalSrc}
+												alt="Current"
+												className="h-28 w-40 rounded-lg border border-border object-cover"
+											/>
+											{imagePick && imagePick.naturalWidth > 0 && (
+												<span className="text-muted-foreground text-xs">
+													{imagePick.naturalWidth}×{imagePick.naturalHeight}
+												</span>
+											)}
+										</div>
+										<span className="text-muted-foreground">→</span>
+										<div className="flex flex-col items-center gap-1.5">
+											<span className="text-muted-foreground text-xs">
+												Replacement
+											</span>
+											{imageChoice ? (
+												// biome-ignore lint/performance/noImgElement: data URL / arbitrary source
+												<img
+													src={imageChoice.displayUrl}
+													alt="Replacement"
+													className="h-28 w-40 rounded-lg border border-border object-cover"
+												/>
+											) : (
+												<div className="flex h-28 w-40 items-center justify-center rounded-lg border border-border border-dashed">
+													<ImageIcon className="size-6 text-muted-foreground" />
+												</div>
+											)}
+											{imageChoice &&
+											imageChoice.naturalWidth &&
+											imageChoice.naturalWidth > 0 ? (
+												<span className="text-muted-foreground text-xs">
+													{imageChoice.naturalWidth}×{imageChoice.naturalHeight}
+												</span>
+											) : (
+												<span className="text-muted-foreground text-xs">
+													&nbsp;
+												</span>
+											)}
+										</div>
+									</div>
+
+									{imageChoice?.naturalWidth &&
+										imagePick &&
+										imagePick.naturalWidth > 0 &&
+										(imageChoice.naturalWidth !== imagePick.naturalWidth ||
+											imageChoice.naturalHeight !==
+												imagePick.naturalHeight) && (
+											<p className="text-center text-amber-600 text-xs dark:text-amber-500">
+												Different dimensions than the original — it may be
+												cropped or stretched on the page.
+											</p>
+										)}
+
+									{/* Upload */}
+									<label
+										className="flex cursor-pointer flex-col items-center gap-1.5 rounded-xl border border-border border-dashed p-4 transition-colors hover:border-primary/60 hover:bg-muted/40"
+										onDragOver={(e) => e.preventDefault()}
+										onDrop={(e) => {
+											e.preventDefault();
+											const file = e.dataTransfer.files?.[0];
+											if (file) handleImageFile(file);
+										}}
+									>
+										<UploadIcon className="size-5 text-muted-foreground" />
+										<span className="font-medium text-sm">
+											{imageBusy
+												? "Uploading…"
+												: "Drop an image, click to browse, or paste"}
+										</span>
+										<span className="text-muted-foreground text-xs">
+											PNG, JPEG, WebP, GIF, or SVG — 10MB max
+										</span>
+										<input
+											type="file"
+											accept="image/png,image/jpeg,image/webp,image/gif,image/svg+xml"
+											className="hidden"
+											disabled={imageBusy}
+											onChange={(e) => {
+												const file = e.target.files?.[0];
+												if (file) handleImageFile(file);
+												e.target.value = "";
+											}}
+										/>
+									</label>
+
+									{/* URL */}
+									<div className="flex items-center gap-2">
+										<Input
+											value={imageUrlInput}
+											onChange={(e) => setImageUrlInput(e.target.value)}
+											placeholder="https://example.com/image.png"
+											disabled={imageBusy}
+											onKeyDown={(e) => {
+												if (e.key === "Enter") {
+													e.preventDefault();
+													handleImageUrl();
+												}
+											}}
+										/>
+										<Button
+											type="button"
+											variant="outline"
+											disabled={imageBusy || !imageUrlInput.trim()}
+											onClick={handleImageUrl}
+										>
+											<LinkIcon className="size-4" />
+											Use URL
+										</Button>
+									</div>
+								</div>
+								<div className="flex flex-col-reverse gap-2 pt-1 sm:flex-row sm:justify-end">
+									{imagePick?.isExisting && (
+										<Button
+											variant="ghost"
+											className="text-destructive hover:text-destructive sm:mr-auto"
+											disabled={imageBusy}
+											onClick={handleImagePickRevert}
+										>
+											Revert to original
+										</Button>
+									)}
+									<Button
+										variant="outline"
+										disabled={imageBusy}
+										onClick={handleImagePickCancel}
+									>
+										Cancel
+									</Button>
+									<Button
+										disabled={imageBusy || !imageChoice}
+										onClick={handleImageApply}
+									>
+										Apply to page
+									</Button>
+								</div>
+							</>
+						) : view === "imageReview" ? (
+							<>
+								<div className="space-y-1">
+									<DialogTitle>Review your image replacements</DialogTitle>
+									<DialogDescription>
+										{imageEdits.length === 1
+											? "1 image replaced"
+											: `${imageEdits.length} images replaced`}{" "}
+										— remove any you don't want, add an optional note, then
+										submit.
+									</DialogDescription>
+								</div>
+								{/* p-1 keeps focus outlines from clipping at scroll edges */}
+								<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-1">
+									{imageEdits.map((edit) => (
+										<div
+											key={edit.id}
+											className="rounded-xl border border-border bg-background/50 p-3"
+										>
+											<div className="mb-2 flex items-center justify-between gap-2">
+												<span
+													className="truncate text-muted-foreground text-xs"
+													title={edit.pageUrl}
+												>
+													{getUrlPath(edit.pageUrl)}
+												</span>
+												<Button
+													variant="ghost"
+													size="icon"
+													className="size-7 shrink-0 text-muted-foreground hover:text-destructive"
+													onClick={() => handleRemoveImageEdit(edit.id)}
+													title="Remove this replacement"
+												>
+													<Trash2Icon className="size-3.5" />
+												</Button>
+											</div>
+											<div className="flex items-center justify-center gap-3">
+												{/* biome-ignore lint/performance/noImgElement: arbitrary external source */}
+												<img
+													src={edit.originalSrc}
+													alt="Original"
+													className="h-20 w-32 rounded-lg border border-border object-cover"
+												/>
+												<span className="text-muted-foreground">→</span>
+												{edit.previewUrl || edit.newUrl ? (
+													// biome-ignore lint/performance/noImgElement: data URL / arbitrary source
+													<img
+														src={edit.previewUrl ?? edit.newUrl}
+														alt="Replacement"
+														className="h-20 w-32 rounded-lg border border-border object-cover"
+													/>
+												) : (
+													<div className="flex h-20 w-32 flex-col items-center justify-center gap-1 rounded-lg border border-border border-dashed">
+														<ImageIcon className="size-4 text-muted-foreground" />
+														<span className="px-1 text-center text-[10px] text-muted-foreground">
+															Uploaded (preview gone after reload)
+														</span>
+													</div>
+												)}
+											</div>
+										</div>
+									))}
+									<Textarea
+										value={textNote}
+										onChange={(e) => setTextNote(e.target.value)}
+										placeholder="Anything else the team should know? (optional)"
+										className="min-h-20 resize-none"
+										maxLength={6000}
+										disabled={isPending}
+									/>
+								</div>
+								<div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+									<Button
+										variant="outline"
+										disabled={isPending}
+										onClick={() => setOpen(false)}
+									>
+										Keep replacing
+									</Button>
+									<Button
+										disabled={isPending || imageEdits.length === 0}
+										onClick={handleSubmitImageEdits}
+									>
+										<SendIcon className="size-4" />
+										{isPending
+											? "Submitting…"
+											: imageEdits.length === 1
+												? "Submit 1 suggestion"
+												: `Submit ${imageEdits.length} suggestions`}
+									</Button>
+								</div>
+							</>
 						) : view === "styleGuide" ? (
 							<div className="flex flex-col gap-6 px-1 py-3">
 								<div className="flex flex-col items-center gap-3 text-center">

@@ -50,6 +50,7 @@ services:
       mc mb -p local/reviseo-annotations &&
       mc mb -p local/reviseo-site-screenshots &&
       mc mb -p local/reviseo-profile-pictures &&
+      mc mb -p local/reviseo-image-edits &&
       mc anonymous set download local/reviseo-profile-pictures &&
       echo 'MinIO buckets ready.'
       "

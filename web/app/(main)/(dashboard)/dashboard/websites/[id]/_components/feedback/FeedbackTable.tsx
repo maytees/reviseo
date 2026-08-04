@@ -33,6 +33,7 @@ import { useEffect, useState } from "react";
 import { FaEdgeLegacy, FaMicrosoft } from "react-icons/fa";
 import { SiFirefoxbrowser } from "react-icons/si";
 import type { WebsiteDataTypeNonNullable } from "@/app/data/website/get-website-by-id-and-dev-id";
+import ImageEditList from "@/components/image-edit-list";
 import StyleEditList from "@/components/style-edit-list";
 import TextEditList from "@/components/text-edit-list";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -236,6 +237,21 @@ const FeedbackTable = ({
 									</div>
 								</div>
 								<StyleEditList edits={selectedFeedback.styleEdits} />
+							</>
+						) : selectedFeedback.type === "IMAGE_EDIT" ? (
+							<>
+								<div className="my-2 flex w-full flex-row items-center justify-between">
+									<div>
+										<h2 className="font-semibold text-lg">
+											Suggested Image Replacements
+										</h2>
+										<p className="text-muted-foreground text-xs">
+											Review each replacement, grab the new image, then mark it
+											applied or rejected
+										</p>
+									</div>
+								</div>
+								<ImageEditList edits={selectedFeedback.imageEdits} />
 							</>
 						) : (
 							selectedFeedback.screenshotKey && (

@@ -82,6 +82,29 @@ export const styleEditsSubmissionSchema = z.object({
 		.max(30, "Too many changes in one batch — submit and start a new one"),
 });
 
+// Image-edit tool (widget): one batch of image replacements.
+export const imageEditItemSchema = z
+	.object({
+		selector: z.string().min(1).max(1000),
+		pageUrl: z.string().url().max(2000),
+		// As rendered on the page — may be relative-resolved, data:, etc.
+		originalSrc: z.string().min(1).max(4000),
+		// Replacement: bucket key (upload/paste) or remote URL.
+		newKey: z.string().min(1).max(300).optional(),
+		newUrl: z.string().url().max(2000).optional(),
+	})
+	.refine((v) => Boolean(v.newKey) !== Boolean(v.newUrl), {
+		message: "Provide exactly one of newKey or newUrl",
+	});
+
+export const imageEditsSubmissionSchema = z.object({
+	note: z.string().max(6000).optional(),
+	edits: z
+		.array(imageEditItemSchema)
+		.min(1, "No image replacements to submit")
+		.max(20, "Too many replacements in one batch — submit and start a new one"),
+});
+
 // Waitlist form
 export const waitlistSchema = z.object({
 	email: z.email(),
@@ -96,3 +119,5 @@ export type TextEditsSubmission = z.infer<typeof textEditsSubmissionSchema>;
 export type StyleChange = z.infer<typeof styleChangeSchema>;
 export type StyleEditItem = z.infer<typeof styleEditItemSchema>;
 export type StyleEditsSubmission = z.infer<typeof styleEditsSubmissionSchema>;
+export type ImageEditItem = z.infer<typeof imageEditItemSchema>;
+export type ImageEditsSubmission = z.infer<typeof imageEditsSubmissionSchema>;

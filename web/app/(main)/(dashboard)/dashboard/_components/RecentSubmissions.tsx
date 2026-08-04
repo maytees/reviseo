@@ -1,5 +1,6 @@
 import {
 	Globe,
+	ImageIcon,
 	MessageCircle,
 	PaletteIcon,
 	PersonStanding,
@@ -74,6 +75,10 @@ const RecentSubmissions = async ({
 											// Edit-tool feedback has no screenshot.
 											<div className="flex aspect-video h-auto w-full items-center justify-center rounded bg-fuchsia-500/10 lg:w-20">
 												<PaletteIcon className="size-5 text-fuchsia-500" />
+											</div>
+										) : feedback.type === "IMAGE_EDIT" ? (
+											<div className="flex aspect-video h-auto w-full items-center justify-center rounded bg-cyan-500/10 lg:w-20">
+												<ImageIcon className="size-5 text-cyan-500" />
 											</div>
 										) : (
 											<div className="flex aspect-video h-auto w-full items-center justify-center rounded bg-violet-500/10 lg:w-20">
