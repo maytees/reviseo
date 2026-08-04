@@ -144,8 +144,8 @@ const ReviseoModal = () => {
 		defaultValues: {
 			title: "",
 			description: "",
-			priority: undefined,
-			type: undefined,
+			priority: "LOW",
+			type: "IMPROVEMENT",
 		},
 	});
 
