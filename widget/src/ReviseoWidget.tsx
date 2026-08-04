@@ -1,7 +1,7 @@
 import { snapdom } from "@zumer/snapdom";
 import { useEffect, useRef } from "preact/hooks";
 import { useUserAgent } from "./hooks/useBrowserInfo";
-import { TextEditEngine } from "./text-edit";
+import { TEXT_EDITS_STORAGE_KEY, TextEditEngine } from "./text-edit";
 
 /** Remove all HTML comments (prevents invalid XML like "--") */
 function removeAllComments(root) {
@@ -275,6 +275,27 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 			trigger.style.height = size.height;
 		};
 
+		// Pending (unsubmitted) edit count — drives the red badge on the
+		// trigger button / speed-dial circle.
+		const pendingEditCount = () => {
+			const engine = textEngineRef.current;
+			if (engine) return engine.getEdits().length;
+			try {
+				const raw = sessionStorage.getItem(TEXT_EDITS_STORAGE_KEY);
+				const parsed = raw ? JSON.parse(raw) : [];
+				return Array.isArray(parsed) ? parsed.length : 0;
+			} catch {
+				return 0;
+			}
+		};
+
+		const sendEditCount = () => {
+			triggerIframeRef.current?.contentWindow?.postMessage(
+				{ type: "EDIT_COUNT", count: pendingEditCount() },
+				WIDGET_ORIGIN,
+			);
+		};
+
 		const showModal = (message: Record<string, unknown>) => {
 			const modal = document.getElementById(
 				"reviseo-modal",
@@ -299,7 +320,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 			setTriggerSize(TRIGGER_COLLAPSED);
 
 			engine.start({
-				onEditsChanged: () => {},
+				onEditsChanged: () => sendEditCount(),
 				onReview: (edits) => {
 					showModal({
 						type: "SHOW_TEXT_REVIEW",
@@ -311,6 +332,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 					if (triggerIframeRef.current) {
 						triggerIframeRef.current.style.display = "block";
 					}
+					sendEditCount();
 				},
 			});
 		};
@@ -357,6 +379,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 				case "TEXT_EDIT_REMOVED":
 					if (typeof event.data.id === "string") {
 						textEngineRef.current?.removeEdit(event.data.id);
+						sendEditCount();
 					}
 					break;
 
@@ -365,6 +388,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 					// the page. The modal keeps showing its success view until
 					// it closes itself (CLOSE_FORM).
 					textEngineRef.current?.clearAfterSubmit();
+					sendEditCount();
 					break;
 
 				case "HEALTH_CHECK":
@@ -383,6 +407,8 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 					if (triggerIframeRef.current) {
 						triggerIframeRef.current.style.display = "block";
 					}
+					// Edits may be waiting from a previous session (reload).
+					sendEditCount();
 					break;
 
 				case "OPEN_FORM": {

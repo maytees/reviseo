@@ -31,7 +31,8 @@ type Callbacks = {
 	onExit: () => void;
 };
 
-const STORAGE_KEY = "__reviseo_text_edits_v1";
+export const TEXT_EDITS_STORAGE_KEY = "__reviseo_text_edits_v1";
+const STORAGE_KEY = TEXT_EDITS_STORAGE_KEY;
 
 // Reviseo dark-theme tokens (oklch from globals.css, hex fallbacks for
 // browsers without oklch()).
@@ -71,6 +72,55 @@ const SKIP_TAGS = new Set([
 
 function normalizeText(text: string): string {
 	return text.replace(/\s+/g, " ").trim();
+}
+
+type DiffSegment = { text: string; kind: "same" | "removed" | "added" };
+
+/** Word-level LCS diff (mirror of web/lib/text-diff.ts) for the hover
+ *  tooltip on edited elements. Inputs are capped at 2000 chars. */
+function diffWords(original: string, suggested: string): DiffSegment[] {
+	const a = original.split(/(\s+)/).filter((t) => t.length > 0);
+	const b = suggested.split(/(\s+)/).filter((t) => t.length > 0);
+	const m = a.length;
+	const n = b.length;
+	const table: number[][] = Array.from({ length: m + 1 }, () =>
+		new Array(n + 1).fill(0),
+	);
+	for (let i = m - 1; i >= 0; i--) {
+		for (let j = n - 1; j >= 0; j--) {
+			table[i][j] =
+				a[i] === b[j]
+					? table[i + 1][j + 1] + 1
+					: Math.max(table[i + 1][j], table[i][j + 1]);
+		}
+	}
+
+	const segments: DiffSegment[] = [];
+	const push = (text: string, kind: DiffSegment["kind"]) => {
+		const last = segments[segments.length - 1];
+		if (last && last.kind === kind) last.text += text;
+		else segments.push({ text, kind });
+	};
+
+	let i = 0;
+	let j = 0;
+	while (i < m && j < n) {
+		if (a[i] === b[j]) {
+			push(a[i], "same");
+			i++;
+			j++;
+		} else if (table[i + 1][j] >= table[i][j + 1]) {
+			push(a[i], "removed");
+			i++;
+		} else {
+			push(b[j], "added");
+			j++;
+		}
+	}
+	while (i < m) push(a[i++], "removed");
+	while (j < n) push(b[j++], "added");
+
+	return segments;
 }
 
 function randomId(): string {
@@ -142,6 +192,9 @@ export class TextEditEngine {
 	private shadow: ShadowRoot | null = null;
 	private banner: HTMLDivElement | null = null;
 	private toolbar: HTMLDivElement | null = null;
+	/** Hover tooltip showing the diff of an applied edit. */
+	private difftip: HTMLDivElement | null = null;
+	private difftipEl: HTMLElement | null = null;
 
 	private cleanupFns: Array<() => void> = [];
 
@@ -178,7 +231,10 @@ export class TextEditEngine {
 		const onOut = (e: Event) => this.handleMouseOut(e as MouseEvent);
 		const onClick = (e: Event) => this.handleClick(e as MouseEvent);
 		const onKey = (e: KeyboardEvent) => this.handleKeydown(e);
-		const onReposition = () => this.positionToolbar();
+		const onReposition = () => {
+			this.positionToolbar();
+			this.positionDifftip();
+		};
 
 		document.addEventListener("mouseover", onOver, true);
 		document.addEventListener("mouseout", onOut, true);
@@ -227,6 +283,8 @@ export class TextEditEngine {
 		this.shadow = null;
 		this.banner = null;
 		this.toolbar = null;
+		this.difftip = null;
+		this.difftipEl = null;
 
 		const cb = this.callbacks;
 		this.callbacks = null;
@@ -348,6 +406,13 @@ export class TextEditEngine {
 		this.hoverEl = el;
 		this.touch(el);
 		this.syncElementStyles(el);
+
+		// Edited element → show what changed.
+		const entry = [...this.applied.entries()].find(([, a]) => a.el === el);
+		if (entry) {
+			const record = this.edits.find((r) => r.id === entry[0]);
+			if (record) this.showDifftip(el, record);
+		}
 	}
 
 	private handleMouseOut(e: MouseEvent) {
@@ -362,6 +427,7 @@ export class TextEditEngine {
 	private clearHover() {
 		const el = this.hoverEl;
 		this.hoverEl = null;
+		this.hideDifftip();
 		if (el) this.syncElementStyles(el);
 	}
 
@@ -659,6 +725,29 @@ export class TextEditEngine {
 			.revert:hover { background: rgba(229,72,77,.12); }
 			.kbd { color: ${T.mutedForeground}; font-weight: 400; font-size: 11px; }
 			.save .kbd { color: rgba(255,255,255,.7); }
+			.difftip {
+				position: fixed; display: none; flex-direction: column; gap: 6px;
+				max-width: 340px;
+				background: ${T.card};
+				background: ${T.cardOklch};
+				color: ${T.foreground}; font-size: 13px; line-height: 1.55;
+				padding: 10px 12px; border: 1px solid ${T.border}; border-radius: 12px;
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+				pointer-events: none;
+				white-space: normal;
+			}
+			.difftip .label {
+				font-size: 11px; font-weight: 600; letter-spacing: .03em;
+				text-transform: uppercase; color: ${T.mutedForeground};
+			}
+			.difftip .removed {
+				background: rgba(229, 72, 77, 0.14); color: #f87171;
+				text-decoration: line-through; border-radius: 3px; padding: 0 2px;
+			}
+			.difftip .added {
+				background: rgba(74, 222, 128, 0.14); color: #4ade80;
+				font-weight: 500; border-radius: 3px; padding: 0 2px;
+			}
 		`;
 		this.shadow.appendChild(style);
 
@@ -671,6 +760,67 @@ export class TextEditEngine {
 		toolbar.className = "toolbar";
 		this.shadow.appendChild(toolbar);
 		this.toolbar = toolbar;
+
+		const difftip = document.createElement("div");
+		difftip.className = "difftip";
+		this.shadow.appendChild(difftip);
+		this.difftip = difftip;
+	}
+
+	/** Hover tooltip: word diff of the applied edit. Built with DOM nodes —
+	 *  page text must never reach innerHTML. */
+	private showDifftip(el: HTMLElement, record: TextEditRecord) {
+		const tip = this.difftip;
+		if (!tip) return;
+
+		tip.textContent = "";
+		const label = document.createElement("span");
+		label.className = "label";
+		label.textContent = "Your edit";
+		tip.appendChild(label);
+
+		const body = document.createElement("span");
+		for (const segment of diffWords(
+			record.originalText,
+			record.suggestedText,
+		)) {
+			const span = document.createElement("span");
+			if (segment.kind !== "same") span.className = segment.kind;
+			span.textContent = segment.text;
+			body.appendChild(span);
+		}
+		tip.appendChild(body);
+
+		this.difftipEl = el;
+		tip.style.display = "flex";
+		this.positionDifftip();
+	}
+
+	private hideDifftip() {
+		this.difftipEl = null;
+		if (this.difftip) this.difftip.style.display = "none";
+	}
+
+	private positionDifftip() {
+		const tip = this.difftip;
+		const el = this.difftipEl;
+		if (!tip || !el || tip.style.display === "none") return;
+
+		const rect = el.getBoundingClientRect();
+		const tipRect = tip.getBoundingClientRect();
+		const gap = 10;
+
+		// Above the element; below if it would collide with the banner area.
+		let top = rect.top - tipRect.height - gap;
+		if (top < 64) top = rect.bottom + gap;
+
+		let left = rect.left;
+		const maxLeft = window.innerWidth - tipRect.width - 8;
+		if (left > maxLeft) left = maxLeft;
+		if (left < 8) left = 8;
+
+		tip.style.top = `${top}px`;
+		tip.style.left = `${left}px`;
 	}
 
 	private renderBanner() {

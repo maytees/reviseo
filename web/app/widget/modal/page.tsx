@@ -577,15 +577,18 @@ const ReviseoModal = () => {
 							</div>
 						) : view === "review" ? (
 							<>
-								<DialogTitle>Review your text edits</DialogTitle>
-								<DialogDescription>
-									{textEdits.length === 1
-										? "1 suggested change"
-										: `${textEdits.length} suggested changes`}{" "}
-									— remove any you don't want, add an optional note, then
-									submit.
-								</DialogDescription>
-								<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto py-1">
+								<div className="space-y-1">
+									<DialogTitle>Review your text edits</DialogTitle>
+									<DialogDescription>
+										{textEdits.length === 1
+											? "1 suggested change"
+											: `${textEdits.length} suggested changes`}{" "}
+										— remove any you don't want, add an optional note, then
+										submit.
+									</DialogDescription>
+								</div>
+								{/* p-1 keeps focus outlines from clipping at scroll edges */}
+								<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto p-1">
 									{textEdits.map((edit) => (
 										<div
 											key={edit.id}

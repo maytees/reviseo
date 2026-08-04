@@ -28,6 +28,18 @@ const DIAL_ACTIONS = [
 	},
 ] as const;
 
+/** Red pending-edits counter, pinned to a corner of its parent. */
+const EditCountBadge = ({ count }: { count: number }) => (
+	<motion.span
+		initial={{ scale: 0 }}
+		animate={{ scale: 1 }}
+		transition={{ type: "spring", stiffness: 500, damping: 22 }}
+		className="-top-1 -right-1 absolute z-10 flex size-5 items-center justify-center rounded-full bg-red-500 font-semibold text-[10px] text-white shadow-md"
+	>
+		{count > 9 ? "9+" : count}
+	</motion.span>
+);
+
 const TriggerButton = () => {
 	const { data: hookSession, isPending } = authClient.useSession();
 
@@ -51,6 +63,9 @@ const TriggerButton = () => {
 	// expand/collapse lifecycle (EXPAND_TRIGGER before showing the dial,
 	// COLLAPSE_TRIGGER after the exit animation completes).
 	const [expanded, setExpanded] = useState(false);
+	// Unsubmitted text edits (loader-reported). Closed menu → red badge on
+	// the main button; open menu → badge moves to the text-edits circle.
+	const [editCount, setEditCount] = useState(0);
 	const triggerId = useId();
 
 	const expand = () => {
@@ -122,6 +137,13 @@ const TriggerButton = () => {
 			// pressed while the customer page has focus.
 			if (event.data?.type === "COLLAPSE_DIAL") {
 				setExpanded(false);
+				return;
+			}
+
+			if (event.data?.type === "EDIT_COUNT") {
+				setEditCount(
+					typeof event.data.count === "number" ? event.data.count : 0,
+				);
 				return;
 			}
 
@@ -306,15 +328,20 @@ const TriggerButton = () => {
 								<span className="rounded-full bg-foreground/90 px-3 py-1.5 font-medium text-background text-xs shadow-lg">
 									{action.label}
 								</span>
-								<Button
-									size="icon"
-									variant="secondary"
-									className="size-12 rounded-full border-2 border-border shadow-lg"
-									title={action.label}
-									onClick={() => handleDialAction(action.key)}
-								>
-									<action.icon className="size-5" />
-								</Button>
+								<div className="relative">
+									<Button
+										size="icon"
+										variant="secondary"
+										className="size-12 rounded-full border-2 border-border shadow-lg"
+										title={action.label}
+										onClick={() => handleDialAction(action.key)}
+									>
+										<action.icon className="size-5" />
+									</Button>
+									{action.key === "text" && editCount > 0 && (
+										<EditCountBadge count={editCount} />
+									)}
+								</div>
 							</motion.div>
 						))}
 					</div>
@@ -329,6 +356,11 @@ const TriggerButton = () => {
 				whileTap={{ scale: 1.05 }}
 				key="reviseo-trigger"
 			>
+				{/* Pending edits reminder — moves to the text-edits circle
+				    while the menu is open */}
+				{!expanded && signedIn && editCount > 0 && (
+					<EditCountBadge count={editCount} />
+				)}
 				<Button
 					disabled={isPending}
 					id={triggerId}
