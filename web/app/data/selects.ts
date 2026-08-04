@@ -20,6 +20,8 @@ export const feedbackSelect = {
 	websiteId: true,
 	authorId: true,
 	status: true,
+	approval: true,
+	approvalNote: true,
 	pageUrl: true,
 	screenshotKey: true,
 	viewport: true,

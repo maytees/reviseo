@@ -30,11 +30,14 @@ import {
 } from "@/components/ui/old-card";
 import { prisma } from "@/lib/db";
 import {
+	APPROVAL_CONFIG,
 	STATUS_BADGE_MAP,
 	STATUS_CONFIG,
 	TYPE_BADGE_MAP,
 	TYPE_CONFIG,
 } from "@/lib/types";
+import ApprovalQueue from "./_components/ApprovalQueue";
+import TeamManager from "./_components/TeamManager";
 
 export const metadata: Metadata = {
 	title: "Your Feedback",
@@ -43,9 +46,12 @@ export const metadata: Metadata = {
 export default async function ClientDashboard() {
 	const user = await requireUser();
 
-	const [websites, feedback] = await Promise.all([
+	const [websites, feedback, leadRows] = await Promise.all([
 		prisma.website.findMany({
-			where: { clientId: user.id },
+			// Legacy pointer OR client-team membership
+			where: {
+				OR: [{ clientId: user.id }, { clients: { some: { userId: user.id } } }],
+			},
 			select: {
 				id: true,
 				name: true,
@@ -60,7 +66,50 @@ export default async function ClientDashboard() {
 			orderBy: { createdAt: "desc" },
 			take: 50,
 		}),
+		prisma.websiteClient.findMany({
+			where: { userId: user.id, role: "lead" },
+			select: { websiteId: true },
+		}),
 	]);
+
+	const leadWebsiteIds = leadRows.map((row) => row.websiteId);
+
+	// Lead-only data: the client teams they manage + submissions waiting on
+	// their approval.
+	const [teams, pendingApprovals] =
+		leadWebsiteIds.length > 0
+			? await Promise.all([
+					prisma.website.findMany({
+						where: { id: { in: leadWebsiteIds } },
+						select: {
+							id: true,
+							name: true,
+							clients: {
+								select: {
+									id: true,
+									role: true,
+									trusted: true,
+									canAnnotate: true,
+									canText: true,
+									canStyle: true,
+									canImage: true,
+									user: { select: { name: true, email: true } },
+								},
+								orderBy: { createdAt: "asc" },
+							},
+						},
+					}),
+					prisma.feedback.findMany({
+						where: {
+							websiteId: { in: leadWebsiteIds },
+							approval: "PENDING",
+							authorId: { not: user.id },
+						},
+						select: feedbackSelect,
+						orderBy: { createdAt: "asc" },
+					}),
+				])
+			: [[], []];
 
 	return (
 		<div className="mx-auto flex w-full max-w-4xl flex-col gap-8 px-4 py-12 sm:px-6">
@@ -126,6 +175,48 @@ export default async function ClientDashboard() {
 				</CardContent>
 			</Card>
 
+			{/* Lead-only: approval queue */}
+			{leadWebsiteIds.length > 0 && (
+				<Card>
+					<CardHeader>
+						<CardTitle>Approvals</CardTitle>
+						<CardDescription>
+							{pendingApprovals.length === 0
+								? "Nothing waiting — team submissions land here for your review before the developer sees them"
+								: `${pendingApprovals.length} submission${pendingApprovals.length === 1 ? "" : "s"} waiting for your review`}
+						</CardDescription>
+					</CardHeader>
+					{pendingApprovals.length > 0 && (
+						<CardContent>
+							<ApprovalQueue items={pendingApprovals} />
+						</CardContent>
+					)}
+				</Card>
+			)}
+
+			{/* Lead-only: team management */}
+			{teams.length > 0 && (
+				<Card>
+					<CardHeader>
+						<CardTitle>Your team</CardTitle>
+						<CardDescription>
+							Invite teammates to review, choose which tools they can use, and
+							mark trusted people whose feedback skips your approval.
+						</CardDescription>
+					</CardHeader>
+					<CardContent className="flex flex-col gap-6">
+						{teams.map((team) => (
+							<TeamManager
+								key={team.id}
+								websiteId={team.id}
+								websiteName={team.name}
+								members={team.clients}
+							/>
+						))}
+					</CardContent>
+				</Card>
+			)}
+
 			{/* Feedback history */}
 			<Card>
 				<CardHeader>
@@ -171,12 +262,25 @@ export default async function ClientDashboard() {
 											<Badge variant={TYPE_BADGE_MAP[item.type]}>
 												{TYPE_CONFIG[item.type].label}
 											</Badge>
+											{(() => {
+												const approvalConfig = APPROVAL_CONFIG[item.approval];
+												return approvalConfig ? (
+													<Badge variant={approvalConfig.badge}>
+														{approvalConfig.label}
+													</Badge>
+												) : null;
+											})()}
 											<Badge variant={STATUS_BADGE_MAP[item.status]}>
 												<StatusIcon className="mr-1 size-3" />
 												{statusConfig.label}
 											</Badge>
 										</div>
 									</div>
+									{item.approval === "REJECTED" && item.approvalNote && (
+										<p className="text-destructive text-xs">
+											Note from your team lead: {item.approvalNote}
+										</p>
+									)}
 									{/* Edit-tool batches show their changes inline so the
 									    client can track which suggestions were applied. */}
 									{item.type === "TEXT_EDIT" && item.textEdits.length > 0 && (

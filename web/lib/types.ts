@@ -168,6 +168,18 @@ export const TYPE_BADGE_MAP: Record<FeedbackType, BadgeVariantsType> = {
 	IMAGE_EDIT: "secondary",
 };
 
+// Client-team approval pipeline. DIRECT items show no badge — they never
+// entered the queue.
+export const APPROVAL_CONFIG = {
+	DIRECT: null,
+	PENDING: {
+		label: "Awaiting approval",
+		badge: "warning" as BadgeVariantsType,
+	},
+	APPROVED: { label: "Approved", badge: "success" as BadgeVariantsType },
+	REJECTED: { label: "Rejected", badge: "destructive" as BadgeVariantsType },
+} as const;
+
 export const TEXT_EDIT_STATUS_CONFIG = {
 	PENDING: { label: "Pending", icon: ClockIcon, color: "text-amber-500" },
 	APPLIED: {
@@ -210,6 +222,8 @@ export type FeedbackSelectAllPayload = Prisma.FeedbackGetPayload<{
 		websiteId: true;
 		authorId: true;
 		status: true;
+		approval: true;
+		approvalNote: true;
 		pageUrl: true;
 		viewport: true;
 		priority: true;

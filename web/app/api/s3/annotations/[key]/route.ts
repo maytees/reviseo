@@ -21,7 +21,7 @@ export async function GET(
 	const feedback = await prisma.feedback.findFirst({
 		where: { screenshotKey: key },
 		select: {
-			website: { select: { organizationId: true, clientId: true } },
+			website: { select: { id: true, organizationId: true, clientId: true } },
 		},
 	});
 

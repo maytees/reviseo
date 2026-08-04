@@ -49,7 +49,7 @@ export async function POST(request: Request) {
 		// upload replacement images for it.
 		const website = await prisma.website.findUnique({
 			where: { projectId },
-			select: { organizationId: true, clientId: true },
+			select: { id: true, organizationId: true, clientId: true },
 		});
 
 		if (!website || !(await userCanAccessWebsite(session.user.id, website))) {

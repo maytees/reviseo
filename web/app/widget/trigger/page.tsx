@@ -91,6 +91,14 @@ const TriggerButton = () => {
 		style: number;
 		image: number;
 	}>({ text: 0, style: 0, image: 0 });
+	// Per-tool permissions from /api/widget/allowed. Client-team members may
+	// have some tools disabled by their lead; everyone else gets all four.
+	const [capabilities, setCapabilities] = useState<Record<string, boolean>>({
+		annotate: true,
+		text: true,
+		style: true,
+		image: true,
+	});
 	const triggerId = useId();
 
 	const expand = () => {
@@ -286,6 +294,14 @@ const TriggerButton = () => {
 
 				if (data.allowed === true) {
 					setAllowed(true);
+					if (data.capabilities && typeof data.capabilities === "object") {
+						setCapabilities({
+							annotate: data.capabilities.annotate !== false,
+							text: data.capabilities.text !== false,
+							style: data.capabilities.style !== false,
+							image: data.capabilities.image !== false,
+						});
+					}
 				} else {
 					setAllowed(false);
 					setHealthy(false); // hide widget if not allowed
@@ -329,54 +345,57 @@ const TriggerButton = () => {
 			>
 				{expanded && (
 					<div className="absolute right-2 bottom-[76px] flex flex-col items-end gap-3">
-						{[...DIAL_ACTIONS].reverse().map((action, i) => (
-							<motion.div
-								key={action.key}
-								className="flex items-center gap-2.5"
-								initial={{ opacity: 0, y: 18, scale: 0.5 }}
-								animate={{
-									opacity: 1,
-									y: 0,
-									scale: 1,
-									transition: {
-										type: "spring",
-										stiffness: 420,
-										damping: 24,
-										delay: (DIAL_ACTIONS.length - 1 - i) * 0.05,
-									},
-								}}
-								exit={{
-									opacity: 0,
-									y: 12,
-									scale: 0.6,
-									transition: { duration: 0.12, delay: i * 0.03 },
-								}}
-							>
-								<span className="rounded-full bg-foreground/90 px-3 py-1.5 font-medium text-background text-xs shadow-lg">
-									{action.label}
-								</span>
-								<div className="relative">
-									<Button
-										size="icon"
-										variant="secondary"
-										className="size-12 rounded-full border-2 border-border shadow-lg"
-										title={action.label}
-										onClick={() => handleDialAction(action)}
-									>
-										<action.icon className="size-5" />
-									</Button>
-									{action.key === "text" && modeCounts.text > 0 && (
-										<EditCountBadge count={modeCounts.text} />
-									)}
-									{action.key === "style" && modeCounts.style > 0 && (
-										<EditCountBadge count={modeCounts.style} />
-									)}
-									{action.key === "image" && modeCounts.image > 0 && (
-										<EditCountBadge count={modeCounts.image} />
-									)}
-								</div>
-							</motion.div>
-						))}
+						{[...DIAL_ACTIONS]
+							.filter((action) => capabilities[action.key] !== false)
+							.reverse()
+							.map((action, i) => (
+								<motion.div
+									key={action.key}
+									className="flex items-center gap-2.5"
+									initial={{ opacity: 0, y: 18, scale: 0.5 }}
+									animate={{
+										opacity: 1,
+										y: 0,
+										scale: 1,
+										transition: {
+											type: "spring",
+											stiffness: 420,
+											damping: 24,
+											delay: i * 0.05,
+										},
+									}}
+									exit={{
+										opacity: 0,
+										y: 12,
+										scale: 0.6,
+										transition: { duration: 0.12, delay: i * 0.03 },
+									}}
+								>
+									<span className="rounded-full bg-foreground/90 px-3 py-1.5 font-medium text-background text-xs shadow-lg">
+										{action.label}
+									</span>
+									<div className="relative">
+										<Button
+											size="icon"
+											variant="secondary"
+											className="size-12 rounded-full border-2 border-border shadow-lg"
+											title={action.label}
+											onClick={() => handleDialAction(action)}
+										>
+											<action.icon className="size-5" />
+										</Button>
+										{action.key === "text" && modeCounts.text > 0 && (
+											<EditCountBadge count={modeCounts.text} />
+										)}
+										{action.key === "style" && modeCounts.style > 0 && (
+											<EditCountBadge count={modeCounts.style} />
+										)}
+										{action.key === "image" && modeCounts.image > 0 && (
+											<EditCountBadge count={modeCounts.image} />
+										)}
+									</div>
+								</motion.div>
+							))}
 					</div>
 				)}
 			</AnimatePresence>

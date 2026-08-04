@@ -19,7 +19,7 @@ export async function GET(
 
 	const website = await prisma.website.findFirst({
 		where: { screenshotKey: key },
-		select: { organizationId: true, clientId: true },
+		select: { id: true, organizationId: true, clientId: true },
 	});
 
 	if (!website || !(await userCanAccessWebsite(session.user.id, website))) {

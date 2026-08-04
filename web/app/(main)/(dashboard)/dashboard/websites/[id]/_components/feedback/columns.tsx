@@ -84,7 +84,24 @@ export const columns: ColumnDef<Feedback>[] = [
 		},
 		cell: ({ row }) => {
 			const title = row.getValue("title") as string;
-			return <div className="font-medium">{title}</div>;
+			// Pending items exist but haven't been approved by the client's
+			// lead yet — visible to you, actionable once approved.
+			const pending = row.original.approval === "PENDING";
+			return (
+				<div className={pending ? "opacity-60" : undefined}>
+					<div className="font-medium">{title}</div>
+					{pending && (
+						<Badge variant="warning" size="sm" className="mt-1">
+							Awaiting client approval
+						</Badge>
+					)}
+					{row.original.approval === "REJECTED" && (
+						<Badge variant="destructive" size="sm" className="mt-1">
+							Rejected by client lead
+						</Badge>
+					)}
+				</div>
+			);
 		},
 	},
 	{

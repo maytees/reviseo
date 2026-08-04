@@ -24,7 +24,9 @@ export async function GET(
 		select: {
 			feedback: {
 				select: {
-					website: { select: { organizationId: true, clientId: true } },
+					website: {
+						select: { id: true, organizationId: true, clientId: true },
+					},
 				},
 			},
 		},

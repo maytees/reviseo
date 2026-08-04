@@ -49,6 +49,17 @@ enum InviteStatus {
   REVOKED
 }
 
+// Feedback approval pipeline for client teams: submissions from regular
+// client members wait for the lead client's approval before the developer
+// treats them as actionable. Leads, trusted members, and workspace members
+// submit DIRECT.
+enum ApprovalStatus {
+  DIRECT
+  PENDING
+  APPROVED
+  REJECTED
+}
+
 model Website {
   id        String @id @default(cuid())
   name      String
@@ -68,10 +79,12 @@ model Website {
   developerId String
   developer   User   @relation("DeveloperWebsites", fields: [developerId], references: [id], onDelete: Cascade)
 
-  // This is only optional beacuse of the onboarding
+  // Legacy single-client pointer (kept for compatibility; reads go through
+  // WebsiteClient). Still set to the lead client.
   clientId String?
   client   User?   @relation("ClientWebsites", fields: [clientId], references: [id], onDelete: SetNull)
 
+  clients  WebsiteClient[]
   feedback Feedback[]
   invites  Invite[]
 
@@ -82,6 +95,35 @@ model Website {
   @@index([organizationId])
   @@index([developerId])
   @@index([clientId])
+}
+
+// The members of a website's client team. One lead (the admin client the
+// developer invited) plus members the lead invited, each with per-tool
+// permissions. Trusted members skip the lead's approval queue.
+model WebsiteClient {
+  id        String  @id @default(cuid())
+  websiteId String
+  website   Website @relation(fields: [websiteId], references: [id], onDelete: Cascade)
+  userId    String
+  user      User    @relation("WebsiteClientMemberships", fields: [userId], references: [id], onDelete: Cascade)
+
+  // "lead" | "member"
+  role    String  @default("member")
+  trusted Boolean @default(false)
+
+  // What this client may do in the widget
+  canAnnotate Boolean @default(true)
+  canText     Boolean @default(true)
+  canStyle    Boolean @default(true)
+  canImage    Boolean @default(true)
+
+  // The lead who invited them (null for developer-invited leads)
+  invitedById String?
+
+  createdAt DateTime @default(now())
+
+  @@unique([websiteId, userId])
+  @@index([userId])
 }
 
 model Feedback {
@@ -98,6 +140,12 @@ model Feedback {
   title       String
   description String?
   pageUrl     String
+
+  // Client-team approval pipeline
+  approval     ApprovalStatus @default(DIRECT)
+  approvedById String?
+  approvedAt   DateTime?
+  approvalNote String?
 
   // Optional: TEXT_EDIT feedback has no screenshot.
   screenshotKey String?
@@ -198,6 +246,17 @@ model Invite {
   expiresAt  DateTime?
   acceptedAt DateTime?
 
+  // Client-team fields: what the accepted user becomes.
+  // "lead" (developer-invited) | "member" (lead-invited)
+  clientRole  String  @default("lead")
+  trusted     Boolean @default(false)
+  canAnnotate Boolean @default(true)
+  canText     Boolean @default(true)
+  canStyle    Boolean @default(true)
+  canImage    Boolean @default(true)
+  // The lead who sent a member invite (userId)
+  invitedById String?
+
   createdAt DateTime @default(now())
 
   @@index([websiteId])
@@ -249,8 +308,9 @@ model User {
   emailNotifications     Boolean  @default(true)
 
   // Reviseo relations
-  developerWebsites Website[]     @relation("DeveloperWebsites")
-  clientWebsites    Website[]     @relation("ClientWebsites")
+  developerWebsites Website[]       @relation("DeveloperWebsites")
+  clientWebsites    Website[]       @relation("ClientWebsites")
+  clientMemberships WebsiteClient[] @relation("WebsiteClientMemberships")
   feedback          Feedback[]
   subscription      Subscription?
 

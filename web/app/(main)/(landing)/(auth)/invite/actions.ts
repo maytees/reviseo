@@ -58,10 +58,39 @@ export async function finalizeClientToken(
 			};
 		}
 
-		await prisma.website.update({
-			where: { id: existingWebsite.id },
-			data: { client: { connect: { id: user.id } } },
+		// Join the website's client team with the role/permissions the invite
+		// carries. Leads also stay on the legacy clientId pointer.
+		await prisma.websiteClient.upsert({
+			where: {
+				websiteId_userId: { websiteId: existingWebsite.id, userId: user.id },
+			},
+			create: {
+				websiteId: existingWebsite.id,
+				userId: user.id,
+				role: invite.clientRole,
+				trusted: invite.trusted,
+				canAnnotate: invite.canAnnotate,
+				canText: invite.canText,
+				canStyle: invite.canStyle,
+				canImage: invite.canImage,
+				invitedById: invite.invitedById,
+			},
+			update: {
+				role: invite.clientRole,
+				trusted: invite.trusted,
+				canAnnotate: invite.canAnnotate,
+				canText: invite.canText,
+				canStyle: invite.canStyle,
+				canImage: invite.canImage,
+			},
 		});
+
+		if (invite.clientRole === "lead" && !existingWebsite.clientId) {
+			await prisma.website.update({
+				where: { id: existingWebsite.id },
+				data: { client: { connect: { id: user.id } } },
+			});
+		}
 
 		// Set invite to accepted
 		await prisma.invite.update({

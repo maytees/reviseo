@@ -53,6 +53,7 @@ import {
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
 import {
+	APPROVAL_CONFIG,
 	type FeedbackSelectAllPayload,
 	PRIORITY_BADGE_MAP,
 	PRIORITY_CONFIG,
@@ -332,6 +333,32 @@ const FeedbackTable = ({
 										Status
 									</TooltipContent>
 								</Tooltip> */}
+								{(() => {
+									const approvalConfig =
+										APPROVAL_CONFIG[selectedFeedback.approval];
+									return approvalConfig ? (
+										<Tooltip>
+											<TooltipTrigger>
+												<Badge
+													variant={approvalConfig.badge}
+													appearance="outline"
+													size="lg"
+													className="hover:cursor-default"
+												>
+													{approvalConfig.label}
+												</Badge>
+											</TooltipTrigger>
+											<TooltipContent>
+												{selectedFeedback.approval === "PENDING"
+													? "The client's lead hasn't approved this yet"
+													: selectedFeedback.approval === "REJECTED"
+														? (selectedFeedback.approvalNote ??
+															"Rejected by the client lead")
+														: "Approved by the client lead"}
+											</TooltipContent>
+										</Tooltip>
+									) : null;
+								})()}
 								<Tooltip>
 									<TooltipTrigger>
 										<Badge

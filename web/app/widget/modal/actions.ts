@@ -18,6 +18,48 @@ import {
 	textEditsSubmissionSchema,
 } from "@/lib/validations";
 
+type SubmissionTool = "annotate" | "text" | "style" | "image";
+
+/** Who may submit, with which tools, and whether it needs lead approval.
+ *  - workspace members, leads, trusted client members → DIRECT
+ *  - regular client members → PENDING (lead approval queue)
+ *  Returns null when the user has no access or lacks the tool permission. */
+async function authorizeSubmission(
+	userId: string,
+	website: { id: string; organizationId: string; clientId: string | null },
+	tool: SubmissionTool,
+): Promise<{ approval: "DIRECT" | "PENDING" } | null> {
+	const clientRow = await prisma.websiteClient.findUnique({
+		where: { websiteId_userId: { websiteId: website.id, userId } },
+	});
+
+	if (clientRow) {
+		const toolAllowed = {
+			annotate: clientRow.canAnnotate,
+			text: clientRow.canText,
+			style: clientRow.canStyle,
+			image: clientRow.canImage,
+		}[tool];
+		if (!toolAllowed) return null;
+		const direct = clientRow.role === "lead" || clientRow.trusted;
+		return { approval: direct ? "DIRECT" : "PENDING" };
+	}
+
+	// Legacy single-client pointer (pre-backfill rows)
+	if (website.clientId === userId) return { approval: "DIRECT" };
+
+	const membership = await prisma.member.findUnique({
+		where: {
+			organizationId_userId: {
+				organizationId: website.organizationId,
+				userId,
+			},
+		},
+		select: { id: true },
+	});
+	return membership ? { approval: "DIRECT" } : null;
+}
+
 // Parent website URL, e.g clientsite.com
 export async function submitFeedbackForm(
 	pageUrl: string,
@@ -56,27 +98,15 @@ export async function submitFeedbackForm(
 			return { status: "error", message: "Could not find valid website" };
 		}
 
-		// Authorized submitters: the website's feedback client, or any member
-		// of the workspace that owns the website.
-		const isClient = existingWebsite.clientId === user.id;
-		const isMember = !isClient
-			? Boolean(
-					await prisma.member.findUnique({
-						where: {
-							organizationId_userId: {
-								organizationId: existingWebsite.organizationId,
-								userId: user.id,
-							},
-						},
-						select: { id: true },
-					}),
-				)
-			: false;
-
-		if (!isClient && !isMember) {
+		const authz = await authorizeSubmission(
+			user.id,
+			existingWebsite,
+			"annotate",
+		);
+		if (!authz) {
 			return {
 				status: "error",
-				message: "You don't have access to submit feedback for this website",
+				message: "You don't have access to submit this type of feedback",
 			};
 		}
 
@@ -88,6 +118,7 @@ export async function submitFeedbackForm(
 				priority,
 				screenshotKey,
 				pageUrl,
+				approval: authz.approval,
 				viewport,
 				browser: browserInfo?.browser,
 				os: browserInfo?.os,
@@ -99,7 +130,10 @@ export async function submitFeedbackForm(
 			},
 		});
 
-		if (existingWebsite.developer.emailNotifications) {
+		if (
+			authz.approval === "DIRECT" &&
+			existingWebsite.developer.emailNotifications
+		) {
 			const emailResponse = await resend.emails.send({
 				from: "Reviseo <info@reviseo.app>",
 				to: [existingWebsite.developer.email],
@@ -166,27 +200,11 @@ export async function submitTextEdits(
 			return { status: "error", message: "Could not find valid website" };
 		}
 
-		// Same rule as screenshot feedback: the website's client, or any
-		// member of the owning workspace.
-		const isClient = existingWebsite.clientId === user.id;
-		const isMember = !isClient
-			? Boolean(
-					await prisma.member.findUnique({
-						where: {
-							organizationId_userId: {
-								organizationId: existingWebsite.organizationId,
-								userId: user.id,
-							},
-						},
-						select: { id: true },
-					}),
-				)
-			: false;
-
-		if (!isClient && !isMember) {
+		const authz = await authorizeSubmission(user.id, existingWebsite, "text");
+		if (!authz) {
 			return {
 				status: "error",
-				message: "You don't have access to submit feedback for this website",
+				message: "You don't have access to submit this type of feedback",
 			};
 		}
 
@@ -209,6 +227,7 @@ export async function submitTextEdits(
 				type: "TEXT_EDIT",
 				description: note || null,
 				priority: "LOW",
+				approval: authz.approval,
 				pageUrl,
 				viewport,
 				browser: browserInfo?.browser,
@@ -229,7 +248,10 @@ export async function submitTextEdits(
 			},
 		});
 
-		if (existingWebsite.developer.emailNotifications) {
+		if (
+			authz.approval === "DIRECT" &&
+			existingWebsite.developer.emailNotifications
+		) {
 			const emailResponse = await resend.emails.send({
 				from: "Reviseo <info@reviseo.app>",
 				to: [existingWebsite.developer.email],
@@ -301,27 +323,11 @@ export async function submitStyleEdits(
 			return { status: "error", message: "Could not find valid website" };
 		}
 
-		// Same rule as the other feedback types: the website's client, or any
-		// member of the owning workspace.
-		const isClient = existingWebsite.clientId === user.id;
-		const isMember = !isClient
-			? Boolean(
-					await prisma.member.findUnique({
-						where: {
-							organizationId_userId: {
-								organizationId: existingWebsite.organizationId,
-								userId: user.id,
-							},
-						},
-						select: { id: true },
-					}),
-				)
-			: false;
-
-		if (!isClient && !isMember) {
+		const authz = await authorizeSubmission(user.id, existingWebsite, "style");
+		if (!authz) {
 			return {
 				status: "error",
-				message: "You don't have access to submit feedback for this website",
+				message: "You don't have access to submit this type of feedback",
 			};
 		}
 
@@ -344,6 +350,7 @@ export async function submitStyleEdits(
 				type: "STYLE_EDIT",
 				description: note || null,
 				priority: "LOW",
+				approval: authz.approval,
 				pageUrl,
 				viewport,
 				browser: browserInfo?.browser,
@@ -363,7 +370,10 @@ export async function submitStyleEdits(
 			},
 		});
 
-		if (existingWebsite.developer.emailNotifications) {
+		if (
+			authz.approval === "DIRECT" &&
+			existingWebsite.developer.emailNotifications
+		) {
 			const emailResponse = await resend.emails.send({
 				from: "Reviseo <info@reviseo.app>",
 				to: [existingWebsite.developer.email],
@@ -440,25 +450,11 @@ export async function submitImageEdits(
 			return { status: "error", message: "Could not find valid website" };
 		}
 
-		const isClient = existingWebsite.clientId === user.id;
-		const isMember = !isClient
-			? Boolean(
-					await prisma.member.findUnique({
-						where: {
-							organizationId_userId: {
-								organizationId: existingWebsite.organizationId,
-								userId: user.id,
-							},
-						},
-						select: { id: true },
-					}),
-				)
-			: false;
-
-		if (!isClient && !isMember) {
+		const authz = await authorizeSubmission(user.id, existingWebsite, "image");
+		if (!authz) {
 			return {
 				status: "error",
-				message: "You don't have access to submit feedback for this website",
+				message: "You don't have access to submit this type of feedback",
 			};
 		}
 
@@ -481,6 +477,7 @@ export async function submitImageEdits(
 				type: "IMAGE_EDIT",
 				description: note || null,
 				priority: "LOW",
+				approval: authz.approval,
 				pageUrl,
 				viewport,
 				browser: browserInfo?.browser,
@@ -501,7 +498,10 @@ export async function submitImageEdits(
 			},
 		});
 
-		if (existingWebsite.developer.emailNotifications) {
+		if (
+			authz.approval === "DIRECT" &&
+			existingWebsite.developer.emailNotifications
+		) {
 			const emailResponse = await resend.emails.send({
 				from: "Reviseo <info@reviseo.app>",
 				to: [existingWebsite.developer.email],
