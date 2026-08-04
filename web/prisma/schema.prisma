@@ -256,6 +256,8 @@ model Invitation {
   // "pending" | "accepted" | "rejected" | "canceled"
   status         String       @default("pending")
   expiresAt      DateTime
+  // Better Auth ≥1.6 writes this on invite creation
+  createdAt      DateTime     @default(now())
   inviterId      String
   user           User         @relation(fields: [inviterId], references: [id], onDelete: Cascade)
 
