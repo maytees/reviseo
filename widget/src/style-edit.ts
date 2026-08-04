@@ -572,6 +572,9 @@ export class StyleEditEngine {
 			}
 			.row { display: flex; align-items: center; gap: 8px; }
 			.row label { flex: 1; color: ${T.foreground}; font-size: 12px; }
+			.field { display: flex; flex-direction: column; gap: 4px; }
+			.field label { color: ${T.mutedForeground}; font-size: 11px; }
+			.controls { display: flex; align-items: center; gap: 8px; }
 			.grid4 { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
 			.grid4 .cell { display: flex; flex-direction: column; gap: 3px; }
 			.grid4 .cell span { font-size: 10px; color: ${T.mutedForeground}; text-align: center; }
@@ -586,8 +589,7 @@ export class StyleEditEngine {
 				width: 30px; height: 30px; padding: 2px; border: 1px solid ${T.border};
 				border-radius: 8px; background: transparent; cursor: pointer;
 			}
-			.num { width: 72px; flex: none; }
-			.hex { width: 88px; flex: none; font-family: ui-monospace, monospace; }
+			.hex { flex: 1; min-width: 0; font-family: ui-monospace, monospace; }
 			.actions { display: flex; gap: 6px; justify-content: flex-end; padding-top: 2px; }
 			.actions button {
 				font-size: 12px; font-weight: 500; padding: 8px 12px; border-radius: 8px;
@@ -688,11 +690,15 @@ export class StyleEditEngine {
 		const currentValue = (prop: PropDef) =>
 			this.pending.get(prop.kebab) ?? this.beforeValues.get(prop.kebab) ?? "";
 
+		// Label stacked on top, controls below — the side-by-side layout
+		// overflowed the panel horizontally.
 		const addColorRow = (prop: PropDef) => {
-			const row = document.createElement("div");
-			row.className = "row";
+			const field = document.createElement("div");
+			field.className = "field";
 			const label = document.createElement("label");
 			label.textContent = prop.label;
+			const controls = document.createElement("div");
+			controls.className = "controls";
 			const color = document.createElement("input");
 			color.type = "color";
 			color.value = toHex(currentValue(prop));
@@ -710,14 +716,14 @@ export class StyleEditEngine {
 					this.setPending(prop.kebab, hex.value);
 				}
 			});
-			row.append(label, color, hex);
-			panel.appendChild(row);
+			controls.append(color, hex);
+			field.append(label, controls);
+			panel.appendChild(field);
 		};
 
-		const pxInput = (prop: PropDef, compact = false) => {
+		const pxInput = (prop: PropDef) => {
 			const input = document.createElement("input");
 			input.type = "number";
-			if (!compact) input.className = "num";
 			input.step = "1";
 			input.value = String(Math.round(parseFloat(currentValue(prop)) || 0));
 			input.addEventListener("input", () => {
@@ -728,12 +734,12 @@ export class StyleEditEngine {
 		};
 
 		const addPxRow = (prop: PropDef) => {
-			const row = document.createElement("div");
-			row.className = "row";
+			const field = document.createElement("div");
+			field.className = "field";
 			const label = document.createElement("label");
 			label.textContent = prop.label;
-			row.append(label, pxInput(prop));
-			panel.appendChild(row);
+			field.append(label, pxInput(prop));
+			panel.appendChild(field);
 		};
 
 		const addWeightRow = (prop: PropDef) => {
@@ -766,7 +772,7 @@ export class StyleEditEngine {
 				cell.className = "cell";
 				const span = document.createElement("span");
 				span.textContent = prop.label;
-				cell.append(pxInput(prop, true), span);
+				cell.append(pxInput(prop), span);
 				grid.appendChild(cell);
 			}
 			panel.appendChild(grid);
