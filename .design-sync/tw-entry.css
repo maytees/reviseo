@@ -1,0 +1,8 @@
+/* Design-sync Tailwind entry: compiles the app theme + utilities for the
+   synced component bundle. Output: web/.ds-tailwind.css (gitignored).
+   Inter/JetBrains Mono load remotely here because the app serves them via
+   next/font, which can't ship with a standalone bundle. */
+@import url("https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=JetBrains+Mono:ital,wght@0,100..800;1,100..800&display=swap");
+@import "../web/app/(main)/globals.css";
+@source "./previews";
