@@ -9,6 +9,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import { requireUser } from "@/app/data/require-user";
 import { feedbackSelect } from "@/app/data/selects";
+import TextEditList from "@/components/text-edit-list";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -154,24 +155,31 @@ export default async function ClientDashboard() {
 							return (
 								<div
 									key={item.id}
-									className="flex flex-col gap-2 rounded-lg border border-border p-4 sm:flex-row sm:items-center sm:justify-between"
+									className="flex flex-col gap-2 rounded-lg border border-border p-4"
 								>
-									<div className="flex min-w-0 flex-col gap-1">
-										<span className="truncate font-medium">{item.title}</span>
-										<span className="flex items-center gap-1.5 text-muted-foreground text-xs">
-											<MessageCircle className="size-3" />
-											{item.website.name} · {moment(item.createdAt).fromNow()}
-										</span>
+									<div className="flex flex-col gap-2 sm:flex-row sm:items-center sm:justify-between">
+										<div className="flex min-w-0 flex-col gap-1">
+											<span className="truncate font-medium">{item.title}</span>
+											<span className="flex items-center gap-1.5 text-muted-foreground text-xs">
+												<MessageCircle className="size-3" />
+												{item.website.name} · {moment(item.createdAt).fromNow()}
+											</span>
+										</div>
+										<div className="flex shrink-0 items-center gap-2">
+											<Badge variant={TYPE_BADGE_MAP[item.type]}>
+												{TYPE_CONFIG[item.type].label}
+											</Badge>
+											<Badge variant={STATUS_BADGE_MAP[item.status]}>
+												<StatusIcon className="mr-1 size-3" />
+												{statusConfig.label}
+											</Badge>
+										</div>
 									</div>
-									<div className="flex shrink-0 items-center gap-2">
-										<Badge variant={TYPE_BADGE_MAP[item.type]}>
-											{TYPE_CONFIG[item.type].label}
-										</Badge>
-										<Badge variant={STATUS_BADGE_MAP[item.status]}>
-											<StatusIcon className="mr-1 size-3" />
-											{statusConfig.label}
-										</Badge>
-									</div>
+									{/* Text-edit batches show their diffs inline so the
+									    client can track which suggestions were applied. */}
+									{item.type === "TEXT_EDIT" && item.textEdits.length > 0 && (
+										<TextEditList edits={item.textEdits} readOnly />
+									)}
 								</div>
 							);
 						})

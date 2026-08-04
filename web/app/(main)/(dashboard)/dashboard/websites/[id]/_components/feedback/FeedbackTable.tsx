@@ -56,6 +56,7 @@ import {
 	TYPE_BADGE_MAP,
 	TYPE_CONFIG,
 } from "@/lib/types";
+import TextEditList from "@/components/text-edit-list";
 import ScreenshotPreview from "../../../../_components/ScreenshotPreview";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
@@ -205,38 +206,59 @@ const FeedbackTable = ({
 								use
 							</DialogDescription>
 						</DialogHeader>
-						<div className="my-2 flex w-full flex-row items-center justify-between">
-							<div>
-								<h2 className="font-semibold text-lg">Annotated Image</h2>
-								<p className="text-muted-foreground text-xs">
-									Click on image to expand
-								</p>
-							</div>
+						{selectedFeedback.type === "TEXT_EDIT" ? (
+							<>
+								<div className="my-2 flex w-full flex-row items-center justify-between">
+									<div>
+										<h2 className="font-semibold text-lg">
+											Suggested Text Edits
+										</h2>
+										<p className="text-muted-foreground text-xs">
+											Review each change, copy the new text, then mark it
+											applied or rejected
+										</p>
+									</div>
+								</div>
+								<TextEditList edits={selectedFeedback.textEdits} />
+							</>
+						) : (
+							selectedFeedback.screenshotKey && (
+								<>
+									<div className="my-2 flex w-full flex-row items-center justify-between">
+										<div>
+											<h2 className="font-semibold text-lg">Annotated Image</h2>
+											<p className="text-muted-foreground text-xs">
+												Click on image to expand
+											</p>
+										</div>
 
-							<Tooltip>
-								<TooltipTrigger asChild>
-									<Button asChild variant={"ghost"} mode={"icon"}>
-										<Link
-											href={`/api/s3/annotations/${selectedFeedback.screenshotKey}`}
-											download={`${selectedFeedback.id}-${selectedFeedback.timestamp}`}
-											target="_blank"
-										>
-											<Download />
-										</Link>
-									</Button>
-								</TooltipTrigger>
-								<TooltipContent>Download (SVG)</TooltipContent>
-							</Tooltip>
-						</div>
+										<Tooltip>
+											<TooltipTrigger asChild>
+												<Button asChild variant={"ghost"} mode={"icon"}>
+													<Link
+														href={`/api/s3/annotations/${selectedFeedback.screenshotKey}`}
+														download={`${selectedFeedback.id}-${selectedFeedback.timestamp}`}
+														target="_blank"
+													>
+														<Download />
+													</Link>
+												</Button>
+											</TooltipTrigger>
+											<TooltipContent>Download (SVG)</TooltipContent>
+										</Tooltip>
+									</div>
 
-						<div className="rounded-sm border border-card bg-card/30 p-3">
-							<ScreenshotPreview
-								app_url=""
-								className="rounded-sm lg:w-full"
-								screenshotKey={selectedFeedback.screenshotKey}
-								onZoomChange={setIsImageZoomed}
-							/>
-						</div>
+									<div className="rounded-sm border border-card bg-card/30 p-3">
+										<ScreenshotPreview
+											app_url=""
+											className="rounded-sm lg:w-full"
+											screenshotKey={selectedFeedback.screenshotKey}
+											onZoomChange={setIsImageZoomed}
+										/>
+									</div>
+								</>
+							)
+						)}
 
 						<div className="flex flex-row items-center justify-between">
 							<div>
@@ -293,17 +315,12 @@ const FeedbackTable = ({
 											})()}
 
 											<span className="hidden md:block">
-												{selectedFeedback.type.charAt(0) +
-													selectedFeedback.type.substring(1).toLowerCase()}
+												{TYPE_CONFIG[selectedFeedback.type].label}
 											</span>
 										</Badge>
 									</TooltipTrigger>
 									<TooltipContent>
-										{selectedFeedback.type
-											.toLowerCase()
-											.charAt(0)
-											.toUpperCase() +
-											selectedFeedback.type.substring(1).toLowerCase()}{" "}
+										{TYPE_CONFIG[selectedFeedback.type].label}
 									</TooltipContent>
 								</Tooltip>
 								<Tooltip>

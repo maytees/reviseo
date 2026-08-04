@@ -1,6 +1,7 @@
 import { snapdom } from "@zumer/snapdom";
 import { useEffect, useRef } from "preact/hooks";
 import { useUserAgent } from "./hooks/useBrowserInfo";
+import { TextEditEngine } from "./text-edit";
 
 /** Remove all HTML comments (prevents invalid XML like "--") */
 function removeAllComments(root) {
@@ -195,6 +196,13 @@ const WIDGET_ORIGIN =
 
 const CLIENT_HINT_KEY = "__reviseo_client";
 const CLIENT_HINT_FRAGMENT = "reviseo-connect";
+// First-party flag: this browser already saw the text-edit onboarding card.
+const TEXT_ONBOARDING_KEY = "__reviseo_text_onboarding";
+
+// Trigger iframe sizes: collapsed = just the round button; expanded = room
+// for the speed-dial circles and their tooltips.
+const TRIGGER_COLLAPSED = { width: "64px", height: "64px" };
+const TRIGGER_EXPANDED = { width: "240px", height: "240px" };
 
 /**
  * Client hint: invite emails and the client dashboard link to the customer
@@ -234,6 +242,8 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 	const browserInfoRef = useRef(browserInfo);
 	browserInfoRef.current = browserInfo;
 
+	const textEngineRef = useRef<TextEditEngine | null>(null);
+
 	useEffect(() => {
 		// Health check timeout (generous: first load may compile/hydrate slowly)
 		healthTimeoutRef.current = window.setTimeout(() => {
@@ -253,12 +263,103 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 		};
 		containerRef.current?.appendChild(modalIframe);
 
+		const setTriggerSize = (size: { width: string; height: string }) => {
+			const trigger = triggerIframeRef.current;
+			if (!trigger) return;
+			trigger.style.width = size.width;
+			trigger.style.height = size.height;
+		};
+
+		const showModal = (message: Record<string, unknown>) => {
+			const modal = document.getElementById(
+				"reviseo-modal",
+			) as HTMLIFrameElement | null;
+			if (!modal) return;
+			modal.style.display = "block";
+			modal.contentWindow?.postMessage(message, WIDGET_ORIGIN);
+		};
+
+		const startTextMode = () => {
+			if (!textEngineRef.current) {
+				textEngineRef.current = new TextEditEngine();
+			}
+			const engine = textEngineRef.current;
+			if (engine.isActive()) return;
+
+			// The banner owns the screen during text mode; the trigger returns
+			// when the mode ends.
+			if (triggerIframeRef.current) {
+				triggerIframeRef.current.style.display = "none";
+			}
+			setTriggerSize(TRIGGER_COLLAPSED);
+
+			engine.start({
+				onEditsChanged: () => {},
+				onReview: (edits) => {
+					showModal({
+						type: "SHOW_TEXT_REVIEW",
+						edits,
+						url: window.location.href,
+					});
+				},
+				onExit: () => {
+					if (triggerIframeRef.current) {
+						triggerIframeRef.current.style.display = "block";
+					}
+				},
+			});
+		};
+
 		// Message listener
 		const handleMessage = async (event: MessageEvent) => {
 			if (event.origin !== WIDGET_ORIGIN) return;
 			if (!event.data?.type) return;
 
 			switch (event.data.type) {
+				case "EXPAND_TRIGGER":
+					setTriggerSize(TRIGGER_EXPANDED);
+					break;
+
+				case "COLLAPSE_TRIGGER":
+					setTriggerSize(TRIGGER_COLLAPSED);
+					break;
+
+				case "TEXT_MODE_START": {
+					let seen = false;
+					try {
+						seen = localStorage.getItem(TEXT_ONBOARDING_KEY) === "1";
+					} catch {}
+					if (seen) {
+						startTextMode();
+					} else {
+						showModal({ type: "SHOW_TEXT_GUIDE" });
+					}
+					break;
+				}
+
+				case "TEXT_GUIDE_DONE": {
+					try {
+						localStorage.setItem(TEXT_ONBOARDING_KEY, "1");
+					} catch {}
+					const modal = document.getElementById("reviseo-modal");
+					if (modal) modal.style.display = "none";
+					startTextMode();
+					break;
+				}
+
+				case "TEXT_EDIT_REMOVED":
+					if (typeof event.data.id === "string") {
+						textEngineRef.current?.removeEdit(event.data.id);
+					}
+					break;
+
+				case "TEXT_SUBMITTED":
+					// Batch is saved server-side; wipe local state and restore
+					// the page. The modal keeps showing its success view until
+					// it closes itself (CLOSE_FORM).
+					textEngineRef.current?.clearAfterSubmit();
+					break;
+
 				case "HEALTH_CHECK":
 					// Respond to health check
 					triggerIframeRef.current?.contentWindow?.postMessage(
@@ -375,6 +476,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 			if (healthTimeoutRef.current) {
 				clearTimeout(healthTimeoutRef.current);
 			}
+			textEngineRef.current?.stop();
 			modalIframe.remove();
 		};
 		// Mount-once: modal iframe + listener must not be duplicated.

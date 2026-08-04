@@ -11,6 +11,7 @@ import {
 	type LucideIcon,
 	PlayIcon,
 	SparklesIcon,
+	TextCursorInputIcon,
 	TriangleAlertIcon,
 	XCircleIcon,
 } from "lucide-react";
@@ -128,6 +129,11 @@ export const TYPE_CONFIG: Record<
 		icon: SparklesIcon,
 		color: "text-blue-600",
 	},
+	TEXT_EDIT: {
+		label: "Text edits",
+		icon: TextCursorInputIcon,
+		color: "text-violet-600",
+	},
 } as const;
 
 export const STATUS_BADGE_MAP: Record<FeedbackStatus, BadgeVariantsType> = {
@@ -145,7 +151,18 @@ export const PRIORITY_BADGE_MAP: Record<FeedbackPriority, BadgeVariantsType> = {
 export const TYPE_BADGE_MAP: Record<FeedbackType, BadgeVariantsType> = {
 	BUG: "destructive",
 	IMPROVEMENT: "info",
+	TEXT_EDIT: "primary",
 };
+
+export const TEXT_EDIT_STATUS_CONFIG = {
+	PENDING: { label: "Pending", icon: ClockIcon, color: "text-amber-500" },
+	APPLIED: {
+		label: "Applied",
+		icon: CheckCircleIcon,
+		color: "text-emerald-500",
+	},
+	REJECTED: { label: "Rejected", icon: XCircleIcon, color: "text-red-500" },
+} as const;
 
 export const INVITE_STATUS_CONFIG: Record<
 	InviteStatus,
@@ -207,6 +224,18 @@ export type FeedbackSelectAllPayload = Prisma.FeedbackGetPayload<{
 		title: true;
 		description: true;
 		type: true;
+		textEdits: {
+			select: {
+				id: true;
+				selector: true;
+				elementTag: true;
+				originalText: true;
+				suggestedText: true;
+				pageUrl: true;
+				status: true;
+			};
+			orderBy: { createdAt: "asc" };
+		};
 	};
 }>;
 

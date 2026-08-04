@@ -38,6 +38,23 @@ export const feedbackFormSchema = z.object({
 	}),
 });
 
+// Text-edit tool (widget): one batch of suggested copy changes.
+export const textEditItemSchema = z.object({
+	selector: z.string().min(1).max(1000),
+	elementTag: z.string().max(50).optional(),
+	originalText: z.string().min(1).max(2000),
+	suggestedText: z.string().min(1).max(2000),
+	pageUrl: z.string().url().max(2000),
+});
+
+export const textEditsSubmissionSchema = z.object({
+	note: z.string().max(6000).optional(),
+	edits: z
+		.array(textEditItemSchema)
+		.min(1, "No text edits to submit")
+		.max(30, "Too many edits in one batch — submit and start a new one"),
+});
+
 // Waitlist form
 export const waitlistSchema = z.object({
 	email: z.email(),
@@ -47,3 +64,5 @@ export type WebsiteFormData = z.infer<typeof websiteSchema>;
 export type ClientFormData = z.infer<typeof clientSchema>;
 export type FeedbackFormData = z.infer<typeof feedbackFormSchema>;
 export type WaitlistFormData = z.infer<typeof waitlistSchema>;
+export type TextEditItem = z.infer<typeof textEditItemSchema>;
+export type TextEditsSubmission = z.infer<typeof textEditsSubmissionSchema>;

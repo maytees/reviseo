@@ -1,4 +1,9 @@
-import { Globe, MessageCircle, PersonStanding } from "lucide-react";
+import {
+	Globe,
+	MessageCircle,
+	PersonStanding,
+	TextCursorInputIcon,
+} from "lucide-react";
 import moment from "moment";
 import Link from "next/link";
 import { Badge, type BadgeVariantsType } from "@/components/ui/badge";
@@ -59,10 +64,17 @@ const RecentSubmissions = async ({
 									className="flex w-full flex-col rounded-sm border border-background/40 bg-background/30 p-2 shadow-2xs lg:flex-row lg:items-center lg:justify-between"
 								>
 									<div className="flex w-full flex-col space-y-2 lg:w-auto lg:flex-row lg:space-x-2 lg:space-y-0">
-										<ScreenshotPreview
-											app_url={env.BETTER_AUTH_URL}
-											screenshotKey={feedback.screenshotKey}
-										/>
+										{feedback.screenshotKey ? (
+											<ScreenshotPreview
+												app_url={env.BETTER_AUTH_URL}
+												screenshotKey={feedback.screenshotKey}
+											/>
+										) : (
+											// TEXT_EDIT feedback has no screenshot.
+											<div className="flex aspect-video h-auto w-full items-center justify-center rounded bg-violet-500/10 lg:w-20">
+												<TextCursorInputIcon className="size-5 text-violet-500" />
+											</div>
+										)}
 										<div className="flex flex-col items-start justify-around gap-1">
 											<div className="flex flex-row items-center gap-1">
 												<p className="font-semibold text-lg lg:text-base">

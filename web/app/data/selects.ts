@@ -37,6 +37,18 @@ export const feedbackSelect = {
 	author: { select: userPublicSelect },
 	// Slim website ref for list rows (name/link only — no recursion)
 	website: { select: { id: true, name: true, url: true } },
+	textEdits: {
+		select: {
+			id: true,
+			selector: true,
+			elementTag: true,
+			originalText: true,
+			suggestedText: true,
+			pageUrl: true,
+			status: true,
+		},
+		orderBy: { createdAt: "asc" as const },
+	},
 } satisfies Prisma.FeedbackSelect;
 
 export const websiteSelect = {

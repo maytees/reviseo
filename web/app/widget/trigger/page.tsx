@@ -1,4 +1,5 @@
 "use client";
+import { CameraIcon, TextCursorInputIcon, XIcon } from "lucide-react";
 import { AnimatePresence, motion } from "motion/react";
 import Image from "next/image";
 import { useEffect, useId, useState } from "react";
@@ -12,6 +13,20 @@ import {
 } from "../lib/storage-access";
 
 type SessionData = Awaited<ReturnType<typeof authClient.getSession>>["data"];
+
+/** Speed-dial actions shown above the main button when expanded. */
+const DIAL_ACTIONS = [
+	{
+		key: "annotate",
+		label: "Annotate screenshot",
+		icon: CameraIcon,
+	},
+	{
+		key: "text",
+		label: "Suggest text edits",
+		icon: TextCursorInputIcon,
+	},
+] as const;
 
 const TriggerButton = () => {
 	const { data: hookSession, isPending } = authClient.useSession();
@@ -32,10 +47,28 @@ const TriggerButton = () => {
 	// signed out).
 	const [needsAuth, setNeedsAuth] = useState(false);
 	const [awaitingLogin, setAwaitingLogin] = useState(false);
+	// Speed-dial open state. The parent iframe is resized around the
+	// expand/collapse lifecycle (EXPAND_TRIGGER before showing the dial,
+	// COLLAPSE_TRIGGER after the exit animation completes).
+	const [expanded, setExpanded] = useState(false);
 	const triggerId = useId();
 
-	const handleWidgetOpen = () => {
-		window.parent.postMessage({ type: "OPEN_FORM" }, "*");
+	const expand = () => {
+		window.parent.postMessage({ type: "EXPAND_TRIGGER" }, "*");
+		setExpanded(true);
+	};
+
+	const collapse = () => setExpanded(false);
+
+	const handleDialAction = (key: (typeof DIAL_ACTIONS)[number]["key"]) => {
+		// The loader takes over the screen either way — snap the iframe back
+		// immediately rather than waiting for the exit animation.
+		setExpanded(false);
+		window.parent.postMessage({ type: "COLLAPSE_TRIGGER" }, "*");
+		window.parent.postMessage(
+			{ type: key === "annotate" ? "OPEN_FORM" : "TEXT_MODE_START" },
+			"*",
+		);
 	};
 
 	/**
@@ -117,6 +150,16 @@ const TriggerButton = () => {
 			window.removeEventListener("message", handleMessage);
 		};
 	}, []);
+
+	// Esc collapses the dial (only relevant while the iframe has focus).
+	useEffect(() => {
+		if (!expanded) return;
+		const onKey = (e: KeyboardEvent) => {
+			if (e.key === "Escape") setExpanded(false);
+		};
+		window.addEventListener("keydown", onKey);
+		return () => window.removeEventListener("keydown", onKey);
+	}, [expanded]);
 
 	// Silent cross-site cookie recovery. Nothing here may prompt or render:
 	//
@@ -213,41 +256,123 @@ const TriggerButton = () => {
 	if (!signedIn && !(clientHint && needsAuth)) return null;
 
 	return (
-		<AnimatePresence>
+		// biome-ignore lint/a11y/noStaticElementInteractions: transparent backdrop click-away for the dial
+		// biome-ignore lint/a11y/useKeyWithClickEvents: Esc handled by a window-level listener
+		<div
+			className="fixed inset-0 overflow-hidden"
+			onClick={(e) => {
+				// Click on the transparent area (not a button) closes the dial.
+				if (expanded && e.target === e.currentTarget) collapse();
+			}}
+		>
+			{/* Speed-dial actions, stacked above the main button */}
+			<AnimatePresence
+				onExitComplete={() => {
+					window.parent.postMessage({ type: "COLLAPSE_TRIGGER" }, "*");
+				}}
+			>
+				{expanded && (
+					<div className="absolute right-2 bottom-[76px] flex flex-col items-end gap-3">
+						{[...DIAL_ACTIONS].reverse().map((action, i) => (
+							<motion.div
+								key={action.key}
+								className="flex items-center gap-2.5"
+								initial={{ opacity: 0, y: 18, scale: 0.5 }}
+								animate={{
+									opacity: 1,
+									y: 0,
+									scale: 1,
+									transition: {
+										type: "spring",
+										stiffness: 420,
+										damping: 24,
+										delay: (DIAL_ACTIONS.length - 1 - i) * 0.05,
+									},
+								}}
+								exit={{
+									opacity: 0,
+									y: 12,
+									scale: 0.6,
+									transition: { duration: 0.12, delay: i * 0.03 },
+								}}
+							>
+								<span className="rounded-full bg-foreground/90 px-3 py-1.5 font-medium text-background text-xs shadow-lg">
+									{action.label}
+								</span>
+								<Button
+									size="icon"
+									variant="secondary"
+									className="size-12 rounded-full border-2 border-border shadow-lg"
+									title={action.label}
+									onClick={() => handleDialAction(action.key)}
+								>
+									<action.icon className="size-5" />
+								</Button>
+							</motion.div>
+						))}
+					</div>
+				)}
+			</AnimatePresence>
+
+			{/* Main trigger button */}
 			<motion.div
+				className="absolute right-1 bottom-1"
 				initial={{ opacity: 0, scale: 0 }}
 				animate={{ opacity: 1, scale: 1 }}
-				whileTap={{ rotate: -25, scale: 1.05 }}
+				whileTap={{ scale: 1.05 }}
 				key="reviseo-trigger"
 			>
 				<Button
 					disabled={isPending}
 					id={triggerId}
-					className={cn(
-						"size-14 rounded-full border-2 border-border",
-						!signedIn && "opacity-80 saturate-50",
-					)}
+					className="size-14 rounded-full border-2 border-border"
 					variant="secondary"
 					title={
 						signedIn
-							? "Leave feedback"
+							? expanded
+								? "Close"
+								: "Leave feedback"
 							: awaitingLogin
 								? "Signed in? Click again to connect"
 								: "Connect to Reviseo to leave feedback"
 					}
-					onClick={signedIn ? handleWidgetOpen : handleConnect}
+					onClick={signedIn ? (expanded ? collapse : expand) : handleConnect}
 				>
-					<Image
-						loading="eager"
-						preload
-						src="/logo.svg"
-						width={35}
-						height={35}
-						alt="Reviseo Logo"
-					/>
+					<AnimatePresence mode="wait" initial={false}>
+						{expanded ? (
+							<motion.span
+								key="close"
+								initial={{ rotate: -90, opacity: 0 }}
+								animate={{ rotate: 0, opacity: 1 }}
+								exit={{ rotate: 90, opacity: 0 }}
+								transition={{ duration: 0.15 }}
+								className="flex"
+							>
+								<XIcon className="size-6" />
+							</motion.span>
+						) : (
+							<motion.span
+								key="logo"
+								initial={{ rotate: 90, opacity: 0 }}
+								animate={{ rotate: 0, opacity: 1 }}
+								exit={{ rotate: -90, opacity: 0 }}
+								transition={{ duration: 0.15 }}
+								className={cn("flex", !signedIn && "opacity-80 saturate-50")}
+							>
+								<Image
+									loading="eager"
+									preload
+									src="/logo.svg"
+									width={35}
+									height={35}
+									alt="Reviseo Logo"
+								/>
+							</motion.span>
+						)}
+					</AnimatePresence>
 				</Button>
 			</motion.div>
-		</AnimatePresence>
+		</div>
 	);
 };
 

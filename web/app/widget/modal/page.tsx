@@ -14,6 +14,11 @@ import {
 	ClockIcon,
 	GlobeIcon,
 	Grid2X2,
+	MousePointerClickIcon,
+	PenLineIcon,
+	SendIcon,
+	TextCursorInputIcon,
+	Trash2Icon,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
@@ -28,6 +33,7 @@ import {
 } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
+import { DiffText } from "@/components/text-edit-diff";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import {
@@ -57,12 +63,19 @@ import { authClient } from "@/lib/auth-client";
 import { useConfetti } from "@/lib/hooks/use-confetti";
 import { tryCatch } from "@/lib/try-catch";
 import { type BrowserInfo, PRIORITY_CONFIG, TYPE_CONFIG } from "@/lib/types";
-import { type FeedbackFormData, feedbackFormSchema } from "@/lib/validations";
+import {
+	type FeedbackFormData,
+	feedbackFormSchema,
+	type TextEditItem,
+} from "@/lib/validations";
 import ExCanvas from "../_components/ExCanvas";
 import { ensureStorageAccess } from "../lib/storage-access";
-import { submitFeedbackForm } from "./actions";
+import { submitFeedbackForm, submitTextEdits } from "./actions";
 
 type SessionData = Awaited<ReturnType<typeof authClient.getSession>>["data"];
+
+/** Edit records forwarded by the loader (its ids, not database ids). */
+type ReviewEdit = TextEditItem & { id: string };
 
 const ReviseoModal = () => {
 	const { data: hookSession } = authClient.useSession();
@@ -72,6 +85,11 @@ const ReviseoModal = () => {
 	const session = hookSession ?? grantedSession;
 	const [open, setOpen] = useState(false);
 	const [step, setStep] = useState<"canvas" | "form">("canvas");
+	// Which experience the dialog is showing: the screenshot feedback flow,
+	// the text-tool onboarding card, or the text-edit review list.
+	const [view, setView] = useState<"feedback" | "guide" | "review">("feedback");
+	const [textEdits, setTextEdits] = useState<ReviewEdit[]>([]);
+	const [textNote, setTextNote] = useState("");
 	const [submitted, setSubmitted] = useState(false);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [isPending, startTransition] = useTransition();
@@ -160,7 +178,11 @@ const ReviseoModal = () => {
 	const closeAndReset = () => {
 		setOpen(false);
 		setSubmitted(false);
+		setLoading(false);
 		setStep("canvas");
+		setView("feedback");
+		setTextEdits([]);
+		setTextNote("");
 		setInitialData(undefined);
 		sceneData.current = null;
 		form.reset();
@@ -280,6 +302,62 @@ const ReviseoModal = () => {
 		});
 	}
 
+	/** Onboarding done → the loader stores the flag and starts text mode. */
+	const handleGuideDone = () => {
+		closeAndReset();
+		window.parent.postMessage({ type: "TEXT_GUIDE_DONE" }, "*");
+	};
+
+	/** Drop one edit from the batch (the loader restores that element). */
+	const handleRemoveEdit = (id: string) => {
+		window.parent.postMessage({ type: "TEXT_EDIT_REMOVED", id }, "*");
+		const remaining = textEdits.filter((e) => e.id !== id);
+		setTextEdits(remaining);
+		if (remaining.length === 0) closeAndReset();
+	};
+
+	const handleSubmitTextEdits = () => {
+		startTransition(async () => {
+			if (!screenshotMetadata.projectId) {
+				toast.error("Missing page data. Close the widget and try again.");
+				return;
+			}
+			if (!session?.user.id) {
+				toast.error("You're signed out. Sign in and try again.");
+				return;
+			}
+
+			const { data: result, error } = await tryCatch(
+				submitTextEdits(
+					screenshotMetadata.projectId,
+					{
+						note: textNote || undefined,
+						edits: textEdits.map(({ id: _id, ...edit }) => edit),
+					},
+					screenshotMetadata.browserInfo,
+					screenshotMetadata.viewport,
+				),
+			);
+
+			if (error) {
+				console.error(error);
+				toast.error("An unexpected error occurred. Please try again.");
+				return;
+			}
+
+			if (result.status === "success") {
+				// The loader wipes its edit state and restores the page; the
+				// success view (confetti) stays up until Done/auto-close.
+				window.parent.postMessage({ type: "TEXT_SUBMITTED" }, "*");
+				setSubmitted(true);
+				triggerConfetti();
+			} else {
+				console.error(result.message);
+				toast.error(result.message);
+			}
+		});
+	};
+
 	useEffect(() => {
 		if (!open) {
 			window.parent.postMessage({ type: "CLOSE_FORM" }, "*");
@@ -289,31 +367,55 @@ const ReviseoModal = () => {
 
 	// Auto-close a few seconds after a successful submit (cleared if the
 	// user closes manually first — closeAndReset flips `submitted`).
+	// biome-ignore lint/correctness/useExhaustiveDependencies: closeAndReset is stable enough for this effect
 	useEffect(() => {
 		if (!submitted) return;
 		const timer = window.setTimeout(() => {
 			closeAndReset();
 		}, 5000);
 		return () => window.clearTimeout(timer);
-		// biome-ignore lint/correctness/useExhaustiveDependencies: closeAndReset is stable enough for this effect
 	}, [submitted]);
 
 	// Listen for SHOW_MODAL message and request data only when opening
 	useEffect(() => {
+		const recoverSession = () => {
+			// Cross-site: the trigger already acquired the Storage Access
+			// permission with a user gesture, so this resolves without a
+			// prompt and lets this document's requests carry cookies too.
+			void (async () => {
+				await ensureStorageAccess();
+				const { data } = await authClient.getSession();
+				if (data) setGrantedSession(data);
+			})();
+		};
+
 		const handleMessage = (event: MessageEvent) => {
 			switch (event.data?.type) {
+				case "SHOW_TEXT_GUIDE":
+					setOpen(true);
+					setSubmitted(false);
+					setLoading(false);
+					setView("guide");
+					recoverSession();
+					break;
+				case "SHOW_TEXT_REVIEW":
+					setOpen(true);
+					setSubmitted(false);
+					setLoading(false);
+					setView("review");
+					if (Array.isArray(event.data.edits)) {
+						setTextEdits(event.data.edits);
+					}
+					recoverSession();
+					// Page data carries projectId + browser info for submission.
+					window.parent.postMessage({ type: "REQUEST_PAGE_DATA" }, "*");
+					break;
 				case "SHOW_MODAL":
 					// Modal is being shown, request fresh data
 					setOpen(true);
 					setSubmitted(false);
-					// Cross-site: the trigger already acquired the Storage Access
-					// permission with a user gesture, so this resolves without a
-					// prompt and lets this document's requests carry cookies too.
-					void (async () => {
-						await ensureStorageAccess();
-						const { data } = await authClient.getSession();
-						if (data) setGrantedSession(data);
-					})();
+					setView("feedback");
+					recoverSession();
 					window.parent.postMessage({ type: "REQUEST_PAGE_DATA" }, "*");
 					window.parent.postMessage({ type: "REQUEST_PAGE_SCREENSHOT" }, "*");
 					setLoading(true);
@@ -354,12 +456,17 @@ const ReviseoModal = () => {
 					<DialogContent
 						onEscapeKeyDown={(e) => e.preventDefault()}
 						className={
-							submitted
+							submitted || view === "guide"
 								? "rounded-2xl bg-card"
-								: "overflow-y-scroll bg-card transition-all duration-500 ease-in-out"
+								: view === "review"
+									? "flex max-h-[85vh] flex-col rounded-2xl bg-card sm:max-w-xl"
+									: "overflow-y-scroll bg-card transition-all duration-500 ease-in-out"
 						}
-						// Success state: compact centered card, not fullscreen
-						variant={submitted ? "default" : "fullscreen"}
+						// Fullscreen only for the annotate flow; success, the
+						// text-tool guide, and the review list are compact cards.
+						variant={
+							submitted || view !== "feedback" ? "default" : "fullscreen"
+						}
 					>
 						{submitted ? (
 							<div className="flex flex-col items-center justify-center gap-6 px-4 py-10 text-center">
@@ -384,11 +491,12 @@ const ReviseoModal = () => {
 									className="flex flex-col gap-2"
 								>
 									<h2 className="font-bold font-caudex text-3xl">
-										Feedback sent!
+										{view === "review" ? "Suggestions sent!" : "Feedback sent!"}
 									</h2>
 									<p className="max-w-sm text-muted-foreground">
-										The team has been notified and will review your feedback
-										shortly. Thanks for helping make this site better.
+										{view === "review"
+											? "The team has been notified and will review your suggested copy changes shortly."
+											: "The team has been notified and will review your feedback shortly. Thanks for helping make this site better."}
 									</p>
 								</motion.div>
 								<motion.div
@@ -405,6 +513,142 @@ const ReviseoModal = () => {
 									</span>
 								</motion.div>
 							</div>
+						) : view === "guide" ? (
+							<div className="flex flex-col gap-6 px-1 py-3">
+								<div className="flex flex-col items-center gap-3 text-center">
+									<motion.div
+										initial={{ scale: 0, rotate: -15 }}
+										animate={{ scale: 1, rotate: 0 }}
+										transition={{ type: "spring", stiffness: 260, damping: 16 }}
+										className="flex size-14 items-center justify-center rounded-2xl bg-violet-500/10"
+									>
+										<TextCursorInputIcon className="size-7 text-violet-500" />
+									</motion.div>
+									<DialogTitle className="font-caudex text-2xl">
+										Suggest text edits
+									</DialogTitle>
+									<DialogDescription className="max-w-sm">
+										Fix typos and reword copy directly on the page — the team
+										sees exactly what you want changed.
+									</DialogDescription>
+								</div>
+								<ol className="flex flex-col gap-4">
+									{(
+										[
+											[MousePointerClickIcon, "Click any text on the page"],
+											[
+												PenLineIcon,
+												"Type your change — it previews live, right in place",
+											],
+											[SendIcon, "Save, repeat for more, then review & submit"],
+										] as const
+									).map(([Icon, label], i) => (
+										<motion.li
+											key={label}
+											initial={{ opacity: 0, x: -10 }}
+											animate={{ opacity: 1, x: 0 }}
+											transition={{ delay: 0.1 + i * 0.08 }}
+											className="flex items-center gap-3"
+										>
+											<span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted">
+												<Icon className="size-4 text-foreground" />
+											</span>
+											<span className="text-sm">
+												<span className="mr-1.5 font-semibold text-muted-foreground">
+													{i + 1}.
+												</span>
+												{label}
+											</span>
+										</motion.li>
+									))}
+								</ol>
+								<div className="flex flex-col items-center gap-2">
+									<Button
+										size="lg"
+										className="w-full"
+										onClick={handleGuideDone}
+									>
+										Got it — start editing
+									</Button>
+									<span className="text-muted-foreground text-xs">
+										Press Esc anytime to exit edit mode
+									</span>
+								</div>
+							</div>
+						) : view === "review" ? (
+							<>
+								<DialogTitle>Review your text edits</DialogTitle>
+								<DialogDescription>
+									{textEdits.length === 1
+										? "1 suggested change"
+										: `${textEdits.length} suggested changes`}{" "}
+									— remove any you don't want, add an optional note, then
+									submit.
+								</DialogDescription>
+								<div className="flex min-h-0 flex-1 flex-col gap-3 overflow-y-auto py-1">
+									{textEdits.map((edit) => (
+										<div
+											key={edit.id}
+											className="rounded-xl border border-border bg-background/50 p-3"
+										>
+											<div className="mb-2 flex items-center justify-between gap-2">
+												<div className="flex min-w-0 items-center gap-2">
+													<span className="rounded bg-muted px-1.5 py-0.5 font-mono text-[10px] text-muted-foreground uppercase">
+														{edit.elementTag ?? "text"}
+													</span>
+													<span
+														className="truncate text-muted-foreground text-xs"
+														title={edit.pageUrl}
+													>
+														{getUrlPath(edit.pageUrl)}
+													</span>
+												</div>
+												<Button
+													variant="ghost"
+													size="icon"
+													className="size-7 shrink-0 text-muted-foreground hover:text-destructive"
+													onClick={() => handleRemoveEdit(edit.id)}
+													title="Remove this edit"
+												>
+													<Trash2Icon className="size-3.5" />
+												</Button>
+											</div>
+											<DiffText
+												original={edit.originalText}
+												suggested={edit.suggestedText}
+											/>
+										</div>
+									))}
+									<Textarea
+										value={textNote}
+										onChange={(e) => setTextNote(e.target.value)}
+										placeholder="Anything else the team should know? (optional)"
+										className="min-h-20 resize-none"
+										maxLength={6000}
+										disabled={isPending}
+									/>
+								</div>
+								<div className="flex flex-col-reverse gap-2 pt-2 sm:flex-row sm:justify-end">
+									<Button
+										variant="outline"
+										disabled={isPending}
+										onClick={() => setOpen(false)}
+									>
+										Keep editing
+									</Button>
+									<Button
+										disabled={isPending || textEdits.length === 0}
+										onClick={handleSubmitTextEdits}
+									>
+										<SendIcon className="size-4" />
+										{isPending
+											? "Submitting…"
+											: textEdits.length === 1
+												? "Submit 1 suggestion"
+												: `Submit ${textEdits.length} suggestions`}
+									</Button>
+								</div>
+							</>
 						) : (
 							<>
 								<DialogTitle>Submit Feedback</DialogTitle>

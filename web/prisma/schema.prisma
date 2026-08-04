@@ -24,6 +24,15 @@ enum FeedbackStatus {
 enum FeedbackType {
   BUG
   IMPROVEMENT
+  TEXT_EDIT
+}
+
+// Per-edit lifecycle inside a TEXT_EDIT feedback: the developer marks each
+// suggestion applied or rejected independently.
+enum TextEditStatus {
+  PENDING
+  APPLIED
+  REJECTED
 }
 
 enum FeedbackPriority {
@@ -88,7 +97,10 @@ model Feedback {
   description String?
   pageUrl     String
 
-  screenshotKey String
+  // Optional: TEXT_EDIT feedback has no screenshot.
+  screenshotKey String?
+
+  textEdits TextEdit[]
 
   browser        String?
   browserVersion String?
@@ -102,6 +114,28 @@ model Feedback {
 
   @@index([websiteId])
   @@index([authorId])
+}
+
+// One suggested copy change captured by the widget's text-edit tool. A
+// TEXT_EDIT feedback groups the batch a client submitted in one session.
+model TextEdit {
+  id         String   @id @default(cuid())
+  feedbackId String
+  feedback   Feedback @relation(fields: [feedbackId], references: [id], onDelete: Cascade)
+
+  // Best-effort CSS selector for locating the element; originalText is the
+  // reliable fallback when host markup changes.
+  selector      String
+  elementTag    String?
+  originalText  String
+  suggestedText String
+  pageUrl       String
+
+  status TextEditStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+
+  @@index([feedbackId])
 }
 
 model Invite {

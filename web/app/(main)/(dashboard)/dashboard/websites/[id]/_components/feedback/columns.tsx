@@ -1,7 +1,12 @@
 "use client";
 
 import type { ColumnDef } from "@tanstack/react-table";
-import { ArrowUpDown, MoreHorizontal, Trash } from "lucide-react";
+import {
+	ArrowUpDown,
+	MoreHorizontal,
+	TextCursorInputIcon,
+	Trash,
+} from "lucide-react";
 import type React from "react";
 import { useState } from "react";
 import ScreenshotPreview from "@/app/(main)/(dashboard)/dashboard/_components/ScreenshotPreview";
@@ -36,12 +41,19 @@ export const columns: ColumnDef<Feedback>[] = [
 		accessorKey: "screenshotKey",
 		header: "Screenshot",
 		cell: ({ row }) => {
-			const screenshotKey = row.getValue("screenshotKey") as string;
+			const screenshotKey = row.original.screenshotKey;
 			return (
 				// biome-ignore lint/a11y/noStaticElementInteractions: goon need this
 				// biome-ignore lint/a11y/useKeyWithClickEvents: goon need this
 				<div onClick={(e) => e.stopPropagation()}>
-					<ScreenshotPreview app_url={""} screenshotKey={screenshotKey} />{" "}
+					{screenshotKey ? (
+						<ScreenshotPreview app_url={""} screenshotKey={screenshotKey} />
+					) : (
+						// TEXT_EDIT feedback has no screenshot — themed tile instead.
+						<div className="flex aspect-video h-auto w-full items-center justify-center rounded bg-violet-500/10 lg:w-20">
+							<TextCursorInputIcon className="size-5 text-violet-500" />
+						</div>
+					)}
 				</div>
 			);
 		},

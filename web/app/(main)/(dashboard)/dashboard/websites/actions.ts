@@ -143,12 +143,12 @@ export async function deleteWebsite(websiteId: string): Promise<ApiResponse> {
 			select: { screenshotKey: true },
 		});
 		await Promise.all(
-			feedback.map((f) =>
-				deleteObject(
-					env.NEXT_PUBLIC_S3_BUCKET_NAME_ANNOTATIONS,
-					f.screenshotKey,
+			feedback
+				.map((f) => f.screenshotKey)
+				.filter((key): key is string => Boolean(key))
+				.map((key) =>
+					deleteObject(env.NEXT_PUBLIC_S3_BUCKET_NAME_ANNOTATIONS, key),
 				),
-			),
 		);
 
 		// Cascade deletes feedback rows and invites
