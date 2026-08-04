@@ -353,11 +353,16 @@ const ReviseoModal = () => {
 				>
 					<DialogContent
 						onEscapeKeyDown={(e) => e.preventDefault()}
-						className="overflow-y-scroll bg-card transition-all duration-500 ease-in-out"
-						variant={"fullscreen"}
+						className={
+							submitted
+								? "rounded-2xl bg-card"
+								: "overflow-y-scroll bg-card transition-all duration-500 ease-in-out"
+						}
+						// Success state: compact centered card, not fullscreen
+						variant={submitted ? "default" : "fullscreen"}
 					>
 						{submitted ? (
-							<div className="flex h-full flex-col items-center justify-center gap-6 text-center">
+							<div className="flex flex-col items-center justify-center gap-6 px-4 py-10 text-center">
 								<DialogTitle className="sr-only">
 									Feedback Submitted
 								</DialogTitle>
