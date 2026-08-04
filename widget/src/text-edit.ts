@@ -2,10 +2,12 @@
 // the customer page's DOM). Lets a client click any text on the page, type a
 // replacement in place, and accumulate a batch of suggested copy changes.
 //
-// All UI (mode banner, save/cancel toolbar) lives in a closed Shadow DOM so
-// host-page CSS can't restyle it and vice versa. Element highlights use
-// save/restore of inline styles — no stylesheet injection, so strict CSP
-// style-src policies can't break the tool.
+// All UI (mode banner, save/cancel toolbar) lives in a Shadow DOM styled with
+// Reviseo's design tokens (see web/app/(main)/globals.css) so it looks like
+// the rest of the product while host-page CSS can't restyle it. Element
+// highlights are inline styles applied over a saved per-element baseline —
+// `syncElementStyles` is the single place visual state is rendered, so
+// hover/edit/marker styles can never leak or stack.
 //
 // The engine — not the page DOM — is the source of truth for edits: if the
 // host framework re-renders and stomps our in-place preview, the recorded
@@ -30,8 +32,21 @@ type Callbacks = {
 };
 
 const STORAGE_KEY = "__reviseo_text_edits_v1";
-const ACCENT = "#8b5cf6";
-const ACCENT_DARK = "#7c3aed";
+
+// Reviseo dark-theme tokens (oklch from globals.css, hex fallbacks for
+// browsers without oklch()).
+const T = {
+	primary: "#6d3df5",
+	primaryOklch: "oklch(0.5053 0.235 286.8637)",
+	primaryHover: "#5c2fe0",
+	card: "#242424",
+	cardOklch: "oklch(0.2264 0 0)",
+	foreground: "#ebebeb",
+	mutedForeground: "#b5b5b5",
+	border: "rgba(255, 255, 255, 0.1)",
+	destructive: "#e5484d",
+	font: 'Inter, ui-sans-serif, system-ui, -apple-system, "Segoe UI", sans-serif',
+};
 
 // Elements that never make sense as text-edit targets.
 const SKIP_TAGS = new Set([
@@ -101,35 +116,6 @@ function computeSelector(el: Element): string {
 	return `body > ${parts.join(" > ")}`;
 }
 
-type SavedStyle = {
-	outline: string;
-	outlineOffset: string;
-	cursor: string;
-	textDecoration: string;
-	textDecorationThickness: string;
-	textUnderlineOffset: string;
-};
-
-function saveStyle(el: HTMLElement): SavedStyle {
-	return {
-		outline: el.style.outline,
-		outlineOffset: el.style.outlineOffset,
-		cursor: el.style.cursor,
-		textDecoration: el.style.textDecoration,
-		textDecorationThickness: el.style.textDecorationThickness,
-		textUnderlineOffset: el.style.textUnderlineOffset,
-	};
-}
-
-function restoreStyle(el: HTMLElement, saved: SavedStyle) {
-	el.style.outline = saved.outline;
-	el.style.outlineOffset = saved.outlineOffset;
-	el.style.cursor = saved.cursor;
-	el.style.textDecoration = saved.textDecoration;
-	el.style.textDecorationThickness = saved.textDecorationThickness;
-	el.style.textUnderlineOffset = saved.textUnderlineOffset;
-}
-
 export class TextEditEngine {
 	private active = false;
 	private callbacks: Callbacks | null = null;
@@ -138,14 +124,17 @@ export class TextEditEngine {
 	/** Elements currently carrying an applied suggestion. */
 	private applied = new Map<
 		string,
-		{ el: HTMLElement; originalHTML: string; savedStyle: SavedStyle }
+		{ el: HTMLElement; originalHTML: string }
 	>();
 
+	/** Each element's untouched inline `style` attribute, captured the first
+	 *  time the engine styles it. All visual states are rendered on top of
+	 *  this baseline, so releasing an element is a plain attribute restore. */
+	private baseline = new Map<HTMLElement, string | null>();
+
 	private hoverEl: HTMLElement | null = null;
-	private hoverSaved: SavedStyle | null = null;
 
 	private editingEl: HTMLElement | null = null;
-	private editingSaved: SavedStyle | null = null;
 	private editingOriginalHTML = "";
 	private editingRecordId: string | null = null;
 
@@ -208,20 +197,27 @@ export class TextEditEngine {
 		});
 	}
 
-	/** Exit mode. Restores every element to its original markup; recorded
-	 *  edits stay (sessionStorage) for the next session or submission. */
+	/** Exit mode. Restores every element to its original markup and styles;
+	 *  recorded edits stay (sessionStorage) for later. */
 	stop() {
 		if (!this.active) return;
 		this.active = false;
 
 		this.cancelEditing(true);
-		this.clearHover();
+		this.hoverEl = null;
 
-		for (const { el, originalHTML, savedStyle } of this.applied.values()) {
+		for (const { el, originalHTML } of this.applied.values()) {
 			el.innerHTML = originalHTML;
-			restoreStyle(el, savedStyle);
 		}
 		this.applied.clear();
+
+		// Every element the engine ever styled goes back to its untouched
+		// inline style — nothing can be left behind.
+		for (const [el, style] of this.baseline) {
+			if (style === null) el.removeAttribute("style");
+			else el.setAttribute("style", style);
+		}
+		this.baseline.clear();
 
 		for (const fn of this.cleanupFns) fn();
 		this.cleanupFns = [];
@@ -243,8 +239,8 @@ export class TextEditEngine {
 		const tracked = this.applied.get(id);
 		if (tracked) {
 			tracked.el.innerHTML = tracked.originalHTML;
-			restoreStyle(tracked.el, tracked.savedStyle);
 			this.applied.delete(id);
+			this.releaseElement(tracked.el);
 		}
 		this.persist();
 		this.renderBanner();
@@ -256,6 +252,72 @@ export class TextEditEngine {
 		this.edits = [];
 		this.persist();
 		this.stop();
+	}
+
+	// ------------------------------------------------------------------
+	// Styling: single renderer over a per-element baseline
+	// ------------------------------------------------------------------
+
+	/** Capture the element's untouched inline style once. */
+	private touch(el: HTMLElement) {
+		if (!this.baseline.has(el)) {
+			this.baseline.set(el, el.getAttribute("style"));
+		}
+	}
+
+	private isApplied(el: HTMLElement): boolean {
+		for (const entry of this.applied.values()) {
+			if (entry.el === el) return true;
+		}
+		return false;
+	}
+
+	/** Render the element's current visual state from scratch: baseline
+	 *  first, then exactly the styles its state calls for. */
+	private syncElementStyles(el: HTMLElement) {
+		const base = this.baseline.get(el);
+		if (base === undefined) return; // never touched
+		if (base === null) el.removeAttribute("style");
+		else el.setAttribute("style", base);
+
+		const editing = el === this.editingEl;
+		const hovered = el === this.hoverEl;
+		const applied = this.isApplied(el);
+
+		if (editing) {
+			el.style.outline = `2px solid ${T.primary}`;
+			el.style.outlineOffset = "3px";
+			el.style.borderRadius = "2px";
+			el.style.cursor = "text";
+			// plaintext-only editing forces pre-wrap rendering; without this,
+			// source-formatting newlines/indentation show up as fake centering.
+			el.style.whiteSpace = "normal";
+			return;
+		}
+
+		if (applied) {
+			el.style.textDecoration = `underline dashed ${T.primary}`;
+			el.style.textDecorationThickness = "2px";
+			el.style.textUnderlineOffset = "4px";
+			el.style.cursor = "pointer";
+		}
+
+		if (hovered) {
+			el.style.outline = `2px dashed ${T.primary}`;
+			el.style.outlineOffset = "3px";
+			el.style.borderRadius = "2px";
+			el.style.cursor = "pointer";
+		}
+	}
+
+	/** Element leaves the engine entirely → baseline restore + forget. */
+	private releaseElement(el: HTMLElement) {
+		const base = this.baseline.get(el);
+		if (base !== undefined) {
+			if (base === null) el.removeAttribute("style");
+			else el.setAttribute("style", base);
+			this.baseline.delete(el);
+		}
 	}
 
 	// ------------------------------------------------------------------
@@ -284,10 +346,8 @@ export class TextEditEngine {
 
 		this.clearHover();
 		this.hoverEl = el;
-		this.hoverSaved = saveStyle(el);
-		el.style.outline = `2px dashed ${ACCENT}`;
-		el.style.outlineOffset = "2px";
-		el.style.cursor = "pointer";
+		this.touch(el);
+		this.syncElementStyles(el);
 	}
 
 	private handleMouseOut(e: MouseEvent) {
@@ -300,16 +360,9 @@ export class TextEditEngine {
 	}
 
 	private clearHover() {
-		if (this.hoverEl && this.hoverSaved) {
-			// Don't wipe the applied-edit marker styles.
-			const appliedEntry = [...this.applied.values()].find(
-				(a) => a.el === this.hoverEl,
-			);
-			restoreStyle(this.hoverEl, this.hoverSaved);
-			if (appliedEntry) this.markApplied(this.hoverEl);
-		}
+		const el = this.hoverEl;
 		this.hoverEl = null;
-		this.hoverSaved = null;
+		if (el) this.syncElementStyles(el);
 	}
 
 	private handleClick(e: MouseEvent) {
@@ -371,16 +424,18 @@ export class TextEditEngine {
 		const existing = [...this.applied.entries()].find(([, a]) => a.el === el);
 
 		this.editingEl = el;
-		this.editingSaved = saveStyle(el);
 		this.editingOriginalHTML = existing
 			? existing[1].originalHTML
 			: el.innerHTML;
 		this.editingRecordId = existing ? existing[0] : null;
 
-		el.style.outline = `2px solid ${ACCENT}`;
-		el.style.outlineOffset = "2px";
-		el.style.cursor = "text";
-		el.style.textDecoration = "none";
+		this.touch(el);
+
+		// Plain-text editing: flatten to normalized text so the source
+		// markup's newlines/indentation can't render as phantom whitespace.
+		el.textContent = normalizeText(el.innerText);
+
+		this.syncElementStyles(el);
 
 		try {
 			(el as HTMLElement & { contentEditable: string }).contentEditable =
@@ -395,7 +450,7 @@ export class TextEditEngine {
 
 	private commitEditing() {
 		const el = this.editingEl;
-		if (!el || !this.editingSaved) return;
+		if (!el) return;
 
 		const suggested = normalizeText(el.innerText);
 		const originalText = normalizeText(
@@ -419,9 +474,6 @@ export class TextEditEngine {
 		if (existingId) {
 			const record = this.edits.find((r) => r.id === existingId);
 			if (record) record.suggestedText = suggested;
-			const tracked = this.applied.get(existingId);
-			if (tracked) restoreStyle(el, this.editingSaved);
-			this.markApplied(el);
 		} else {
 			const record: TextEditRecord = {
 				id: randomId(),
@@ -432,18 +484,15 @@ export class TextEditEngine {
 				pageUrl: window.location.href,
 			};
 			this.edits.push(record);
-			restoreStyle(el, this.editingSaved);
 			this.applied.set(record.id, {
 				el,
 				originalHTML: this.editingOriginalHTML,
-				savedStyle: this.editingSaved,
 			});
-			this.markApplied(el);
 		}
 
 		this.editingEl = null;
-		this.editingSaved = null;
 		this.editingRecordId = null;
+		this.syncElementStyles(el);
 		this.hideToolbar();
 		this.persist();
 		this.renderBanner();
@@ -452,7 +501,7 @@ export class TextEditEngine {
 
 	private cancelEditing(silent = false) {
 		const el = this.editingEl;
-		if (!el || !this.editingSaved) return;
+		if (!el) return;
 
 		el.contentEditable = "false";
 		el.blur();
@@ -461,16 +510,14 @@ export class TextEditEngine {
 			// Was already an applied edit → back to the suggested text.
 			const record = this.edits.find((r) => r.id === this.editingRecordId);
 			el.textContent = record?.suggestedText ?? "";
-			restoreStyle(el, this.editingSaved);
-			this.markApplied(el);
 		} else {
 			el.innerHTML = this.editingOriginalHTML;
-			restoreStyle(el, this.editingSaved);
 		}
 
 		this.editingEl = null;
-		this.editingSaved = null;
 		this.editingRecordId = null;
+		this.syncElementStyles(el);
+		if (!this.isApplied(el)) this.releaseElement(el);
 		if (!silent) this.hideToolbar();
 	}
 
@@ -478,39 +525,30 @@ export class TextEditEngine {
 	private revertEditing() {
 		const el = this.editingEl;
 		const id = this.editingRecordId;
-		if (!el || !this.editingSaved || !id) return;
+		if (!el || !id) return;
 
 		el.contentEditable = "false";
 		el.blur();
 		el.innerHTML = this.editingOriginalHTML;
-		restoreStyle(el, this.editingSaved);
 
 		this.edits = this.edits.filter((r) => r.id !== id);
 		this.applied.delete(id);
 
 		this.editingEl = null;
-		this.editingSaved = null;
 		this.editingRecordId = null;
+		this.releaseElement(el);
 		this.hideToolbar();
 		this.persist();
 		this.renderBanner();
 		this.callbacks?.onEditsChanged(this.getEdits());
 	}
 
-	/** Dashed-underline marker on elements carrying a suggestion. */
-	private markApplied(el: HTMLElement) {
-		el.style.textDecoration = `underline dashed ${ACCENT}`;
-		el.style.textDecorationThickness = "2px";
-		el.style.textUnderlineOffset = "4px";
-		el.style.cursor = "pointer";
-	}
-
 	private applySuggestion(record: TextEditRecord, el: HTMLElement) {
-		const savedStyle = saveStyle(el);
+		this.touch(el);
 		const originalHTML = el.innerHTML;
 		el.textContent = record.suggestedText;
-		this.applied.set(record.id, { el, originalHTML, savedStyle });
-		this.markApplied(el);
+		this.applied.set(record.id, { el, originalHTML });
+		this.syncElementStyles(el);
 	}
 
 	/** After reload / re-entering mode: re-show stored suggestions in place
@@ -542,7 +580,7 @@ export class TextEditEngine {
 	}
 
 	// ------------------------------------------------------------------
-	// Shadow DOM UI
+	// Shadow DOM UI (Reviseo design tokens)
 	// ------------------------------------------------------------------
 
 	private mountShadowUI() {
@@ -557,56 +595,70 @@ export class TextEditEngine {
 		const style = document.createElement("style");
 		style.textContent = `
 			:host { all: initial; }
-			* { box-sizing: border-box; font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+			* { box-sizing: border-box; font-family: ${T.font}; -webkit-font-smoothing: antialiased; }
 			.banner {
 				position: fixed; top: 16px; left: 50%; transform: translateX(-50%);
-				display: flex; align-items: center; gap: 10px;
-				background: rgba(17, 17, 22, 0.92);
-				-webkit-backdrop-filter: blur(8px); backdrop-filter: blur(8px);
-				color: #fff; font-size: 13px; line-height: 1;
-				padding: 10px 10px 10px 16px; border-radius: 999px;
-				box-shadow: 0 8px 24px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.08);
-				animation: slideDown .25s cubic-bezier(.2,.9,.3,1.2);
+				display: flex; align-items: center; gap: 12px;
+				background: ${T.card};
+				background: ${T.cardOklch};
+				color: ${T.foreground}; font-size: 13px; line-height: 1;
+				padding: 10px 10px 10px 16px;
+				border: 1px solid ${T.border}; border-radius: 16px;
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
+				animation: slideDown .25s cubic-bezier(.2,.9,.3,1.15);
 				white-space: nowrap;
 			}
 			@keyframes slideDown { from { opacity: 0; transform: translate(-50%, -12px); } to { opacity: 1; transform: translate(-50%, 0); } }
-			.banner .hint { opacity: .65; }
+			.banner .hint { color: ${T.mutedForeground}; }
 			.banner .count {
-				min-width: 22px; height: 22px; padding: 0 6px;
+				min-width: 22px; height: 22px; padding: 0 7px;
 				display: inline-flex; align-items: center; justify-content: center;
-				background: ${ACCENT}; border-radius: 999px; font-weight: 600; font-size: 12px;
+				background: ${T.primary};
+				background: ${T.primaryOklch};
+				color: #fff; border-radius: 999px; font-weight: 600; font-size: 12px;
 			}
-			.banner button { border: none; cursor: pointer; font-size: 13px; }
+			.banner button { border: none; cursor: pointer; font-size: 13px; font-family: inherit; }
 			.review {
-				background: ${ACCENT}; color: #fff; font-weight: 600;
-				padding: 8px 14px; border-radius: 999px; transition: background .15s;
+				background: ${T.primary};
+				background: ${T.primaryOklch};
+				color: #fff; font-weight: 500;
+				padding: 9px 14px; border-radius: 10px; transition: background .15s;
 			}
-			.review:hover { background: ${ACCENT_DARK}; }
-			.review:disabled { background: rgba(255,255,255,.14); color: rgba(255,255,255,.4); cursor: default; }
+			.review:hover { background: ${T.primaryHover}; }
+			.review:disabled { background: rgba(255,255,255,.08); color: ${T.mutedForeground}; cursor: default; }
 			.exit {
-				background: transparent; color: rgba(255,255,255,.6);
-				width: 28px; height: 28px; border-radius: 999px;
+				background: transparent; color: ${T.mutedForeground};
+				width: 30px; height: 30px; border-radius: 10px;
 				display: inline-flex; align-items: center; justify-content: center;
+				transition: background .15s, color .15s;
 			}
-			.exit:hover { background: rgba(255,255,255,.12); color: #fff; }
+			.exit:hover { background: rgba(255,255,255,.08); color: ${T.foreground}; }
 			.toolbar {
 				position: fixed; display: none; align-items: center; gap: 6px;
-				background: rgba(17, 17, 22, 0.94);
-				padding: 6px; border-radius: 12px;
-				box-shadow: 0 8px 24px rgba(0,0,0,.35), 0 0 0 1px rgba(255,255,255,.08);
+				background: ${T.card};
+				background: ${T.cardOklch};
+				padding: 6px; border: 1px solid ${T.border}; border-radius: 12px;
+				box-shadow: 0 10px 30px rgba(0, 0, 0, 0.45);
 			}
 			.toolbar button {
-				border: none; cursor: pointer; font-size: 12px; font-weight: 600;
-				padding: 7px 12px; border-radius: 8px;
-				display: inline-flex; align-items: center; gap: 5px;
+				border: none; cursor: pointer; font-size: 12px; font-weight: 500;
+				font-family: inherit;
+				padding: 8px 12px; border-radius: 8px;
+				display: inline-flex; align-items: center; gap: 6px;
+				transition: background .15s;
 			}
-			.save { background: ${ACCENT}; color: #fff; }
-			.save:hover { background: ${ACCENT_DARK}; }
-			.cancel { background: rgba(255,255,255,.1); color: rgba(255,255,255,.85); }
-			.cancel:hover { background: rgba(255,255,255,.18); }
-			.revert { background: transparent; color: #f87171; }
-			.revert:hover { background: rgba(248,113,113,.12); }
-			.kbd { opacity: .55; font-weight: 400; font-size: 11px; }
+			.save {
+				background: ${T.primary};
+				background: ${T.primaryOklch};
+				color: #fff;
+			}
+			.save:hover { background: ${T.primaryHover}; }
+			.cancel { background: rgba(255,255,255,.08); color: ${T.foreground}; }
+			.cancel:hover { background: rgba(255,255,255,.14); }
+			.revert { background: transparent; color: ${T.destructive}; }
+			.revert:hover { background: rgba(229,72,77,.12); }
+			.kbd { color: ${T.mutedForeground}; font-weight: 400; font-size: 11px; }
+			.save .kbd { color: rgba(255,255,255,.7); }
 		`;
 		this.shadow.appendChild(style);
 
@@ -625,7 +677,7 @@ export class TextEditEngine {
 		if (!this.banner) return;
 		const count = this.edits.length;
 		this.banner.innerHTML = `
-			<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${ACCENT}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
+			<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="${T.primary}" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4Z"/></svg>
 			<span>Click any text to edit</span>
 			<span class="hint">Esc exits</span>
 			<span class="count">${count}</span>
@@ -675,8 +727,8 @@ export class TextEditEngine {
 	private positionToolbar() {
 		if (!this.toolbar || !this.editingEl) return;
 		const rect = this.editingEl.getBoundingClientRect();
-		const toolbarHeight = 44;
-		const gap = 8;
+		const toolbarHeight = 46;
+		const gap = 10;
 
 		// Above the element; below if it would leave the viewport (or collide
 		// with the banner area).
@@ -684,7 +736,7 @@ export class TextEditEngine {
 		if (top < 64) top = rect.bottom + gap;
 
 		let left = rect.left;
-		const maxLeft = window.innerWidth - 240;
+		const maxLeft = window.innerWidth - 250;
 		if (left > maxLeft) left = maxLeft;
 		if (left < 8) left = 8;
 

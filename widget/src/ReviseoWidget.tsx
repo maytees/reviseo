@@ -263,6 +263,11 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 		};
 		containerRef.current?.appendChild(modalIframe);
 
+		// Whether the trigger's speed-dial menu is open (mirrors
+		// EXPAND_TRIGGER / COLLAPSE_TRIGGER). Lets the page-level Esc handler
+		// close the dial even though the keypress never reaches the iframe.
+		let dialExpanded = false;
+
 		const setTriggerSize = (size: { width: string; height: string }) => {
 			const trigger = triggerIframeRef.current;
 			if (!trigger) return;
@@ -317,10 +322,12 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 
 			switch (event.data.type) {
 				case "EXPAND_TRIGGER":
+					dialExpanded = true;
 					setTriggerSize(TRIGGER_EXPANDED);
 					break;
 
 				case "COLLAPSE_TRIGGER":
+					dialExpanded = false;
 					setTriggerSize(TRIGGER_COLLAPSED);
 					break;
 
@@ -470,9 +477,24 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 
 		window.addEventListener("message", handleMessage);
 
+		// Esc on the customer page closes the speed dial. The dial lives in
+		// the trigger iframe, which only hears keys while focused — so the
+		// loader forwards page-level Esc across the frame boundary. (Text
+		// mode's own Esc handling lives in the engine.)
+		const handlePageKeydown = (event: KeyboardEvent) => {
+			if (event.key !== "Escape" || !dialExpanded) return;
+			if (textEngineRef.current?.isActive()) return;
+			triggerIframeRef.current?.contentWindow?.postMessage(
+				{ type: "COLLAPSE_DIAL" },
+				WIDGET_ORIGIN,
+			);
+		};
+		window.addEventListener("keydown", handlePageKeydown, true);
+
 		// Cleanup
 		return () => {
 			window.removeEventListener("message", handleMessage);
+			window.removeEventListener("keydown", handlePageKeydown, true);
 			if (healthTimeoutRef.current) {
 				clearTimeout(healthTimeoutRef.current);
 			}

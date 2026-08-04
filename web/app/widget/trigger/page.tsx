@@ -118,6 +118,13 @@ const TriggerButton = () => {
 		const retryInterval = window.setInterval(sendHealthCheck, 1000);
 
 		const handleMessage = (event: MessageEvent) => {
+			// Loader forwards page-level Esc — the iframe can't hear keys
+			// pressed while the customer page has focus.
+			if (event.data?.type === "COLLAPSE_DIAL") {
+				setExpanded(false);
+				return;
+			}
+
 			if (event.data?.type === "HEALTH_OK") {
 				if (!event.data.projectId) {
 					setHealthy(false);
