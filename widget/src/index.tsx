@@ -1,5 +1,5 @@
 // src/main.tsx
-// Mount Preact app directly to body
+// Mount Preact app into a dedicated host element on <body>
 import { render } from "preact";
 import ReviseoWidget from "./ReviseoWidget";
 
@@ -18,5 +18,33 @@ if (!projectId) {
 			"the script tag. Get either from your Reviseo dashboard's Widget tab.",
 	);
 } else {
-	render(<ReviseoWidget projectId={projectId} />, document.body);
+	// Render into our own host element instead of document.body directly:
+	// frameworks that own the body (React/Next hydration, Astro view
+	// transitions) replace body children on client-side navigation, which
+	// would silently remove the widget until a hard refresh.
+	const host = document.createElement("div");
+	host.id = "reviseo-root";
+
+	const mount = () => {
+		document.body.appendChild(host);
+		render(<ReviseoWidget projectId={projectId} />, host);
+
+		// If a client-side navigation swaps the body (or removes our host),
+		// re-attach it — the Preact tree inside the host stays alive.
+		const observer = new MutationObserver(() => {
+			if (!document.body.contains(host)) {
+				document.body.appendChild(host);
+			}
+		});
+		observer.observe(document.documentElement, {
+			childList: true,
+			subtree: true,
+		});
+	};
+
+	if (document.body) {
+		mount();
+	} else {
+		document.addEventListener("DOMContentLoaded", mount, { once: true });
+	}
 }
