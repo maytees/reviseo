@@ -95,8 +95,11 @@ export async function inviteClientMember(
 			},
 		});
 
+		// No clientName in the URL: the lead only knows the email, and passing
+		// the local-part would silently become the member's account name. The
+		// invite page asks them for a real name instead.
 		const inviteeName = email.split("@")[0];
-		const inviteUrl = `${env.BETTER_AUTH_URL}/invite?token=${token}&clientName=${encodeURIComponent(inviteeName)}`;
+		const inviteUrl = `${env.BETTER_AUTH_URL}/invite?token=${token}`;
 		if (env.NODE_ENV === "development") {
 			console.log(`\n[dev-client-member-invite] ${email} -> ${inviteUrl}\n`);
 		}
@@ -199,6 +202,36 @@ export async function removeClientMember(
 	}
 }
 
+/** Lead toggles whether teammates get an email when the lead approves or
+ *  rejects their submissions (off by default). */
+export async function updateLeadNotifyDecisions(
+	websiteId: string,
+	enabled: boolean,
+): Promise<ApiResponse> {
+	const user = await requireUser();
+
+	try {
+		const lead = await requireLead(user.id, websiteId);
+		if (!lead) {
+			return {
+				status: "error",
+				message: "Only the lead client can change this setting",
+			};
+		}
+
+		await prisma.websiteClient.update({
+			where: { id: lead.id },
+			data: { notifyDecisions: enabled },
+		});
+
+		revalidatePath("/client/dashboard");
+		return { status: "success", message: "Setting updated" };
+	} catch (e) {
+		console.error("Failed to update decision-email setting:\n", e);
+		return { status: "error", message: "Failed to update setting" };
+	}
+}
+
 /** Lead approves or rejects a member's pending submission. Approval is the
  *  moment the developer gets notified — pending items never emailed them. */
 export async function decideFeedbackApproval(
@@ -284,8 +317,9 @@ export async function decideFeedbackApproval(
 			if (emailResponse.error) console.error(emailResponse);
 		}
 
-		// Tell the member what happened.
-		if (feedback.author?.email) {
+		// Tell the member what happened — only if this lead opted in to
+		// decision emails (off by default).
+		if (lead.notifyDecisions && feedback.author?.email) {
 			const emailResponse = await resend.emails.send({
 				from: "Reviseo <info@reviseo.app>",
 				to: [feedback.author.email],

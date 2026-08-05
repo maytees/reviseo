@@ -14,6 +14,13 @@ import {
 	EmptyTitle,
 } from "@/components/ui/empty";
 import {
+	Select,
+	SelectContent,
+	SelectItem,
+	SelectTrigger,
+	SelectValue,
+} from "@/components/ui/select";
+import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
@@ -67,6 +74,7 @@ function initials(name?: string | null, email?: string | null) {
 type FeedbackBoardProps = {
 	items: FeedbackSelectAllPayload[];
 	rejectedItems: FeedbackSelectAllPayload[];
+	websites: { id: string; name: string }[];
 	viewerId: string;
 	isLead: boolean;
 };
@@ -74,6 +82,7 @@ type FeedbackBoardProps = {
 export default function FeedbackBoard({
 	items,
 	rejectedItems,
+	websites,
 	viewerId,
 	isLead,
 }: FeedbackBoardProps) {
@@ -81,22 +90,16 @@ export default function FeedbackBoard({
 		null,
 	);
 	const [showAllResolved, setShowAllResolved] = useState(false);
-	const [websiteFilter, setWebsiteFilter] = useState<string | null>(null);
+	const [websiteFilter, setWebsiteFilter] = useState<string>("all");
 
-	const websiteOptions = (() => {
-		const seen = new Map<string, string>();
-		for (const item of [...items, ...rejectedItems]) {
-			seen.set(item.website.id, item.website.name);
-		}
-		return [...seen.entries()].map(([id, name]) => ({ id, name }));
-	})();
-
-	const visible = websiteFilter
-		? items.filter((item) => item.website.id === websiteFilter)
-		: items;
-	const visibleRejected = websiteFilter
-		? rejectedItems.filter((item) => item.website.id === websiteFilter)
-		: rejectedItems;
+	const visible =
+		websiteFilter === "all"
+			? items
+			: items.filter((item) => item.website.id === websiteFilter);
+	const visibleRejected =
+		websiteFilter === "all"
+			? rejectedItems
+			: rejectedItems.filter((item) => item.website.id === websiteFilter);
 
 	if (items.length === 0 && rejectedItems.length === 0) {
 		return (
@@ -117,29 +120,22 @@ export default function FeedbackBoard({
 
 	return (
 		<div className="flex flex-col gap-5">
-			{websiteOptions.length > 1 && (
-				<div className="flex flex-wrap items-center gap-1.5">
-					<Button
-						variant={websiteFilter === null ? "secondary" : "ghost"}
-						size="sm"
-						onClick={() => setWebsiteFilter(null)}
-					>
-						All websites
-					</Button>
-					{websiteOptions.map((website) => (
-						<Button
-							key={website.id}
-							variant={websiteFilter === website.id ? "secondary" : "ghost"}
-							size="sm"
-							onClick={() =>
-								setWebsiteFilter(
-									websiteFilter === website.id ? null : website.id,
-								)
-							}
-						>
-							{website.name}
-						</Button>
-					))}
+			{websites.length > 1 && (
+				<div className="flex items-center gap-2">
+					<span className="text-muted-foreground text-xs">Website</span>
+					<Select value={websiteFilter} onValueChange={setWebsiteFilter}>
+						<SelectTrigger size="sm" className="w-56">
+							<SelectValue />
+						</SelectTrigger>
+						<SelectContent>
+							<SelectItem value="all">All websites</SelectItem>
+							{websites.map((website) => (
+								<SelectItem key={website.id} value={website.id}>
+									{website.name}
+								</SelectItem>
+							))}
+						</SelectContent>
+					</Select>
 				</div>
 			)}
 

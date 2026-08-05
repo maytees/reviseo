@@ -120,6 +120,10 @@ model WebsiteClient {
   // The lead who invited them (null for developer-invited leads)
   invitedById String?
 
+  // Lead-only setting: email teammates when this lead approves/rejects
+  // their submissions. Off by default.
+  notifyDecisions Boolean @default(false)
+
   createdAt DateTime @default(now())
 
   @@unique([websiteId, userId])

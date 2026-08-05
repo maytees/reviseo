@@ -60,6 +60,45 @@ async function authorizeSubmission(
 	return membership ? { approval: "DIRECT" } : null;
 }
 
+/** Email the website's lead(s) when a member submission lands in their
+ *  approval queue. Failures are logged, never surfaced — the submission
+ *  itself already succeeded. */
+async function notifyLeadsOfPending(
+	websiteId: string,
+	websiteName: string,
+	feedbackTitle: string,
+	authorName: string | null,
+) {
+	try {
+		const leads = await prisma.websiteClient.findMany({
+			where: { websiteId, role: "lead" },
+			select: {
+				user: {
+					select: { email: true, name: true, emailNotifications: true },
+				},
+			},
+		});
+		await Promise.all(
+			leads
+				.filter((lead) => lead.user.emailNotifications)
+				.map(async (lead) => {
+					const emailResponse = await resend.emails.send({
+						from: "Reviseo <info@reviseo.app>",
+						to: [lead.user.email],
+						subject: `${websiteName} - Feedback awaiting your approval`,
+						html: `<p>Hi ${lead.user.name || "there"},</p>
+<p>${authorName || "A teammate"} submitted "<strong>${feedbackTitle}</strong>" on ${websiteName}. It's waiting for your review before the developer sees it.</p>
+<p><a href="${env.BETTER_AUTH_URL}/client/dashboard">Review it on your dashboard</a></p>
+<p>— Reviseo</p>`,
+					});
+					if (emailResponse.error) console.error(emailResponse);
+				}),
+		);
+	} catch (e) {
+		console.error("Failed to notify leads of pending feedback:\n", e);
+	}
+}
+
 // Parent website URL, e.g clientsite.com
 export async function submitFeedbackForm(
 	pageUrl: string,
@@ -156,6 +195,15 @@ export async function submitFeedbackForm(
 			if (emailResponse.error) {
 				console.error(emailResponse);
 			}
+		}
+
+		if (authz.approval === "PENDING") {
+			await notifyLeadsOfPending(
+				existingWebsite.id,
+				existingWebsite.name,
+				title,
+				user.name,
+			);
 		}
 
 		return { status: "success", message: "Successfully submitted feedback" };
@@ -279,6 +327,15 @@ export async function submitTextEdits(
 			if (emailResponse.error) {
 				console.error(emailResponse);
 			}
+		}
+
+		if (authz.approval === "PENDING") {
+			await notifyLeadsOfPending(
+				existingWebsite.id,
+				existingWebsite.name,
+				title,
+				user.name,
+			);
 		}
 
 		return { status: "success", message: "Text edits submitted" };
@@ -408,6 +465,15 @@ export async function submitStyleEdits(
 			}
 		}
 
+		if (authz.approval === "PENDING") {
+			await notifyLeadsOfPending(
+				existingWebsite.id,
+				existingWebsite.name,
+				title,
+				user.name,
+			);
+		}
+
 		return { status: "success", message: "Style changes submitted" };
 	} catch (e) {
 		console.error("Failed to submit style edits:\n", e);
@@ -524,6 +590,15 @@ export async function submitImageEdits(
 			if (emailResponse.error) {
 				console.error(emailResponse);
 			}
+		}
+
+		if (authz.approval === "PENDING") {
+			await notifyLeadsOfPending(
+				existingWebsite.id,
+				existingWebsite.name,
+				title,
+				user.name,
+			);
 		}
 
 		return { status: "success", message: "Image replacements submitted" };

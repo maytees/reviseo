@@ -18,6 +18,7 @@ import {
 	DialogTrigger,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
+import { Switch } from "@/components/ui/switch";
 import {
 	Tooltip,
 	TooltipContent,
@@ -28,6 +29,7 @@ import {
 	type MemberPermissions,
 	removeClientMember,
 	updateClientMember,
+	updateLeadNotifyDecisions,
 } from "../actions";
 
 export type TeamMemberRow = {
@@ -305,15 +307,58 @@ const InviteMemberDialog = ({ websiteId }: { websiteId: string }) => {
 	);
 };
 
+/** Off by default: whether teammates get result emails on approve/reject. */
+const DecisionEmailToggle = ({
+	websiteId,
+	initialEnabled,
+}: {
+	websiteId: string;
+	initialEnabled: boolean;
+}) => {
+	const switchId = useId();
+	const [enabled, setEnabled] = useState(initialEnabled);
+	const [isPending, startTransition] = useTransition();
+
+	const toggle = (next: boolean) => {
+		const previous = enabled;
+		setEnabled(next);
+		startTransition(async () => {
+			const result = await updateLeadNotifyDecisions(websiteId, next);
+			if (result.status === "error") {
+				setEnabled(previous);
+				toast.error(result.message);
+			}
+		});
+	};
+
+	return (
+		<label
+			htmlFor={switchId}
+			className="flex cursor-pointer items-center gap-2 text-muted-foreground text-xs"
+		>
+			<Switch
+				id={switchId}
+				size="sm"
+				checked={enabled}
+				disabled={isPending}
+				onCheckedChange={toggle}
+			/>
+			Email teammates when you approve or reject their submissions
+		</label>
+	);
+};
+
 /** Lead-only: manage one website's client team. */
 const TeamManager = ({
 	websiteId,
 	websiteName,
 	members,
+	notifyDecisions,
 }: {
 	websiteId: string;
 	websiteName: string;
 	members: TeamMemberRow[];
+	notifyDecisions: boolean;
 }) => {
 	// Lead first, then everyone else in their original (join-date) order.
 	const sorted = [
@@ -326,6 +371,10 @@ const TeamManager = ({
 				<span className="font-caudex font-semibold">{websiteName}</span>
 				<InviteMemberDialog websiteId={websiteId} />
 			</div>
+			<DecisionEmailToggle
+				websiteId={websiteId}
+				initialEnabled={notifyDecisions}
+			/>
 			{sorted.map((member) => (
 				<MemberRow key={member.id} member={member} />
 			))}

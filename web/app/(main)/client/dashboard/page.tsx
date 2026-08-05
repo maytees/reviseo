@@ -93,12 +93,14 @@ export default async function ClientDashboard() {
 						clients: {
 							select: {
 								id: true,
+								userId: true,
 								role: true,
 								trusted: true,
 								canAnnotate: true,
 								canText: true,
 								canStyle: true,
 								canImage: true,
+								notifyDecisions: true,
 								user: { select: { name: true, email: true } },
 							},
 							orderBy: { createdAt: "asc" },
@@ -149,7 +151,7 @@ export default async function ClientDashboard() {
 				</h1>
 				<p className="text-muted-foreground text-sm">
 					{isLead
-						? `You lead the review team for ${websites.length === 1 ? websites[0].name : `${websites.length} websites`}.`
+						? `You lead the review team for ${teams.length === 1 ? teams[0].name : `${teams.length} websites`}.`
 						: "Track the feedback you've submitted and see what's been resolved."}
 				</p>
 			</div>
@@ -271,6 +273,7 @@ export default async function ClientDashboard() {
 					<FeedbackBoard
 						items={boardItems}
 						rejectedItems={rejectedOwn}
+						websites={websites.map((w) => ({ id: w.id, name: w.name }))}
 						viewerId={user.id}
 						isLead={isLead}
 					/>
@@ -294,6 +297,10 @@ export default async function ClientDashboard() {
 								websiteId={team.id}
 								websiteName={team.name}
 								members={team.clients}
+								notifyDecisions={
+									team.clients.find((c) => c.userId === user.id)
+										?.notifyDecisions ?? false
+								}
 							/>
 						))}
 					</CardContent>

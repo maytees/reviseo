@@ -55,46 +55,33 @@ export default function FeedbackDetailDialog({
 
 	return (
 		<Dialog open onOpenChange={onOpenChange}>
-			<DialogContent variant="feedback" className="overflow-y-auto">
-				<DialogHeader>
+			<DialogContent className="max-h-[85vh] gap-4 overflow-y-auto sm:max-w-2xl">
+				<DialogHeader className="gap-2">
 					<DialogTitle className="pr-6 text-left">{item.title}</DialogTitle>
-					<div className="flex flex-wrap items-center gap-2 pt-1">
-						<Badge
-							variant={TYPE_BADGE_MAP[item.type]}
-							appearance="outline"
-							size="lg"
-						>
-							<TypeIcon className="size-3.5" />
+					<div className="flex flex-wrap items-center gap-1.5">
+						<Badge variant={TYPE_BADGE_MAP[item.type]} appearance="outline">
+							<TypeIcon className="size-3" />
 							{typeConfig.label}
 						</Badge>
 						<Badge
 							variant={PRIORITY_BADGE_MAP[item.priority]}
 							appearance="outline"
-							size="lg"
 						>
-							<PriorityIcon className="size-3.5" />
+							<PriorityIcon className="size-3" />
 							{priorityConfig.label}
 						</Badge>
-						<Badge
-							variant={STATUS_BADGE_MAP[item.status]}
-							appearance="outline"
-							size="lg"
-						>
-							<StatusIcon className="size-3.5" />
+						<Badge variant={STATUS_BADGE_MAP[item.status]} appearance="outline">
+							<StatusIcon className="size-3" />
 							{statusConfig.label}
 						</Badge>
 						{approvalConfig && (
-							<Badge
-								variant={approvalConfig.badge}
-								appearance="light"
-								size="lg"
-							>
+							<Badge variant={approvalConfig.badge} appearance="light">
 								{approvalConfig.label}
 							</Badge>
 						)}
-						<Badge variant="outline" appearance="outline" size="lg">
+						<span className="text-muted-foreground text-xs">
 							{moment(item.createdAt).fromNow()}
-						</Badge>
+						</span>
 					</div>
 				</DialogHeader>
 
@@ -121,19 +108,19 @@ export default function FeedbackDetailDialog({
 					<ImageEditList edits={item.imageEdits} readOnly />
 				)}
 
-				<p className="text-muted-foreground text-sm">
-					{item.description || "No description provided."}
-				</p>
+				{item.description && (
+					<p className="text-muted-foreground text-sm">{item.description}</p>
+				)}
 
-				<div className="flex flex-wrap items-center gap-x-4 gap-y-1 text-muted-foreground text-xs">
+				<div className="flex flex-wrap items-center gap-x-4 gap-y-1 border-border/60 border-t pt-3 text-muted-foreground text-xs">
 					<a
 						href={item.pageUrl}
 						target="_blank"
 						rel="noopener noreferrer"
-						className="inline-flex items-center gap-1 hover:text-foreground"
+						className="inline-flex min-w-0 items-center gap-1 hover:text-foreground"
 					>
-						{item.pageUrl}
-						<ExternalLinkIcon className="size-3" />
+						<span className="truncate">{item.pageUrl}</span>
+						<ExternalLinkIcon className="size-3 shrink-0" />
 					</a>
 					{environment && <span>{environment}</span>}
 				</div>
