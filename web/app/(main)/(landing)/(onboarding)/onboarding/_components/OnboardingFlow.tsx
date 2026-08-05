@@ -4,6 +4,7 @@ import { AnimatePresence } from "framer-motion";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import type { UserOnboardingDataType } from "@/app/data/user/get-user-onboarding-data";
+import { isPlaceholderName } from "@/lib/name";
 import { tryCatch } from "@/lib/try-catch";
 import type { ClientFormData, WebsiteFormData } from "@/lib/validations";
 import { completeOnboarding } from "../actions";
@@ -197,10 +198,15 @@ export function OnboardingFlow(props: { userData: UserOnboardingDataType }) {
 									<WelcomeStep
 										handleComplete={handleComplete}
 										onNext={() => setCurrentStep(1)}
+										// Placeholder (email local-part) names blank the field so
+										// the user has to type a real one.
 										userName={
-											props.userData?.name ||
-											props.userData?.email.split("@")[0] ||
-											undefined
+											isPlaceholderName(
+												props.userData?.name,
+												props.userData?.email ?? "",
+											)
+												? undefined
+												: (props.userData?.name ?? undefined)
 										}
 									/>
 								)}

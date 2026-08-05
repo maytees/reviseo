@@ -2,7 +2,12 @@
 
 import { motion } from "framer-motion";
 import { Sparkles } from "lucide-react";
+import { useId, useState, useTransition } from "react";
+import { toast } from "sonner";
+import { updateUserProfile } from "@/app/(main)/(dashboard)/dashboard/settings/actions";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 interface WelcomeStepProps {
 	onNext: () => void;
@@ -15,6 +20,26 @@ export function WelcomeStep({
 	userName,
 	handleComplete,
 }: WelcomeStepProps) {
+	const nameId = useId();
+	const [name, setName] = useState(userName ?? "");
+	const [isPending, startTransition] = useTransition();
+
+	// Every account needs a name — save it before either exit path.
+	const saveNameThen = (proceed: () => void | Promise<void>) => {
+		const trimmed = name.trim();
+		if (!trimmed) return;
+		startTransition(async () => {
+			if (trimmed !== userName) {
+				const result = await updateUserProfile(trimmed);
+				if (result.status === "error") {
+					toast.error(result.message);
+					return;
+				}
+			}
+			await proceed();
+		});
+	};
+
 	return (
 		<motion.div
 			initial={{ opacity: 0, y: 20 }}
@@ -96,11 +121,32 @@ export function WelcomeStep({
 				</motion.div>
 			</div>
 
+			<div className="mx-auto flex max-w-sm flex-col gap-1.5 pt-2 text-left">
+				<Label htmlFor={nameId}>What should we call you?</Label>
+				<Input
+					id={nameId}
+					value={name}
+					onChange={(e) => setName(e.target.value)}
+					placeholder="Your name"
+					maxLength={100}
+					disabled={isPending}
+					autoComplete="name"
+				/>
+			</div>
+
 			<div className="space-x-2 pt-4">
-				<Button onClick={handleComplete} variant={"outline"}>
+				<Button
+					onClick={() => saveNameThen(handleComplete)}
+					variant={"outline"}
+					disabled={isPending || !name.trim()}
+				>
 					Skip Onboarding
 				</Button>
-				<Button onClick={onNext} className="font-inter">
+				<Button
+					onClick={() => saveNameThen(onNext)}
+					className="font-inter"
+					disabled={isPending || !name.trim()}
+				>
 					Let's get started →
 				</Button>
 			</div>

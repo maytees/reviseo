@@ -3,6 +3,7 @@
 import { isBefore } from "date-fns";
 import { requireUser } from "@/app/data/require-user";
 import { prisma } from "@/lib/db";
+import { isPlaceholderName } from "@/lib/name";
 import type { ApiResponse } from "@/lib/types";
 
 export async function finalizeClientToken(
@@ -98,12 +99,17 @@ export async function finalizeClientToken(
 			data: { status: "ACCEPTED", acceptedAt: new Date() },
 		});
 
-		// First-time client accounts skip developer onboarding
-		if (!user.name || clientName) {
+		// First-time client accounts skip developer onboarding. Better Auth
+		// defaults name to the email local-part, so replace placeholder names
+		// with the one collected on the invite page (or typed by the inviter).
+		const needsName = isPlaceholderName(user.name, user.email);
+		if (needsName || clientName) {
 			await prisma.user.update({
 				where: { id: user.id },
 				data: {
-					...(clientName && !user.name ? { name: clientName } : {}),
+					...(clientName && needsName
+						? { name: clientName.trim().slice(0, 100) }
+						: {}),
 					hasCompletedOnboarding: true,
 				},
 			});

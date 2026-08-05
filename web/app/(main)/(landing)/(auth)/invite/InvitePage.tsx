@@ -5,6 +5,7 @@ import { useRouter } from "next/navigation";
 import { use, useEffect, useState } from "react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import {
 	Card,
 	CardContent,
@@ -13,11 +14,13 @@ import {
 	CardTitle,
 } from "@/components/ui/old-card";
 import { authClient } from "@/lib/auth-client";
+import { isPlaceholderName } from "@/lib/name";
 import { tryCatch } from "@/lib/try-catch";
 import { finalizeClientToken } from "./actions";
 
 type InviteState =
 	| "checking_auth"
+	| "needs_name"
 	| "processing"
 	| "success"
 	| "error"
@@ -46,6 +49,10 @@ const InvitePage = ({
 	const [state, setState] = useState<InviteState>("checking_auth");
 	const [error, setError] = useState<ErrorState | null>(null);
 	const [successMessage, setSuccessMessage] = useState<string>("");
+	// Name typed on the needs_name gate; finalize passes it so the account
+	// never ends up nameless.
+	const [nameInput, setNameInput] = useState("");
+	const [submittedName, setSubmittedName] = useState<string | null>(null);
 
 	useEffect(() => {
 		if (isPending) {
@@ -81,6 +88,22 @@ const InvitePage = ({
 			return;
 		}
 
+		// Accounts created through the invite flow skip onboarding, so this is
+		// the only chance to collect a name for them. A clientName that's just
+		// the email local-part (older invite links) doesn't count as a name.
+		const meaningfulClientName =
+			clientName && !isPlaceholderName(clientName, session.user.email)
+				? clientName
+				: null;
+		if (
+			isPlaceholderName(session.user.name, session.user.email) &&
+			!meaningfulClientName &&
+			!submittedName
+		) {
+			setState("needs_name");
+			return;
+		}
+
 		// Finalize token
 		const finalize = async () => {
 			setState("processing");
@@ -88,7 +111,10 @@ const InvitePage = ({
 
 			try {
 				const { data: result, error: networkError } = await tryCatch(
-					finalizeClientToken(storageToken, clientName),
+					finalizeClientToken(
+						storageToken,
+						meaningfulClientName ?? submittedName,
+					),
 				);
 
 				if (networkError) {
@@ -200,7 +226,7 @@ const InvitePage = ({
 		};
 
 		finalize();
-	}, [token, session?.user, isPending, router, clientName]);
+	}, [token, session?.user, isPending, router, clientName, submittedName]);
 
 	// Checking authentication
 	if (state === "checking_auth") {
@@ -219,6 +245,42 @@ const InvitePage = ({
 							Checking your authentication status...
 						</p>
 					</div>
+				</CardContent>
+			</Card>
+		);
+	}
+
+	// Collect a name before accepting — invited accounts skip onboarding
+	if (state === "needs_name") {
+		return (
+			<Card className="mx-auto w-full">
+				<CardHeader>
+					<CardTitle className="text-xl">One last thing</CardTitle>
+					<CardDescription>
+						Tell us your name so your team knows who's leaving feedback.
+					</CardDescription>
+				</CardHeader>
+				<CardContent className="flex flex-col gap-4">
+					<div className="flex flex-col gap-1.5">
+						<label className="font-medium text-sm" htmlFor="invite-name">
+							Your name
+						</label>
+						<Input
+							id="invite-name"
+							value={nameInput}
+							onChange={(e) => setNameInput(e.target.value)}
+							placeholder="e.g. Jordan Rivera"
+							maxLength={100}
+							autoComplete="name"
+						/>
+					</div>
+					<Button
+						className="w-full"
+						disabled={!nameInput.trim()}
+						onClick={() => setSubmittedName(nameInput.trim())}
+					>
+						Continue
+					</Button>
 				</CardContent>
 			</Card>
 		);

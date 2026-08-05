@@ -11,6 +11,7 @@ import {
 	CardTitle,
 } from "@/components/ui/card";
 import { prisma } from "@/lib/db";
+import { isPlaceholderName } from "@/lib/name";
 import AcceptInvitationCard from "./AcceptInvitationCard";
 
 export const metadata: Metadata = {
@@ -97,6 +98,13 @@ export default async function AcceptInvitationPage({
 				expired,
 			}}
 			sessionEmail={session.user.email}
+			// Placeholder (email local-part) names count as unnamed so the
+			// card asks for a real one.
+			sessionName={
+				isPlaceholderName(session.user.name, session.user.email)
+					? null
+					: session.user.name
+			}
 		/>
 	);
 }

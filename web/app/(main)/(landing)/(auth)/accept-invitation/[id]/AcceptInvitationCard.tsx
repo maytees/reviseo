@@ -2,8 +2,9 @@
 
 import { Building2, CheckIcon, XIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useTransition } from "react";
+import { useId, useState, useTransition } from "react";
 import { toast } from "sonner";
+import { updateUserProfile } from "@/app/(main)/(dashboard)/dashboard/settings/actions";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import {
@@ -13,6 +14,8 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
 import { skipOnboardingAfterJoin } from "./actions";
 
@@ -28,18 +31,34 @@ type InvitationView = {
 export default function AcceptInvitationCard({
 	invitation,
 	sessionEmail,
+	sessionName,
 }: {
 	invitation: InvitationView;
 	sessionEmail: string;
+	sessionName: string | null;
 }) {
 	const router = useRouter();
+	const nameId = useId();
+	const [name, setName] = useState(sessionName ?? "");
 	const [isPending, startTransition] = useTransition();
 
 	const emailMismatch =
 		invitation.email.toLowerCase() !== sessionEmail.toLowerCase();
+	// Members joining a workspace skip onboarding, so collect the name here.
+	const needsName = !sessionName;
 
 	const accept = () => {
+		const trimmed = name.trim();
+		if (needsName && !trimmed) return;
 		startTransition(async () => {
+			if (needsName) {
+				const profileResult = await updateUserProfile(trimmed);
+				if (profileResult.status === "error") {
+					toast.error(profileResult.message);
+					return;
+				}
+			}
+
 			const { error } = await authClient.organization.acceptInvitation({
 				invitationId: invitation.id,
 			});
@@ -107,21 +126,41 @@ export default function AcceptInvitationCard({
 						Sign in with the invited email to accept it.
 					</p>
 				) : (
-					<div className="flex gap-3">
-						<Button
-							variant="outline"
-							disabled={isPending}
-							onClick={reject}
-							size="lg"
-						>
-							<XIcon className="size-4" />
-							Decline
-						</Button>
-						<Button disabled={isPending} onClick={accept} size="lg">
-							<CheckIcon className="size-4" />
-							{isPending ? "Joining…" : "Accept Invitation"}
-						</Button>
-					</div>
+					<>
+						{needsName && (
+							<div className="flex w-full max-w-xs flex-col gap-1.5">
+								<Label htmlFor={nameId}>Your name</Label>
+								<Input
+									id={nameId}
+									value={name}
+									onChange={(e) => setName(e.target.value)}
+									placeholder="e.g. Jordan Rivera"
+									maxLength={100}
+									disabled={isPending}
+									autoComplete="name"
+								/>
+							</div>
+						)}
+						<div className="flex gap-3">
+							<Button
+								variant="outline"
+								disabled={isPending}
+								onClick={reject}
+								size="lg"
+							>
+								<XIcon className="size-4" />
+								Decline
+							</Button>
+							<Button
+								disabled={isPending || (needsName && !name.trim())}
+								onClick={accept}
+								size="lg"
+							>
+								<CheckIcon className="size-4" />
+								{isPending ? "Joining…" : "Accept Invitation"}
+							</Button>
+						</div>
+					</>
 				)}
 			</CardContent>
 		</Card>
