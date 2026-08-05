@@ -4,6 +4,7 @@ import { ShieldCheckIcon, Trash2Icon, UserRoundPlusIcon } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useId, useState, useTransition } from "react";
 import { toast } from "sonner";
+import { Avatar, AvatarFallback } from "@/components/ui/avatar";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { Checkbox } from "@/components/ui/checkbox";
@@ -47,6 +48,13 @@ const PERMISSION_FIELDS = [
 	{ key: "canImage", label: "Images" },
 ] as const;
 
+const initials = (name: string | null, email: string) => {
+	const source = name?.trim() || email;
+	const parts = source.split(/\s+/).filter(Boolean);
+	if (parts.length >= 2) return (parts[0][0] + parts[1][0]).toUpperCase();
+	return source.slice(0, 2).toUpperCase();
+};
+
 const permsOf = (m: TeamMemberRow): MemberPermissions => ({
 	trusted: m.trusted,
 	canAnnotate: m.canAnnotate,
@@ -88,13 +96,20 @@ const MemberRow = ({ member }: { member: TeamMemberRow }) => {
 	return (
 		<div className="flex flex-col gap-2 rounded-lg border border-border p-3">
 			<div className="flex items-center justify-between gap-2">
-				<div className="flex min-w-0 flex-col">
-					<span className="truncate font-medium text-sm">
-						{member.user.name || member.user.email}
-					</span>
-					<span className="truncate text-muted-foreground text-xs">
-						{member.user.email}
-					</span>
+				<div className="flex min-w-0 items-center gap-2.5">
+					<Avatar className="size-8">
+						<AvatarFallback className="text-xs">
+							{initials(member.user.name, member.user.email)}
+						</AvatarFallback>
+					</Avatar>
+					<div className="flex min-w-0 flex-col">
+						<span className="truncate font-medium text-sm">
+							{member.user.name || member.user.email}
+						</span>
+						<span className="truncate text-muted-foreground text-xs">
+							{member.user.email}
+						</span>
+					</div>
 				</div>
 				<div className="flex shrink-0 items-center gap-1.5">
 					{isLead ? (
@@ -122,7 +137,8 @@ const MemberRow = ({ member }: { member: TeamMemberRow }) => {
 				</div>
 			</div>
 			{!isLead && (
-				<div className="flex flex-wrap items-center gap-x-4 gap-y-2">
+				<div className="flex flex-wrap items-center gap-x-4 gap-y-2 border-border/60 border-t pt-2.5">
+					<span className="text-muted-foreground text-xs">Can use</span>
 					{PERMISSION_FIELDS.map((field) => (
 						<label
 							key={field.key}
@@ -140,6 +156,10 @@ const MemberRow = ({ member }: { member: TeamMemberRow }) => {
 							{field.label}
 						</label>
 					))}
+					<span
+						aria-hidden
+						className="hidden h-4 w-px bg-border sm:inline-block"
+					/>
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<label
@@ -294,16 +314,23 @@ const TeamManager = ({
 	websiteId: string;
 	websiteName: string;
 	members: TeamMemberRow[];
-}) => (
-	<div className="flex flex-col gap-3">
-		<div className="flex items-center justify-between gap-2">
-			<span className="font-medium text-sm">{websiteName}</span>
-			<InviteMemberDialog websiteId={websiteId} />
+}) => {
+	// Lead first, then everyone else in their original (join-date) order.
+	const sorted = [
+		...members.filter((m) => m.role === "lead"),
+		...members.filter((m) => m.role !== "lead"),
+	];
+	return (
+		<div className="flex flex-col gap-3">
+			<div className="flex items-center justify-between gap-2">
+				<span className="font-caudex font-semibold">{websiteName}</span>
+				<InviteMemberDialog websiteId={websiteId} />
+			</div>
+			{sorted.map((member) => (
+				<MemberRow key={member.id} member={member} />
+			))}
 		</div>
-		{members.map((member) => (
-			<MemberRow key={member.id} member={member} />
-		))}
-	</div>
-);
+	);
+};
 
 export default TeamManager;
