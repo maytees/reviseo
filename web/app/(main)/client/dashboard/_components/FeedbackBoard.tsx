@@ -14,13 +14,6 @@ import {
 	EmptyTitle,
 } from "@/components/ui/empty";
 import {
-	Select,
-	SelectContent,
-	SelectItem,
-	SelectTrigger,
-	SelectValue,
-} from "@/components/ui/select";
-import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
@@ -74,7 +67,6 @@ function initials(name?: string | null, email?: string | null) {
 type FeedbackBoardProps = {
 	items: FeedbackSelectAllPayload[];
 	rejectedItems: FeedbackSelectAllPayload[];
-	websites: { id: string; name: string }[];
 	viewerId: string;
 	isLead: boolean;
 };
@@ -82,7 +74,6 @@ type FeedbackBoardProps = {
 export default function FeedbackBoard({
 	items,
 	rejectedItems,
-	websites,
 	viewerId,
 	isLead,
 }: FeedbackBoardProps) {
@@ -90,16 +81,9 @@ export default function FeedbackBoard({
 		null,
 	);
 	const [showAllResolved, setShowAllResolved] = useState(false);
-	const [websiteFilter, setWebsiteFilter] = useState<string>("all");
 
-	const visible =
-		websiteFilter === "all"
-			? items
-			: items.filter((item) => item.website.id === websiteFilter);
-	const visibleRejected =
-		websiteFilter === "all"
-			? rejectedItems
-			: rejectedItems.filter((item) => item.website.id === websiteFilter);
+	const visible = items;
+	const visibleRejected = rejectedItems;
 
 	if (items.length === 0 && rejectedItems.length === 0) {
 		return (
@@ -120,25 +104,6 @@ export default function FeedbackBoard({
 
 	return (
 		<div className="flex flex-col gap-5">
-			{websites.length > 1 && (
-				<div className="flex items-center gap-2">
-					<span className="text-muted-foreground text-xs">Website</span>
-					<Select value={websiteFilter} onValueChange={setWebsiteFilter}>
-						<SelectTrigger size="sm" className="w-56">
-							<SelectValue />
-						</SelectTrigger>
-						<SelectContent>
-							<SelectItem value="all">All websites</SelectItem>
-							{websites.map((website) => (
-								<SelectItem key={website.id} value={website.id}>
-									{website.name}
-								</SelectItem>
-							))}
-						</SelectContent>
-					</Select>
-				</div>
-			)}
-
 			{/* Rejected items never reached the developer — they need the
 			    author's attention, not a lifecycle column. */}
 			{visibleRejected.length > 0 && (

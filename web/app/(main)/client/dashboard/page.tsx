@@ -32,15 +32,21 @@ import FeedbackBoard from "./_components/FeedbackBoard";
 import SignOutButton from "./_components/SignOutButton";
 import StatTile from "./_components/StatTile";
 import TeamManager from "./_components/TeamManager";
+import WebsiteSwitcher from "./_components/WebsiteSwitcher";
 
 export const metadata: Metadata = {
 	title: "Your Feedback",
 };
 
-export default async function ClientDashboard() {
+export default async function ClientDashboard({
+	searchParams,
+}: {
+	searchParams: Promise<{ site?: string }>;
+}) {
 	const user = await requireUser();
+	const { site } = await searchParams;
 
-	const [websites, leadRows] = await Promise.all([
+	const [websites, clientRows] = await Promise.all([
 		prisma.website.findMany({
 			// Legacy pointer OR client-team membership
 			where: {
@@ -55,38 +61,74 @@ export default async function ClientDashboard() {
 			orderBy: { createdAt: "desc" },
 		}),
 		prisma.websiteClient.findMany({
-			where: { userId: user.id, role: "lead" },
-			select: { websiteId: true },
+			where: { userId: user.id },
+			select: { websiteId: true, role: true },
 		}),
 	]);
 
-	const leadWebsiteIds = leadRows.map((row) => row.websiteId);
-	const isLead = leadWebsiteIds.length > 0;
+	if (websites.length === 0) {
+		return (
+			<div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6">
+				<div className="flex flex-wrap items-start justify-between gap-4">
+					<div className="flex flex-col gap-0.5">
+						<h1 className="font-bold font-caudex text-3xl">
+							{user.name ? `Welcome, ${user.name}` : "Welcome"}
+						</h1>
+						<p className="text-muted-foreground text-sm">
+							Track the feedback you've submitted and see what's been resolved.
+						</p>
+					</div>
+					<SignOutButton />
+				</div>
+				<Card>
+					<CardContent>
+						<Empty>
+							<EmptyHeader>
+								<EmptyMedia variant="icon">
+									<Globe />
+								</EmptyMedia>
+								<EmptyTitle>No websites yet</EmptyTitle>
+								<EmptyDescription>
+									When a developer adds you to a website, it will show up here.
+								</EmptyDescription>
+							</EmptyHeader>
+						</Empty>
+					</CardContent>
+				</Card>
+			</div>
+		);
+	}
 
-	const [boardFeedback, teams, pendingApprovals] = await Promise.all([
+	// The whole page is scoped to ONE website at a time; role is per-site.
+	const selected = websites.find((w) => w.id === site) ?? websites[0];
+	const isLeadHere = clientRows.some(
+		(row) => row.websiteId === selected.id && row.role === "lead",
+	);
+
+	const [boardFeedback, team, pendingApprovals] = await Promise.all([
 		prisma.feedback.findMany({
-			// Leads also see teammates' submissions on sites they lead — but only
-			// ones that actually reached the developer. Teammates' PENDING items
-			// live in the approval queue; their REJECTED ones stay private.
-			where: isLead
+			// Leads see teammates' submissions too — but only ones that actually
+			// reached the developer. Teammates' PENDING items live in the
+			// approval queue; their REJECTED ones stay private to the author.
+			where: isLeadHere
 				? {
+						websiteId: selected.id,
 						OR: [
 							{ authorId: user.id },
 							{
-								websiteId: { in: leadWebsiteIds },
 								authorId: { not: user.id },
 								approval: { in: ["DIRECT", "APPROVED"] },
 							},
 						],
 					}
-				: { authorId: user.id },
+				: { websiteId: selected.id, authorId: user.id },
 			select: feedbackSelect,
 			orderBy: { createdAt: "desc" },
 			take: 60,
 		}),
-		isLead
-			? prisma.website.findMany({
-					where: { id: { in: leadWebsiteIds } },
+		isLeadHere
+			? prisma.website.findUnique({
+					where: { id: selected.id },
 					select: {
 						id: true,
 						name: true,
@@ -107,11 +149,11 @@ export default async function ClientDashboard() {
 						},
 					},
 				})
-			: [],
-		isLead
+			: null,
+		isLeadHere
 			? prisma.feedback.findMany({
 					where: {
-						websiteId: { in: leadWebsiteIds },
+						websiteId: selected.id,
 						approval: "PENDING",
 						authorId: { not: user.id },
 					},
@@ -143,59 +185,56 @@ export default async function ClientDashboard() {
 		(f) => f.status === "RESOLVED",
 	).length;
 
-	const header = (
-		<div className="flex flex-wrap items-start justify-between gap-4">
-			<div className="flex flex-col gap-0.5">
-				<h1 className="font-bold font-caudex text-3xl">
-					{user.name ? `Welcome, ${user.name}` : "Welcome"}
-				</h1>
-				<p className="text-muted-foreground text-sm">
-					{isLead
-						? `You lead the review team for ${teams.length === 1 ? teams[0].name : `${teams.length} websites`}.`
-						: "Track the feedback you've submitted and see what's been resolved."}
-				</p>
+	return (
+		<div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6">
+			<div className="flex flex-wrap items-start justify-between gap-4">
+				<div className="flex flex-col gap-0.5">
+					<h1 className="font-bold font-caudex text-3xl">
+						{user.name ? `Welcome, ${user.name}` : "Welcome"}
+					</h1>
+					<p className="text-muted-foreground text-sm">
+						{isLeadHere
+							? `You lead the review team for ${selected.name}.`
+							: `You review ${selected.name} — track your feedback and see what's been resolved.`}
+					</p>
+				</div>
+				<SignOutButton />
 			</div>
-			<div className="flex items-center gap-2">
-				{isLead && (
+
+			{/* Site scope toolbar — everything below is about this website */}
+			<div className="flex flex-wrap items-center gap-2">
+				{websites.length > 1 && (
+					<WebsiteSwitcher
+						websites={websites.map((w) => ({ id: w.id, name: w.name }))}
+						selectedId={selected.id}
+					/>
+				)}
+				{isLeadHere && (
 					<Badge variant="primary" appearance="light">
 						Team lead
 					</Badge>
 				)}
-				<SignOutButton />
+				<span className="text-muted-foreground text-xs">
+					Managed by {selected.developer.name || selected.developer.email}
+				</span>
+				<Button asChild variant="outline" size="sm" className="ml-auto">
+					<Link
+						// #reviseo-connect marks the client's browser so the widget can
+						// offer its connect button there even when third-party cookies
+						// are blocked.
+						href={`${selected.url}#reviseo-connect`}
+						target="_blank"
+						rel="noopener noreferrer"
+					>
+						Open site
+						<ExternalLink className="size-3.5" />
+					</Link>
+				</Button>
 			</div>
-		</div>
-	);
-
-	if (websites.length === 0) {
-		return (
-			<div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6">
-				{header}
-				<Card>
-					<CardContent>
-						<Empty>
-							<EmptyHeader>
-								<EmptyMedia variant="icon">
-									<Globe />
-								</EmptyMedia>
-								<EmptyTitle>No websites yet</EmptyTitle>
-								<EmptyDescription>
-									When a developer adds you to a website, it will show up here.
-								</EmptyDescription>
-							</EmptyHeader>
-						</Empty>
-					</CardContent>
-				</Card>
-			</div>
-		);
-	}
-
-	return (
-		<div className="mx-auto flex w-full max-w-6xl flex-col gap-8 px-4 py-10 sm:px-6">
-			{header}
 
 			{/* Summary strip */}
 			<div className="grid gap-3 sm:grid-cols-3">
-				{isLead ? (
+				{isLeadHere ? (
 					<>
 						<StatTile
 							icon={ClockIcon}
@@ -243,7 +282,7 @@ export default async function ClientDashboard() {
 			</div>
 
 			{/* Lead-only: approval queue — the one thing a lead must act on */}
-			{isLead && pendingApprovals.length > 0 && (
+			{isLeadHere && pendingApprovals.length > 0 && (
 				<Card>
 					<CardHeader>
 						<CardTitle>Needs your review</CardTitle>
@@ -264,24 +303,23 @@ export default async function ClientDashboard() {
 				<CardHeader>
 					<CardTitle>Where things stand</CardTitle>
 					<CardDescription>
-						{isLead
-							? "Every submission from you and your team, from new to resolved. The developer moves items along — click any card for details."
-							: "Your submissions, from new to resolved. The developer moves items along — click any card for details."}
+						{isLeadHere
+							? `Every submission from you and your team on ${selected.name}, from new to resolved. The developer moves items along — click any card for details.`
+							: `Your submissions on ${selected.name}, from new to resolved. The developer moves items along — click any card for details.`}
 					</CardDescription>
 				</CardHeader>
 				<CardContent>
 					<FeedbackBoard
 						items={boardItems}
 						rejectedItems={rejectedOwn}
-						websites={websites.map((w) => ({ id: w.id, name: w.name }))}
 						viewerId={user.id}
-						isLead={isLead}
+						isLead={isLeadHere}
 					/>
 				</CardContent>
 			</Card>
 
 			{/* Lead-only: team management */}
-			{isLead && teams.length > 0 && (
+			{isLeadHere && team && (
 				<Card>
 					<CardHeader>
 						<CardTitle>Your team</CardTitle>
@@ -290,68 +328,19 @@ export default async function ClientDashboard() {
 							mark trusted people whose feedback skips your approval.
 						</CardDescription>
 					</CardHeader>
-					<CardContent className="flex flex-col gap-8">
-						{teams.map((team) => (
-							<TeamManager
-								key={team.id}
-								websiteId={team.id}
-								websiteName={team.name}
-								members={team.clients}
-								notifyDecisions={
-									team.clients.find((c) => c.userId === user.id)
-										?.notifyDecisions ?? false
-								}
-							/>
-						))}
+					<CardContent>
+						<TeamManager
+							websiteId={team.id}
+							websiteName={team.name}
+							members={team.clients}
+							notifyDecisions={
+								team.clients.find((c) => c.userId === user.id)
+									?.notifyDecisions ?? false
+							}
+						/>
 					</CardContent>
 				</Card>
 			)}
-
-			{/* Websites strip */}
-			<Card>
-				<CardHeader>
-					<CardTitle>Websites you review</CardTitle>
-					<CardDescription>
-						Open a site and click the Reviseo button to leave feedback
-					</CardDescription>
-				</CardHeader>
-				<CardContent className="flex flex-col gap-2">
-					{websites.map((website) => (
-						<div
-							key={website.id}
-							className="flex items-center justify-between gap-4 rounded-lg border border-border px-4 py-3"
-						>
-							<div className="flex min-w-0 items-center gap-3">
-								<div className="flex size-8 shrink-0 items-center justify-center rounded-md bg-primary/10">
-									<Globe className="size-4 text-primary" />
-								</div>
-								<div className="flex min-w-0 flex-col">
-									<span className="truncate font-medium text-sm">
-										{website.name}
-									</span>
-									<span className="truncate text-muted-foreground text-xs">
-										Managed by{" "}
-										{website.developer.name || website.developer.email}
-									</span>
-								</div>
-							</div>
-							<Button asChild variant="outline" size="sm">
-								<Link
-									// #reviseo-connect marks the client's browser so the
-									// widget can offer its connect button there even when
-									// third-party cookies are blocked.
-									href={`${website.url}#reviseo-connect`}
-									target="_blank"
-									rel="noopener noreferrer"
-								>
-									Open site
-									<ExternalLink className="size-3.5" />
-								</Link>
-							</Button>
-						</div>
-					))}
-				</CardContent>
-			</Card>
 		</div>
 	);
 }
