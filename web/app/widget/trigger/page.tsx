@@ -1,6 +1,7 @@
 "use client";
 import {
 	CameraIcon,
+	EyeIcon,
 	ImageIcon,
 	PaletteIcon,
 	TextCursorInputIcon,
@@ -45,6 +46,12 @@ const DIAL_ACTIONS = [
 		label: "Replace images",
 		icon: ImageIcon,
 		message: "IMAGE_MODE_START",
+	},
+	{
+		key: "preview",
+		label: "Preview changes",
+		icon: EyeIcon,
+		message: "PREVIEW_MODE_START",
 	},
 ] as const;
 
@@ -98,6 +105,7 @@ const TriggerButton = () => {
 		text: true,
 		style: true,
 		image: true,
+		preview: true,
 	});
 	const triggerId = useId();
 
@@ -300,6 +308,7 @@ const TriggerButton = () => {
 							text: data.capabilities.text !== false,
 							style: data.capabilities.style !== false,
 							image: data.capabilities.image !== false,
+							preview: data.capabilities.preview !== false,
 						});
 					}
 				} else {

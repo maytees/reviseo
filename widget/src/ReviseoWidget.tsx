@@ -3,6 +3,11 @@ import { useEffect, useRef } from "preact/hooks";
 import { readStoredRecords } from "./edit-shared";
 import { useUserAgent } from "./hooks/useBrowserInfo";
 import { IMAGE_EDITS_STORAGE_KEY, ImageEditEngine } from "./image-edit";
+import {
+	PreviewEngine,
+	type PreviewItem,
+	type PreviewViewer,
+} from "./preview-edit";
 import { STYLE_EDITS_STORAGE_KEY, StyleEditEngine } from "./style-edit";
 import { TEXT_EDITS_STORAGE_KEY, TextEditEngine } from "./text-edit";
 
@@ -203,11 +208,15 @@ const CLIENT_HINT_FRAGMENT = "reviseo-connect";
 const TEXT_ONBOARDING_KEY = "__reviseo_text_onboarding";
 const STYLE_ONBOARDING_KEY = "__reviseo_style_onboarding";
 const IMAGE_ONBOARDING_KEY = "__reviseo_image_onboarding";
+const PREVIEW_ONBOARDING_KEY = "__reviseo_preview_onboarding";
+// Deep link: dashboards link to a page with `#reviseo-preview=<feedbackId>`
+// to open preview mode focused on that submission.
+const PREVIEW_FRAGMENT_RX = /#reviseo-preview=([\w-]+)/;
 
 // Trigger iframe sizes: collapsed = just the round button; expanded = room
 // for the speed-dial circles and their tooltips.
 const TRIGGER_COLLAPSED = { width: "64px", height: "64px" };
-const TRIGGER_EXPANDED = { width: "260px", height: "360px" };
+const TRIGGER_EXPANDED = { width: "260px", height: "420px" };
 
 /**
  * Client hint: invite emails and the client dashboard link to the customer
@@ -250,6 +259,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 	const textEngineRef = useRef<TextEditEngine | null>(null);
 	const styleEngineRef = useRef<StyleEditEngine | null>(null);
 	const imageEngineRef = useRef<ImageEditEngine | null>(null);
+	const previewEngineRef = useRef<PreviewEngine | null>(null);
 
 	useEffect(() => {
 		// Health check timeout (generous: first load may compile/hydrate slowly)
@@ -324,8 +334,93 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 			Boolean(
 				textEngineRef.current?.isActive() ||
 					styleEngineRef.current?.isActive() ||
-					imageEngineRef.current?.isActive(),
+					imageEngineRef.current?.isActive() ||
+					previewEngineRef.current?.isActive(),
 			);
+
+		/** Post to the (possibly hidden) modal iframe without showing it. */
+		const postToModal = (message: Record<string, unknown>) => {
+			const modal = document.getElementById(
+				"reviseo-modal",
+			) as HTMLIFrameElement | null;
+			modal?.contentWindow?.postMessage(message, WIDGET_ORIGIN);
+		};
+
+		// ── Preview mode ──────────────────────────────────────────────────
+		// Data comes through the modal iframe (reviseo origin — it can send
+		// the session cookie); the engine itself never touches the network.
+		let previewFetchTimer: number | null = null;
+		let previewFocusId: string | null = null;
+
+		const requestPreviewData = () => {
+			// The modal iframe may still be loading — retry until PREVIEW_DATA
+			// (or PREVIEW_ERROR) clears the timer.
+			let attempts = 0;
+			const tick = () => {
+				postToModal({ type: "PREVIEW_FETCH", projectId });
+				attempts += 1;
+				if (attempts < 15) {
+					previewFetchTimer = window.setTimeout(tick, 1000);
+				}
+			};
+			tick();
+		};
+
+		const clearPreviewFetchTimer = () => {
+			if (previewFetchTimer !== null) {
+				window.clearTimeout(previewFetchTimer);
+				previewFetchTimer = null;
+			}
+		};
+
+		/** Engine's missing/disabled state, mirrored to the modal panel. */
+		const sendPreviewState = () => {
+			const engine = previewEngineRef.current;
+			if (!engine) return;
+			const disabledIds = engine
+				.getItems()
+				.filter((item) => !engine.isItemEnabled(item.id))
+				.map((item) => item.id);
+			postToModal({
+				type: "PREVIEW_STATE",
+				missingIds: engine.getMissingIds(),
+				disabledIds,
+				url: window.location.href,
+			});
+		};
+
+		const startPreviewMode = () => {
+			if (!previewEngineRef.current) {
+				previewEngineRef.current = new PreviewEngine();
+			}
+			const engine = previewEngineRef.current;
+			if (engine.isActive() || anyModeActive()) return;
+
+			if (triggerIframeRef.current) {
+				triggerIframeRef.current.style.display = "none";
+			}
+			setTriggerSize(TRIGGER_COLLAPSED);
+
+			engine.start({
+				onRequestData: () => requestPreviewData(),
+				onOpenPanel: () => {
+					sendPreviewState();
+					showModal({
+						type: "SHOW_PREVIEW_PANEL",
+						url: window.location.href,
+					});
+				},
+				onExit: () => {
+					clearPreviewFetchTimer();
+					previewFocusId = null;
+					const modal = document.getElementById("reviseo-modal");
+					if (modal) modal.style.display = "none";
+					if (triggerIframeRef.current) {
+						triggerIframeRef.current.style.display = "block";
+					}
+				},
+			});
+		};
 
 		const startImageMode = () => {
 			if (!imageEngineRef.current) {
@@ -580,6 +675,74 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 					sendEditCount();
 					break;
 
+				case "PREVIEW_MODE_START": {
+					let seen = false;
+					try {
+						seen = localStorage.getItem(PREVIEW_ONBOARDING_KEY) === "1";
+					} catch {}
+					if (seen) {
+						startPreviewMode();
+					} else {
+						showModal({ type: "SHOW_PREVIEW_GUIDE" });
+					}
+					break;
+				}
+
+				case "PREVIEW_GUIDE_DONE": {
+					try {
+						localStorage.setItem(PREVIEW_ONBOARDING_KEY, "1");
+					} catch {}
+					const modal = document.getElementById("reviseo-modal");
+					if (modal) modal.style.display = "none";
+					startPreviewMode();
+					break;
+				}
+
+				case "PREVIEW_DATA": {
+					clearPreviewFetchTimer();
+					const engine = previewEngineRef.current;
+					if (!engine || !engine.isActive()) break;
+					if (Array.isArray(event.data.items) && event.data.viewer) {
+						engine.setData(
+							event.data.items as PreviewItem[],
+							event.data.viewer as PreviewViewer,
+						);
+						sendPreviewState();
+						if (previewFocusId) {
+							engine.focusItem(previewFocusId);
+							previewFocusId = null;
+						}
+					}
+					break;
+				}
+
+				case "PREVIEW_ERROR":
+					clearPreviewFetchTimer();
+					console.warn(
+						"Reviseo: could not load suggested changes for preview.",
+					);
+					previewEngineRef.current?.stop();
+					break;
+
+				case "PREVIEW_TOGGLE":
+					if (typeof event.data.feedbackId === "string") {
+						previewEngineRef.current?.setItemEnabled(
+							event.data.feedbackId,
+							event.data.on === true,
+						);
+						sendPreviewState();
+					}
+					break;
+
+				case "PREVIEW_FOCUS": {
+					const modal = document.getElementById("reviseo-modal");
+					if (modal) modal.style.display = "none";
+					if (typeof event.data.feedbackId === "string") {
+						previewEngineRef.current?.focusItem(event.data.feedbackId);
+					}
+					break;
+				}
+
 				case "HEALTH_CHECK":
 					// Respond to health check
 					triggerIframeRef.current?.contentWindow?.postMessage(
@@ -692,6 +855,35 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 
 		window.addEventListener("message", handleMessage);
 
+		// Deep link from the dashboards: open preview mode focused on one
+		// submission. Consume the fragment so a refresh doesn't re-trigger.
+		// Also handles hash-only navigations (link clicked while the page was
+		// already open — no reload, so the mount path alone would miss it).
+		const consumePreviewFragment = () => {
+			try {
+				const match = PREVIEW_FRAGMENT_RX.exec(window.location.hash);
+				if (!match) return;
+				previewFocusId = match[1];
+				history.replaceState(
+					null,
+					"",
+					window.location.pathname + window.location.search,
+				);
+				try {
+					localStorage.setItem(PREVIEW_ONBOARDING_KEY, "1");
+				} catch {}
+				const engine = previewEngineRef.current;
+				if (engine?.isActive()) {
+					// Already previewing — just refetch and refocus.
+					requestPreviewData();
+				} else {
+					startPreviewMode();
+				}
+			} catch {}
+		};
+		consumePreviewFragment();
+		window.addEventListener("hashchange", consumePreviewFragment);
+
 		// Esc on the customer page closes the speed dial. The dial lives in
 		// the trigger iframe, which only hears keys while focused — so the
 		// loader forwards page-level Esc across the frame boundary. (Text
@@ -709,6 +901,7 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 		// Cleanup
 		return () => {
 			window.removeEventListener("message", handleMessage);
+			window.removeEventListener("hashchange", consumePreviewFragment);
 			window.removeEventListener("keydown", handlePageKeydown, true);
 			if (healthTimeoutRef.current) {
 				clearTimeout(healthTimeoutRef.current);
@@ -716,6 +909,8 @@ export default function ReviseoWidget({ projectId }: { projectId: string }) {
 			textEngineRef.current?.stop();
 			styleEngineRef.current?.stop();
 			imageEngineRef.current?.stop();
+			previewEngineRef.current?.stop();
+			clearPreviewFetchTimer();
 			modalIframe.remove();
 		};
 		// Mount-once: modal iframe + listener must not be duplicated.

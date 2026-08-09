@@ -10,12 +10,15 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import {
 	ArrowLeftIcon,
 	CheckCircle2Icon,
+	CheckIcon,
 	ChevronRightIcon,
 	ClockIcon,
+	EyeIcon,
 	GlobeIcon,
 	Grid2X2,
 	ImageIcon,
 	LinkIcon,
+	LocateFixedIcon,
 	MousePointerClickIcon,
 	PaletteIcon,
 	PenLineIcon,
@@ -23,13 +26,16 @@ import {
 	SlidersHorizontalIcon,
 	TextCursorInputIcon,
 	Trash2Icon,
+	TriangleAlertIcon,
 	UploadIcon,
+	XIcon,
 } from "lucide-react";
 import { motion } from "motion/react";
 import Image from "next/image";
 import Link from "next/link";
 import {
 	Fragment,
+	useCallback,
 	useEffect,
 	useId,
 	useRef,
@@ -38,6 +44,7 @@ import {
 } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { toast } from "sonner";
+import { decideFeedbackApproval } from "@/app/(main)/client/dashboard/actions";
 import { StyleChangeRows } from "@/components/style-change-rows";
 import { DiffText } from "@/components/text-edit-diff";
 import { Button } from "@/components/ui/button";
@@ -64,6 +71,7 @@ import {
 	SelectTrigger,
 	SelectValue,
 } from "@/components/ui/select";
+import { Switch } from "@/components/ui/switch";
 import { Textarea } from "@/components/ui/textarea";
 import { authClient } from "@/lib/auth-client";
 import { useConfetti } from "@/lib/hooks/use-confetti";
@@ -109,6 +117,53 @@ type ImageChoice = {
 	naturalHeight?: number;
 };
 
+/** One saved submission, as served by /api/widget/edits for preview mode. */
+type PreviewPanelItem = {
+	id: string;
+	title: string;
+	type: "TEXT_EDIT" | "STYLE_EDIT" | "IMAGE_EDIT";
+	approval: "DIRECT" | "PENDING" | "APPROVED" | "REJECTED";
+	approvalNote?: string | null;
+	pageUrl: string;
+	createdAt: string;
+	author: { id: string; name: string | null } | null;
+	textEdits: {
+		id: string;
+		selector: string;
+		originalText: string;
+		suggestedText: string;
+		pageUrl: string;
+	}[];
+	styleEdits: {
+		id: string;
+		selector: string;
+		changes: { property: string; before: string; after: string }[];
+		pageUrl: string;
+	}[];
+	imageEdits: {
+		id: string;
+		selector: string;
+		originalSrc: string;
+		newKey?: string | null;
+		newUrl?: string | null;
+		pageUrl: string;
+		displayUrl?: string;
+	}[];
+};
+
+type PreviewPanelViewer = {
+	role: "lead" | "member" | "developer";
+	userId: string;
+};
+
+const previewPathOf = (url: string) => {
+	try {
+		return new URL(url).pathname;
+	} catch {
+		return url;
+	}
+};
+
 const ReviseoModal = () => {
 	const { data: hookSession } = authClient.useSession();
 	// Session fetched manually after a Storage Access grant (cross-site
@@ -128,6 +183,8 @@ const ReviseoModal = () => {
 		| "imageGuide"
 		| "imagePicker"
 		| "imageReview"
+		| "previewGuide"
+		| "previewPanel"
 	>("feedback");
 	const [textEdits, setTextEdits] = useState<ReviewEdit[]>([]);
 	const [styleEdits, setStyleEdits] = useState<StyleReviewEdit[]>([]);
@@ -137,6 +194,18 @@ const ReviseoModal = () => {
 	const [imageBusy, setImageBusy] = useState(false);
 	const [imageUrlInput, setImageUrlInput] = useState("");
 	const [textNote, setTextNote] = useState("");
+	// Preview mode: fetched submissions + panel state (mirrored from loader)
+	const [previewItems, setPreviewItems] = useState<PreviewPanelItem[]>([]);
+	const [previewViewer, setPreviewViewer] = useState<PreviewPanelViewer | null>(
+		null,
+	);
+	const [previewProjectId, setPreviewProjectId] = useState<string | null>(null);
+	const [previewMissing, setPreviewMissing] = useState<string[]>([]);
+	const [previewDisabled, setPreviewDisabled] = useState<string[]>([]);
+	const [previewPageUrl, setPreviewPageUrl] = useState<string>("");
+	const [previewNoteId, setPreviewNoteId] = useState<string | null>(null);
+	const [previewNote, setPreviewNote] = useState("");
+	const [previewBusy, setPreviewBusy] = useState(false);
 	const [submitted, setSubmitted] = useState(false);
 	const [loading, setLoading] = useState<boolean>(false);
 	const [isPending, startTransition] = useTransition();
@@ -236,6 +305,11 @@ const ReviseoModal = () => {
 		setImageBusy(false);
 		setImageUrlInput("");
 		setTextNote("");
+		// Preview data (items/viewer/projectId) survives on purpose — the
+		// panel reopens instantly while the engine stays active on the page.
+		setPreviewNoteId(null);
+		setPreviewNote("");
+		setPreviewBusy(false);
 		setInitialData(undefined);
 		sceneData.current = null;
 		form.reset();
@@ -359,6 +433,98 @@ const ReviseoModal = () => {
 	const handleGuideDone = () => {
 		closeAndReset();
 		window.parent.postMessage({ type: "TEXT_GUIDE_DONE" }, "*");
+	};
+
+	const handlePreviewGuideDone = () => {
+		closeAndReset();
+		window.parent.postMessage({ type: "PREVIEW_GUIDE_DONE" }, "*");
+	};
+
+	/** Fetch preview data for the loader. Runs on this (reviseo) origin so
+	 *  the request carries the session cookie; bucket-hosted replacement
+	 *  images are resolved to data URLs here for the same reason — the
+	 *  customer page can't send cookies to the serve route. */
+	const fetchPreview = useCallback(async (projectId: string) => {
+		try {
+			await ensureStorageAccess();
+			const res = await fetch("/api/widget/edits", {
+				method: "POST",
+				headers: { "Content-Type": "application/json" },
+				body: JSON.stringify({ projectId }),
+			});
+			if (!res.ok) {
+				window.parent.postMessage(
+					{ type: "PREVIEW_ERROR", status: res.status },
+					"*",
+				);
+				return;
+			}
+			const data = (await res.json()) as {
+				items: PreviewPanelItem[];
+				viewer: PreviewPanelViewer;
+			};
+
+			for (const item of data.items) {
+				for (const edit of item.imageEdits) {
+					if (!edit.newKey) {
+						edit.displayUrl = edit.newUrl ?? undefined;
+						continue;
+					}
+					try {
+						const imageRes = await fetch(
+							`/api/s3/image-edits/${encodeURIComponent(edit.newKey)}`,
+						);
+						if (!imageRes.ok) continue;
+						const blob = await imageRes.blob();
+						edit.displayUrl = await new Promise<string>((resolve, reject) => {
+							const reader = new FileReader();
+							reader.onload = () => resolve(reader.result as string);
+							reader.onerror = reject;
+							reader.readAsDataURL(blob);
+						});
+					} catch {
+						// Missing image → the engine lists the edit as not locatable
+					}
+				}
+			}
+
+			setPreviewItems(data.items);
+			setPreviewViewer(data.viewer);
+			setPreviewProjectId(projectId);
+			window.parent.postMessage(
+				{ type: "PREVIEW_DATA", items: data.items, viewer: data.viewer },
+				"*",
+			);
+		} catch {
+			window.parent.postMessage({ type: "PREVIEW_ERROR", status: 0 }, "*");
+		}
+	}, []);
+
+	/** Lead decides a pending submission right from the preview panel. */
+	const handlePreviewDecision = (
+		item: PreviewPanelItem,
+		decision: "APPROVED" | "REJECTED",
+	) => {
+		setPreviewBusy(true);
+		startTransition(async () => {
+			const { data: result, error } = await tryCatch(
+				decideFeedbackApproval(
+					item.id,
+					decision,
+					previewNoteId === item.id && previewNote ? previewNote : undefined,
+				),
+			);
+			setPreviewBusy(false);
+			if (error || result?.status === "error") {
+				toast.error(result?.message ?? "Something went wrong. Try again.");
+				return;
+			}
+			toast.success(decision === "APPROVED" ? "Approved and sent" : "Rejected");
+			setPreviewNoteId(null);
+			setPreviewNote("");
+			// Refresh both this panel and the page overlay
+			if (previewProjectId) void fetchPreview(previewProjectId);
+		});
 	};
 
 	const handleStyleGuideDone = () => {
@@ -716,6 +882,40 @@ const ReviseoModal = () => {
 					setView("styleGuide");
 					recoverSession();
 					break;
+				case "SHOW_PREVIEW_GUIDE":
+					setOpen(true);
+					setSubmitted(false);
+					setLoading(false);
+					setView("previewGuide");
+					recoverSession();
+					break;
+				case "SHOW_PREVIEW_PANEL":
+					setOpen(true);
+					setSubmitted(false);
+					setLoading(false);
+					setView("previewPanel");
+					if (typeof event.data.url === "string") {
+						setPreviewPageUrl(event.data.url);
+					}
+					recoverSession();
+					break;
+				case "PREVIEW_FETCH":
+					if (typeof event.data.projectId === "string") {
+						recoverSession();
+						void fetchPreview(event.data.projectId);
+					}
+					break;
+				case "PREVIEW_STATE":
+					if (Array.isArray(event.data.missingIds)) {
+						setPreviewMissing(event.data.missingIds as string[]);
+					}
+					if (Array.isArray(event.data.disabledIds)) {
+						setPreviewDisabled(event.data.disabledIds as string[]);
+					}
+					if (typeof event.data.url === "string") {
+						setPreviewPageUrl(event.data.url);
+					}
+					break;
 				case "SHOW_STYLE_REVIEW":
 					setOpen(true);
 					setSubmitted(false);
@@ -813,7 +1013,7 @@ const ReviseoModal = () => {
 
 		window.addEventListener("message", handleMessage);
 		return () => window.removeEventListener("message", handleMessage);
-	}, []);
+	}, [fetchPreview]);
 
 	return (
 		<Fragment>
@@ -832,11 +1032,13 @@ const ReviseoModal = () => {
 							view === "guide" ||
 							view === "styleGuide" ||
 							view === "imageGuide" ||
+							view === "previewGuide" ||
 							view === "imagePicker"
 								? "rounded-2xl bg-card"
 								: view === "review" ||
 										view === "styleReview" ||
-										view === "imageReview"
+										view === "imageReview" ||
+										view === "previewPanel"
 									? "flex max-h-[85vh] flex-col rounded-2xl bg-card sm:max-w-xl"
 									: "overflow-y-scroll bg-card transition-all duration-500 ease-in-out"
 						}
@@ -1026,6 +1228,296 @@ const ReviseoModal = () => {
 									</span>
 								</div>
 							</div>
+						) : view === "previewGuide" ? (
+							<div className="flex flex-col gap-6 px-1 py-3">
+								<div className="flex flex-col items-center gap-3 text-center">
+									<motion.div
+										initial={{ scale: 0, rotate: -15 }}
+										animate={{ scale: 1, rotate: 0 }}
+										transition={{ type: "spring", stiffness: 260, damping: 16 }}
+										className="flex size-14 items-center justify-center rounded-2xl bg-primary/10"
+									>
+										<EyeIcon className="size-7 text-primary" />
+									</motion.div>
+									<DialogTitle className="font-caudex text-2xl">
+										Preview changes
+									</DialogTitle>
+									<DialogDescription className="max-w-sm">
+										See your team's suggested edits applied to the live page —
+										before the developer ships them.
+									</DialogDescription>
+								</div>
+								<ol className="flex flex-col gap-4">
+									{(
+										[
+											[
+												EyeIcon,
+												"Suggested text, style, and image changes render in place",
+											],
+											[
+												MousePointerClickIcon,
+												"Hover any outlined element to see who suggested what",
+											],
+											[
+												SlidersHorizontalIcon,
+												"Open the Changes panel to toggle, approve, or reject",
+											],
+										] as const
+									).map(([Icon, label], i) => (
+										<motion.li
+											key={label}
+											initial={{ opacity: 0, x: -10 }}
+											animate={{ opacity: 1, x: 0 }}
+											transition={{ delay: 0.1 + i * 0.08 }}
+											className="flex items-center gap-3"
+										>
+											<span className="flex size-9 shrink-0 items-center justify-center rounded-full bg-muted">
+												<Icon className="size-4 text-foreground" />
+											</span>
+											<span className="text-sm">
+												<span className="mr-1.5 font-semibold text-muted-foreground">
+													{i + 1}.
+												</span>
+												{label}
+											</span>
+										</motion.li>
+									))}
+								</ol>
+								<div className="flex flex-col items-center gap-2">
+									<Button
+										size="lg"
+										className="w-full"
+										onClick={handlePreviewGuideDone}
+									>
+										Got it — show me
+									</Button>
+									<span className="text-muted-foreground text-xs">
+										Nothing is changed for real — press Esc anytime to exit
+									</span>
+								</div>
+							</div>
+						) : view === "previewPanel" ? (
+							(() => {
+								const currentPath = previewPathOf(previewPageUrl);
+								const editPages = (item: PreviewPanelItem) => [
+									...item.textEdits.map((e) => e.pageUrl),
+									...item.styleEdits.map((e) => e.pageUrl),
+									...item.imageEdits.map((e) => e.pageUrl),
+								];
+								const onThisPage = (item: PreviewPanelItem) =>
+									editPages(item).some((u) => previewPathOf(u) === currentPath);
+								const visible = previewItems.filter(
+									(item) => item.approval !== "REJECTED",
+								);
+								const pendingForMe = visible.filter(
+									(item) =>
+										previewViewer?.role === "lead" &&
+										item.approval === "PENDING" &&
+										item.author?.id !== previewViewer.userId,
+								);
+								const rest = visible.filter(
+									(item) => !pendingForMe.includes(item),
+								);
+								const herePreview = rest.filter(onThisPage);
+								const elsewhere = rest.filter((item) => !onThisPage(item));
+
+								const itemRow = (
+									item: PreviewPanelItem,
+									options: { decidable: boolean },
+								) => {
+									const typeConfig = TYPE_CONFIG[item.type];
+									const TypeIcon = typeConfig.icon;
+									const missing = previewMissing.includes(item.id);
+									const disabled = previewDisabled.includes(item.id);
+									const located = onThisPage(item) && !missing;
+									return (
+										<div
+											key={item.id}
+											className="flex flex-col gap-2 rounded-lg border border-border p-3"
+										>
+											<div className="flex items-start justify-between gap-2">
+												<div className="flex min-w-0 items-center gap-2.5">
+													<span className="flex size-8 shrink-0 items-center justify-center rounded-md bg-muted">
+														<TypeIcon
+															className={`size-4 ${typeConfig.color}`}
+														/>
+													</span>
+													<div className="flex min-w-0 flex-col">
+														<span className="truncate font-medium text-sm">
+															{item.title}
+														</span>
+														<span className="truncate text-muted-foreground text-xs">
+															{item.author?.id === previewViewer?.userId
+																? "You"
+																: item.author?.name || "Teammate"}
+															{item.approval === "PENDING"
+																? " · awaiting approval"
+																: item.approval === "APPROVED"
+																	? " · approved"
+																	: ""}
+														</span>
+													</div>
+												</div>
+												<div className="flex shrink-0 items-center gap-1.5">
+													{located && (
+														<Button
+															variant="ghost"
+															size="sm"
+															onClick={() =>
+																window.parent.postMessage(
+																	{
+																		type: "PREVIEW_FOCUS",
+																		feedbackId: item.id,
+																	},
+																	"*",
+																)
+															}
+														>
+															<LocateFixedIcon className="size-4" />
+															Show me
+														</Button>
+													)}
+													{onThisPage(item) && (
+														<Switch
+															size="sm"
+															checked={!disabled}
+															onCheckedChange={(on) =>
+																window.parent.postMessage(
+																	{
+																		type: "PREVIEW_TOGGLE",
+																		feedbackId: item.id,
+																		on,
+																	},
+																	"*",
+																)
+															}
+														/>
+													)}
+												</div>
+											</div>
+											{missing && (
+												<p className="flex items-center gap-1.5 text-amber-500 text-xs">
+													<TriangleAlertIcon className="size-3.5" />
+													Couldn't find this element — the page may have changed
+													since the suggestion.
+												</p>
+											)}
+											{options.decidable && (
+												<div className="flex flex-col gap-2">
+													{previewNoteId === item.id ? (
+														<Textarea
+															value={previewNote}
+															onChange={(e) => setPreviewNote(e.target.value)}
+															placeholder="Optional note for your teammate…"
+															className="min-h-9 resize-none"
+															maxLength={2000}
+															disabled={previewBusy || isPending}
+														/>
+													) : (
+														<Button
+															variant="ghost"
+															size="sm"
+															className="self-start"
+															disabled={previewBusy || isPending}
+															onClick={() => {
+																setPreviewNoteId(item.id);
+																setPreviewNote("");
+															}}
+														>
+															Add a note
+														</Button>
+													)}
+													<div className="flex justify-end gap-2">
+														<Button
+															variant="outline"
+															size="sm"
+															className="text-destructive hover:text-destructive"
+															disabled={previewBusy || isPending}
+															onClick={() =>
+																handlePreviewDecision(item, "REJECTED")
+															}
+														>
+															<XIcon className="size-4" />
+															Reject
+														</Button>
+														<Button
+															size="sm"
+															disabled={previewBusy || isPending}
+															onClick={() =>
+																handlePreviewDecision(item, "APPROVED")
+															}
+														>
+															<CheckIcon className="size-4" />
+															Approve &amp; send
+														</Button>
+													</div>
+												</div>
+											)}
+										</div>
+									);
+								};
+
+								return (
+									<>
+										<div className="space-y-1">
+											<DialogTitle>Suggested changes</DialogTitle>
+											<DialogDescription>
+												{visible.length === 0
+													? "Nothing to preview yet — suggestions your team submits will show up here."
+													: `Toggle changes on the page${previewViewer?.role === "lead" ? ", and approve or reject what your team sent" : ""}.`}
+											</DialogDescription>
+										</div>
+										<div className="-mx-1 flex flex-col gap-4 overflow-y-auto p-1">
+											{pendingForMe.length > 0 && (
+												<div className="flex flex-col gap-2">
+													<span className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+														Needs your approval
+													</span>
+													{pendingForMe.map((item) =>
+														itemRow(item, { decidable: true }),
+													)}
+												</div>
+											)}
+											{herePreview.length > 0 && (
+												<div className="flex flex-col gap-2">
+													<span className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+														On this page
+													</span>
+													{herePreview.map((item) =>
+														itemRow(item, { decidable: false }),
+													)}
+												</div>
+											)}
+											{elsewhere.length > 0 && (
+												<div className="flex flex-col gap-2">
+													<span className="font-medium text-muted-foreground text-xs uppercase tracking-wide">
+														Other pages
+													</span>
+													{elsewhere.map((item) => (
+														<div
+															key={item.id}
+															className="flex items-center justify-between gap-2 rounded-lg border border-border px-3 py-2"
+														>
+															<span className="truncate text-sm">
+																{item.title}
+															</span>
+															<a
+																className="shrink-0 text-primary text-xs hover:underline"
+																href={`${item.pageUrl.split("#")[0]}#reviseo-preview=${item.id}`}
+															>
+																{previewPathOf(item.pageUrl)}
+															</a>
+														</div>
+													))}
+												</div>
+											)}
+										</div>
+										<Button variant="outline" onClick={closeAndReset}>
+											Back to the page
+										</Button>
+									</>
+								);
+							})()
 						) : view === "imagePicker" ? (
 							<>
 								<div className="space-y-1">

@@ -3,6 +3,7 @@
 import {
 	CheckIcon,
 	ChevronDownIcon,
+	EyeIcon,
 	MessageSquarePlusIcon,
 	XIcon,
 } from "lucide-react";
@@ -186,6 +187,20 @@ const ApprovalCard = ({ item }: { item: FeedbackSelectAllPayload }) => {
 					>
 						<MessageSquarePlusIcon className="size-4" />
 						Add a note
+					</Button>
+				)}
+				{item.type !== "BUG" && item.type !== "IMPROVEMENT" && (
+					<Button asChild variant="ghost" size="sm">
+						<a
+							// Live page opens with the widget in preview mode focused
+							// on this submission — judge it in place, decide there.
+							href={`${item.pageUrl.split("#")[0]}#reviseo-preview=${item.id}`}
+							target="_blank"
+							rel="noopener noreferrer"
+						>
+							<EyeIcon className="size-4" />
+							Preview on site
+						</a>
 					</Button>
 				)}
 				<Button

@@ -1,6 +1,6 @@
 "use client";
 
-import { ExternalLinkIcon } from "lucide-react";
+import { ExternalLinkIcon, EyeIcon } from "lucide-react";
 import moment from "moment";
 import ScreenshotPreview from "@/app/(main)/(dashboard)/dashboard/_components/ScreenshotPreview";
 import ImageEditList from "@/components/image-edit-list";
@@ -123,6 +123,21 @@ export default function FeedbackDetailDialog({
 						<ExternalLinkIcon className="size-3 shrink-0" />
 					</a>
 					{environment && <span>{environment}</span>}
+					{(item.type === "TEXT_EDIT" ||
+						item.type === "STYLE_EDIT" ||
+						item.type === "IMAGE_EDIT") && (
+						<a
+							// Opens the live page with the widget in preview mode,
+							// focused on this submission.
+							href={`${item.pageUrl.split("#")[0]}#reviseo-preview=${item.id}`}
+							target="_blank"
+							rel="noopener noreferrer"
+							className="ml-auto inline-flex items-center gap-1 font-medium text-primary hover:underline"
+						>
+							<EyeIcon className="size-3.5" />
+							Preview on site
+						</a>
+					)}
 				</div>
 			</DialogContent>
 		</Dialog>

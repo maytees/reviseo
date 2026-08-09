@@ -7,6 +7,7 @@ const ALL_CAPABILITIES = {
 	text: true,
 	style: true,
 	image: true,
+	preview: true,
 };
 
 /** Widget trigger asks: may the *signed-in* user leave feedback on this
@@ -61,6 +62,8 @@ export async function POST(request: Request) {
 					text: clientRow.canText,
 					style: clientRow.canStyle,
 					image: clientRow.canImage,
+					// Previewing suggestions needs no per-tool permission
+					preview: true,
 				},
 			},
 			{ status: 200 },
