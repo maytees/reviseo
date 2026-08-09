@@ -22,6 +22,8 @@ import {
 	Monitor,
 	PersonStanding,
 	Smartphone,
+	SquareKanbanIcon,
+	TableIcon,
 	Tablet,
 	Tv,
 	Watch,
@@ -33,7 +35,9 @@ import { useEffect, useState } from "react";
 import { FaEdgeLegacy, FaMicrosoft } from "react-icons/fa";
 import { SiFirefoxbrowser } from "react-icons/si";
 import type { WebsiteDataTypeNonNullable } from "@/app/data/website/get-website-by-id-and-dev-id";
+import { CopyAiPromptButton } from "@/components/copy-ai-prompt-button";
 import ImageEditList from "@/components/image-edit-list";
+import { parseStyleChanges } from "@/components/style-change-rows";
 import StyleEditList from "@/components/style-edit-list";
 import TextEditList from "@/components/text-edit-list";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
@@ -47,11 +51,13 @@ import {
 	DialogTitle,
 } from "@/components/ui/dialog";
 import { Skeleton } from "@/components/ui/skeleton";
+import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group";
 import {
 	Tooltip,
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { styleEditsPrompt, textEditsPrompt } from "@/lib/ai-prompt";
 import {
 	APPROVAL_CONFIG,
 	type FeedbackSelectAllPayload,
@@ -63,7 +69,11 @@ import {
 import ScreenshotPreview from "../../../../_components/ScreenshotPreview";
 import { columns } from "./columns";
 import { DataTable } from "./data-table";
+import FeedbackKanban from "./FeedbackKanban";
 import SelectStatus from "./SelectStatus";
+
+const VIEW_STORAGE_KEY = "reviseo:feedback-view";
+type FeedbackView = "table" | "board";
 
 // Browser icon mapping
 const BROWSER_ICON_MAP: Record<
@@ -126,6 +136,22 @@ const FeedbackTable = ({
 }) => {
 	const [modalOpen, setModalOpen] = useState(false);
 	const [isImageZoomed, setIsImageZoomed] = useState(false);
+	// Never SSR'd (WebsiteTabs mounts client-side only) — lazy read is safe.
+	const [view, setView] = useState<FeedbackView>(() =>
+		typeof window !== "undefined" &&
+		localStorage.getItem(VIEW_STORAGE_KEY) === "board"
+			? "board"
+			: "table",
+	);
+
+	const changeView = (value: string) => {
+		// Radix ToggleGroup emits "" when the active item is re-clicked.
+		if (value !== "table" && value !== "board") return;
+		setView(value);
+		try {
+			localStorage.setItem(VIEW_STORAGE_KEY, value);
+		} catch {}
+	};
 
 	// TODO: Not found modal
 	const [_, setNotFoundOpen] = useState(false);
@@ -184,11 +210,34 @@ const FeedbackTable = ({
 
 	return (
 		<div className="h-full w-full">
-			<DataTable
-				columns={columns}
-				data={website.feedback}
-				openFeedback={openFeedbackModal}
-			/>
+			<div className="flex items-center justify-end pb-2">
+				<ToggleGroup
+					type="single"
+					variant="outline"
+					size="sm"
+					value={view}
+					onValueChange={changeView}
+				>
+					<ToggleGroupItem value="table" aria-label="Table view">
+						<TableIcon className="size-4" />
+					</ToggleGroupItem>
+					<ToggleGroupItem value="board" aria-label="Board view">
+						<SquareKanbanIcon className="size-4" />
+					</ToggleGroupItem>
+				</ToggleGroup>
+			</div>
+			{view === "table" ? (
+				<DataTable
+					columns={columns}
+					data={website.feedback}
+					openFeedback={openFeedbackModal}
+				/>
+			) : (
+				<FeedbackKanban
+					feedback={website.feedback}
+					openFeedback={openFeedbackModal}
+				/>
+			)}
 			<Dialog
 				modal
 				open={modalOpen}
@@ -221,6 +270,26 @@ const FeedbackTable = ({
 											applied or rejected
 										</p>
 									</div>
+									{(() => {
+										// Rejected edits stay out of the batch prompt — the
+										// team decided against them.
+										const included = selectedFeedback.textEdits.filter(
+											(e) => e.status !== "REJECTED",
+										);
+										return (
+											<CopyAiPromptButton
+												label={`Copy AI prompt (${included.length} ${included.length === 1 ? "edit" : "edits"})`}
+												tooltip="Copy one prompt covering every non-rejected edit"
+												disabled={included.length === 0}
+												getPrompt={() =>
+													textEditsPrompt({
+														feedbackTitle: selectedFeedback.title,
+														edits: included,
+													})
+												}
+											/>
+										);
+									})()}
 								</div>
 								<TextEditList edits={selectedFeedback.textEdits} />
 							</>
@@ -236,6 +305,29 @@ const FeedbackTable = ({
 											or rejected
 										</p>
 									</div>
+									{(() => {
+										const included = selectedFeedback.styleEdits.filter(
+											(e) => e.status !== "REJECTED",
+										);
+										return (
+											<CopyAiPromptButton
+												label={`Copy AI prompt (${included.length} ${included.length === 1 ? "change" : "changes"})`}
+												tooltip="Copy one prompt covering every non-rejected change"
+												disabled={included.length === 0}
+												getPrompt={() =>
+													styleEditsPrompt({
+														feedbackTitle: selectedFeedback.title,
+														edits: included.map((e) => ({
+															selector: e.selector,
+															elementTag: e.elementTag,
+															pageUrl: e.pageUrl,
+															changes: parseStyleChanges(e.changes),
+														})),
+													})
+												}
+											/>
+										);
+									})()}
 								</div>
 								<StyleEditList edits={selectedFeedback.styleEdits} />
 							</>

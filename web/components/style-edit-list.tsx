@@ -5,6 +5,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { updateStyleEditStatus } from "@/app/(main)/(dashboard)/dashboard/websites/[id]/_components/feedback/actions";
+import { CopyAiPromptButton } from "@/components/copy-ai-prompt-button";
 import {
 	parseStyleChanges,
 	StyleChangeRows,
@@ -24,6 +25,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { styleEditPrompt } from "@/lib/ai-prompt";
 import {
 	type FeedbackSelectAllPayload,
 	TEXT_EDIT_STATUS_CONFIG,
@@ -130,6 +132,16 @@ const StyleEditCard = ({
 						</TooltipTrigger>
 						<TooltipContent>Copy as CSS</TooltipContent>
 					</Tooltip>
+					<CopyAiPromptButton
+						getPrompt={() =>
+							styleEditPrompt({
+								selector: edit.selector,
+								elementTag: edit.elementTag,
+								pageUrl: edit.pageUrl,
+								changes,
+							})
+						}
+					/>
 					{readOnly ? (
 						<Badge variant={STATUS_BADGE[status]} className="ml-1">
 							<StatusIcon className="mr-1 size-3" />

@@ -10,6 +10,7 @@ import Link from "next/link";
 import { useState, useTransition } from "react";
 import { toast } from "sonner";
 import { updateTextEditStatus } from "@/app/(main)/(dashboard)/dashboard/websites/[id]/_components/feedback/actions";
+import { CopyAiPromptButton } from "@/components/copy-ai-prompt-button";
 import { DiffText } from "@/components/text-edit-diff";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -25,6 +26,7 @@ import {
 	TooltipContent,
 	TooltipTrigger,
 } from "@/components/ui/tooltip";
+import { textEditPrompt } from "@/lib/ai-prompt";
 import {
 	type FeedbackSelectAllPayload,
 	TEXT_EDIT_STATUS_CONFIG,
@@ -145,6 +147,7 @@ const TextEditCard = ({
 						</TooltipTrigger>
 						<TooltipContent>Copy suggested text</TooltipContent>
 					</Tooltip>
+					<CopyAiPromptButton getPrompt={() => textEditPrompt(edit)} />
 					<Tooltip>
 						<TooltipTrigger asChild>
 							<Button

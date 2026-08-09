@@ -330,6 +330,9 @@ function Kanban<T>({
 				onDragStart={handleDragStart}
 				onDragOver={handleDragOver}
 				onDragEnd={handleDragEnd}
+				// Esc / cancelled drags must reset the active id, or the root
+				// keeps data-dragging and the overlay's measured state goes stale.
+				onDragCancel={() => setActiveId(null)}
 			>
 				<div
 					data-slot="kanban"
