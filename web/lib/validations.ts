@@ -66,7 +66,7 @@ export const textEditsSubmissionSchema = z.object({
 	edits: z
 		.array(textEditItemSchema)
 		.min(1, "No text edits to submit")
-		.max(200, "Too many edits in one batch — submit and start a new one"),
+		.max(500, "Too many edits in one batch — submit and start a new one"),
 });
 
 // Style-edit tool (widget): one batch of suggested style changes.
@@ -97,7 +97,7 @@ export const styleEditsSubmissionSchema = z.object({
 	edits: z
 		.array(styleEditItemSchema)
 		.min(1, "No style changes to submit")
-		.max(200, "Too many changes in one batch — submit and start a new one"),
+		.max(500, "Too many changes in one batch — submit and start a new one"),
 });
 
 // Image-edit tool (widget): one batch of image replacements.
