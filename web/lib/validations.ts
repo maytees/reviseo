@@ -39,11 +39,25 @@ export const feedbackFormSchema = z.object({
 });
 
 // Text-edit tool (widget): one batch of suggested copy changes.
+// Ceilings here are abuse guards, not usage limits — set far above anything
+// a real edit produces so clients are never blocked mid-flow.
 export const textEditItemSchema = z.object({
-	selector: z.string().min(1).max(1000),
+	selector: z
+		.string()
+		.min(1)
+		.max(8000, "This element's position on the page is too complex to record"),
 	elementTag: z.string().max(50).optional(),
-	originalText: z.string().min(1).max(2000),
-	suggestedText: z.string().min(1).max(2000),
+	originalText: z
+		.string()
+		.min(1)
+		.max(
+			100000,
+			"The selected text block is too large to store — try a smaller section",
+		),
+	suggestedText: z
+		.string()
+		.min(1)
+		.max(100000, "The replacement text is too long to store"),
 	pageUrl: z.string().url().max(2000),
 });
 
@@ -52,7 +66,7 @@ export const textEditsSubmissionSchema = z.object({
 	edits: z
 		.array(textEditItemSchema)
 		.min(1, "No text edits to submit")
-		.max(30, "Too many edits in one batch — submit and start a new one"),
+		.max(200, "Too many edits in one batch — submit and start a new one"),
 });
 
 // Style-edit tool (widget): one batch of suggested style changes.
@@ -61,17 +75,21 @@ export const styleChangeSchema = z.object({
 	property: z
 		.string()
 		.min(1)
-		.max(40)
+		.max(60)
 		.regex(/^[a-z-]+$/),
-	before: z.string().max(200),
-	after: z.string().min(1).max(200),
+	// Values can run long (gradients, shadows, font stacks)
+	before: z.string().max(2000),
+	after: z.string().min(1, "A style value is empty").max(2000),
 });
 
 export const styleEditItemSchema = z.object({
-	selector: z.string().min(1).max(1000),
+	selector: z
+		.string()
+		.min(1)
+		.max(8000, "This element's position on the page is too complex to record"),
 	elementTag: z.string().max(50).optional(),
 	pageUrl: z.string().url().max(2000),
-	changes: z.array(styleChangeSchema).min(1).max(20),
+	changes: z.array(styleChangeSchema).min(1).max(50),
 });
 
 export const styleEditsSubmissionSchema = z.object({
@@ -79,16 +97,23 @@ export const styleEditsSubmissionSchema = z.object({
 	edits: z
 		.array(styleEditItemSchema)
 		.min(1, "No style changes to submit")
-		.max(30, "Too many changes in one batch — submit and start a new one"),
+		.max(200, "Too many changes in one batch — submit and start a new one"),
 });
 
 // Image-edit tool (widget): one batch of image replacements.
 export const imageEditItemSchema = z
 	.object({
-		selector: z.string().min(1).max(1000),
+		selector: z
+			.string()
+			.min(1)
+			.max(
+				8000,
+				"This element's position on the page is too complex to record",
+			),
 		pageUrl: z.string().url().max(2000),
-		// As rendered on the page — may be relative-resolved, data:, etc.
-		originalSrc: z.string().min(1).max(4000),
+		// As rendered on the page — may be relative-resolved, data:, or an
+		// inline base64 image (which can be very large)
+		originalSrc: z.string().min(1).max(500000),
 		// Replacement: bucket key (upload/paste) or remote URL.
 		newKey: z.string().min(1).max(300).optional(),
 		newUrl: z.string().url().max(2000).optional(),
@@ -102,7 +127,10 @@ export const imageEditsSubmissionSchema = z.object({
 	edits: z
 		.array(imageEditItemSchema)
 		.min(1, "No image replacements to submit")
-		.max(20, "Too many replacements in one batch — submit and start a new one"),
+		.max(
+			100,
+			"Too many replacements in one batch — submit and start a new one",
+		),
 });
 
 // Waitlist form

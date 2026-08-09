@@ -60,6 +60,23 @@ async function authorizeSubmission(
 	return membership ? { approval: "DIRECT" } : null;
 }
 
+/** Turn a zod failure into a toast the client can act on: the schema's own
+ *  human message, prefixed with which edit tripped it. */
+function submissionErrorMessage(
+	error: { issues: { path: PropertyKey[]; message: string }[] },
+	fallback: string,
+): string {
+	const issue = error.issues[0];
+	if (!issue?.message) return fallback;
+	const editIndex =
+		issue.path[0] === "edits" && typeof issue.path[1] === "number"
+			? issue.path[1] + 1
+			: null;
+	return editIndex !== null
+		? `Edit #${editIndex}: ${issue.message}`
+		: issue.message;
+}
+
 /** Email the website's lead(s) when a member submission lands in their
  *  approval queue. Failures are logged, never surfaced — the submission
  *  itself already succeeded. */
@@ -225,7 +242,13 @@ export async function submitTextEdits(
 
 	const validation = textEditsSubmissionSchema.safeParse(submission);
 	if (!validation.success) {
-		return { status: "error", message: "Invalid text edits" };
+		return {
+			status: "error",
+			message: submissionErrorMessage(
+				validation.error,
+				"Couldn't submit these text edits — please try again",
+			),
+		};
 	}
 
 	const { edits, note } = validation.data;
@@ -357,7 +380,13 @@ export async function submitStyleEdits(
 
 	const validation = styleEditsSubmissionSchema.safeParse(submission);
 	if (!validation.success) {
-		return { status: "error", message: "Invalid style changes" };
+		return {
+			status: "error",
+			message: submissionErrorMessage(
+				validation.error,
+				"Couldn't submit these style changes — please try again",
+			),
+		};
 	}
 
 	const { edits, note } = validation.data;
@@ -493,7 +522,13 @@ export async function submitImageEdits(
 
 	const validation = imageEditsSubmissionSchema.safeParse(submission);
 	if (!validation.success) {
-		return { status: "error", message: "Invalid image replacements" };
+		return {
+			status: "error",
+			message: submissionErrorMessage(
+				validation.error,
+				"Couldn't submit these image replacements — please try again",
+			),
+		};
 	}
 
 	const { edits, note } = validation.data;
