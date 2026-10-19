@@ -15,17 +15,12 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { authClient } from "@/lib/auth-client";
-
-/** Only allow same-origin relative paths as post-login redirect targets. */
-function safeNext(raw: string | null): string | null {
-	if (!raw) return null;
-	return raw.startsWith("/") && !raw.startsWith("//") ? raw : null;
-}
+import { DASHBOARD_CHOOSER_PATH, safeNextPath } from "@/lib/auth-redirect";
 
 export function LoginForm() {
 	const router = useRouter();
 	const searchParams = useSearchParams();
-	const next = safeNext(searchParams.get("next"));
+	const next = safeNextPath(searchParams.get("next"));
 	const emailId = useId();
 	const [githubPending, startGithubTransition] = useTransition();
 	const [emailPending, startEmailTransition] = useTransition();
@@ -46,7 +41,8 @@ export function LoginForm() {
 		startGithubTransition(async () => {
 			await authClient.signIn.social({
 				provider: "github",
-				callbackURL: next ?? (!isClientInvite ? "/dashboard" : "/invite"),
+				callbackURL:
+					next ?? (isClientInvite ? "/invite" : DASHBOARD_CHOOSER_PATH),
 				fetchOptions: {
 					onSuccess: () => {
 						toast.success("Signed in with Github, you will be redirected...");

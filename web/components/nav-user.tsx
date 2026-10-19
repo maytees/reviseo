@@ -1,6 +1,8 @@
 "use client";
 
 import { IconDotsVertical, IconLogout } from "@tabler/icons-react";
+import { Repeat2 } from "lucide-react";
+import Link from "next/link";
 
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import {
@@ -18,6 +20,7 @@ import {
 	useSidebar,
 } from "@/components/ui/sidebar";
 import { authClient } from "@/lib/auth-client";
+import { DASHBOARD_CHOOSER_PATH } from "@/lib/auth-redirect";
 import { useSignOut } from "@/lib/hooks/useSignOut";
 import { Skeleton } from "./ui/skeleton";
 
@@ -114,6 +117,13 @@ export function NavUser() {
 								</div>
 							</div>
 						</DropdownMenuLabel>
+						<DropdownMenuSeparator />
+						<DropdownMenuItem asChild>
+							<Link href={DASHBOARD_CHOOSER_PATH}>
+								<Repeat2 />
+								Switch dashboard
+							</Link>
+						</DropdownMenuItem>
 						<DropdownMenuSeparator />
 						<DropdownMenuItem variant="destructive" onClick={handleSignOut}>
 							<IconLogout />

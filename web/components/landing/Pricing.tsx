@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Switch, SwitchIndicator, SwitchWrapper } from "@/components/ui/switch";
 import { authClient } from "@/lib/auth-client";
+import { DASHBOARD_CHOOSER_PATH } from "@/lib/auth-redirect";
 import { Spinner } from "../ui/spinner";
 
 type BillingPeriod = "monthly" | "yearly";
@@ -393,7 +394,7 @@ export function Pricing({
 
 											if (plan === currentPlanKey) {
 												// Go to dashboard if viewing current plan
-												router.push("/dashboard");
+												router.push(DASHBOARD_CHOOSER_PATH);
 												return;
 											}
 

@@ -19,6 +19,7 @@ import {
 	InputOTPSlot,
 } from "@/components/ui/input-otp";
 import { authClient } from "@/lib/auth-client";
+import { DASHBOARD_CHOOSER_PATH, safeNextPath } from "@/lib/auth-redirect";
 
 export function VerifyRequest() {
 	const router = useRouter();
@@ -27,10 +28,7 @@ export function VerifyRequest() {
 	const params = useSearchParams();
 	const email = params.get("email") as string;
 	const isClientInvite = params.get("ci") as string | null;
-	const rawNext = params.get("next");
-	// Only same-origin relative paths
-	const next =
-		rawNext?.startsWith("/") && !rawNext.startsWith("//") ? rawNext : null;
+	const next = safeNextPath(params.get("next"));
 	const isOtpCompleted = otp.length === 6;
 
 	function verifyOtp() {
@@ -42,7 +40,7 @@ export function VerifyRequest() {
 					onSuccess: () => {
 						toast.success("Email verified");
 						router.push(
-							next ?? `${!isClientInvite ? "/onboarding" : "/invite"}`,
+							next ?? (isClientInvite ? "/invite" : DASHBOARD_CHOOSER_PATH),
 						);
 					},
 					onError: (error: ErrorContext) => {

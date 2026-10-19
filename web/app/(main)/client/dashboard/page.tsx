@@ -4,6 +4,7 @@ import {
 	ExternalLink,
 	Globe,
 	InboxIcon,
+	Repeat2,
 	SendIcon,
 } from "lucide-react";
 import type { Metadata } from "next";
@@ -26,6 +27,7 @@ import {
 	CardHeader,
 	CardTitle,
 } from "@/components/ui/old-card";
+import { DASHBOARD_CHOOSER_PATH } from "@/lib/auth-redirect";
 import { prisma } from "@/lib/db";
 import ApprovalQueue from "./_components/ApprovalQueue";
 import FeedbackBoard from "./_components/FeedbackBoard";
@@ -78,7 +80,15 @@ export default async function ClientDashboard({
 							Track the feedback you've submitted and see what's been resolved.
 						</p>
 					</div>
-					<SignOutButton />
+					<div className="flex flex-wrap items-center gap-2">
+						<Button asChild variant="outline" size="sm">
+							<Link href={DASHBOARD_CHOOSER_PATH}>
+								<Repeat2 className="size-4" />
+								Switch dashboard
+							</Link>
+						</Button>
+						<SignOutButton />
+					</div>
 				</div>
 				<Card>
 					<CardContent>
@@ -198,7 +208,15 @@ export default async function ClientDashboard({
 							: `You review ${selected.name} — track your feedback and see what's been resolved.`}
 					</p>
 				</div>
-				<SignOutButton />
+				<div className="flex flex-wrap items-center gap-2">
+					<Button asChild variant="outline" size="sm">
+						<Link href={DASHBOARD_CHOOSER_PATH}>
+							<Repeat2 className="size-4" />
+							Switch dashboard
+						</Link>
+					</Button>
+					<SignOutButton />
+				</div>
 			</div>
 
 			{/* Site scope toolbar — everything below is about this website */}

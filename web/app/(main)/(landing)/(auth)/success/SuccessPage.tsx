@@ -16,6 +16,7 @@ import {
 	CardHeader,
 } from "@/components/ui/old-card";
 import { authClient } from "@/lib/auth-client";
+import { DASHBOARD_CHOOSER_PATH } from "@/lib/auth-redirect";
 import { useConfetti } from "@/lib/hooks/use-confetti";
 
 export const SuccessPage = () => {
@@ -74,7 +75,7 @@ export const SuccessPage = () => {
 
 			<CardFooter className="flex flex-col gap-2">
 				<Button className="w-full" asChild>
-					<Link href={"/dashboard"}>
+					<Link href={DASHBOARD_CHOOSER_PATH}>
 						<LayoutDashboard />
 						Go to Dashboard
 					</Link>

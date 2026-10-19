@@ -20,6 +20,7 @@ import {
 	SheetTrigger,
 } from "@/components/ui/sheet";
 import { authClient } from "@/lib/auth-client";
+import { DASHBOARD_CHOOSER_PATH } from "@/lib/auth-redirect";
 import { useSignOut } from "@/lib/hooks/useSignOut";
 import { cn } from "@/lib/utils";
 import { Avatar, AvatarFallback, AvatarImage } from "../ui/avatar";
@@ -154,7 +155,7 @@ const Navbar = ({
 								</DropdownMenuLabel>
 								<DropdownMenuSeparator />
 								<DropdownMenuItem asChild>
-									<Link href="/dashboard">Dashboard</Link>
+									<Link href={DASHBOARD_CHOOSER_PATH}>Dashboard</Link>
 								</DropdownMenuItem>
 								<DropdownMenuSeparator />
 								<DropdownMenuItem onClick={handleSignOut}>
@@ -224,7 +225,7 @@ const Navbar = ({
 										{session?.user ? (
 											<>
 												<Button asChild variant="outline">
-													<Link href="/dashboard">Dashboard</Link>
+													<Link href={DASHBOARD_CHOOSER_PATH}>Dashboard</Link>
 												</Button>
 												<Button variant="destructive" onClick={handleSignOut}>
 													Log out
