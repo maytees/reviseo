@@ -36,6 +36,7 @@ import { FaEdgeLegacy, FaMicrosoft } from "react-icons/fa";
 import { SiFirefoxbrowser } from "react-icons/si";
 import type { WebsiteDataTypeNonNullable } from "@/app/data/website/get-website-by-id-and-dev-id";
 import { CopyAiPromptButton } from "@/components/copy-ai-prompt-button";
+import { CopyAnnotationPromptButton } from "@/components/copy-annotation-prompt-button";
 import ImageEditList from "@/components/image-edit-list";
 import { parseStyleChanges } from "@/components/style-change-rows";
 import StyleEditList from "@/components/style-edit-list";
@@ -349,7 +350,7 @@ const FeedbackTable = ({
 						) : (
 							selectedFeedback.screenshotKey && (
 								<>
-									<div className="my-2 flex w-full flex-row items-center justify-between">
+									<div className="my-2 flex w-full flex-wrap items-center justify-between gap-3">
 										<div>
 											<h2 className="font-semibold text-lg">Annotated Image</h2>
 											<p className="text-muted-foreground text-xs">
@@ -357,20 +358,28 @@ const FeedbackTable = ({
 											</p>
 										</div>
 
-										<Tooltip>
-											<TooltipTrigger asChild>
-												<Button asChild variant={"ghost"} mode={"icon"}>
-													<Link
-														href={`/api/s3/annotations/${selectedFeedback.screenshotKey}`}
-														download={`${selectedFeedback.id}-${selectedFeedback.timestamp}`}
-														target="_blank"
-													>
-														<Download />
-													</Link>
-												</Button>
-											</TooltipTrigger>
-											<TooltipContent>Download (SVG)</TooltipContent>
-										</Tooltip>
+										<div className="flex items-center gap-2">
+											<CopyAnnotationPromptButton
+												feedback={{
+													...selectedFeedback,
+													screenshotKey: selectedFeedback.screenshotKey,
+												}}
+											/>
+											<Tooltip>
+												<TooltipTrigger asChild>
+													<Button asChild variant={"ghost"} mode={"icon"}>
+														<Link
+															href={`/api/s3/annotations/${selectedFeedback.screenshotKey}`}
+															download={`${selectedFeedback.id}-${selectedFeedback.timestamp}`}
+															target="_blank"
+														>
+															<Download />
+														</Link>
+													</Button>
+												</TooltipTrigger>
+												<TooltipContent>Download (SVG)</TooltipContent>
+											</Tooltip>
+										</div>
 									</div>
 
 									<div className="rounded-sm border border-card bg-card/30 p-3">
