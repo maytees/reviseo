@@ -18,6 +18,7 @@ export interface TextEditFeedbackPromptInput {
 	id: string;
 	title: string;
 	description: string | null;
+	status: "NEW" | "IN_PROGRESS" | "RESOLVED";
 	approval: "DIRECT" | "PENDING" | "APPROVED" | "REJECTED";
 	textEdits: (TextEditPromptInput & {
 		status: "PENDING" | "APPLIED" | "REJECTED";
@@ -124,14 +125,14 @@ ${renderBody(edit)}`;
 		.join("\n\n");
 }
 
-/** All usable text edits on a website, independent of table/board filters. */
+/** Text edits from TODO/New feedback, independent of table/board filters. */
 export function getWebsiteTextEdits(
 	feedback: TextEditFeedbackPromptInput[],
 ): WebsiteTextEditPromptInput[] {
 	return feedback.flatMap((submission) => {
 		if (
-			submission.approval !== "DIRECT" &&
-			submission.approval !== "APPROVED"
+			submission.status !== "NEW" ||
+			(submission.approval !== "DIRECT" && submission.approval !== "APPROVED")
 		) {
 			return [];
 		}
@@ -158,7 +159,7 @@ export function websiteTextEditsPrompt(args: {
 }): string {
 	const edits = getWebsiteTextEdits(args.feedback);
 	const n = edits.length;
-	return `Apply the following ${n} text change${n === 1 ? "" : "s"} across the website "${args.websiteName}" (${args.websiteUrl}). These are all non-rejected text edits from direct or approved feedback for this website.
+	return `Apply the following ${n} text change${n === 1 ? "" : "s"} across the website "${args.websiteName}" (${args.websiteUrl}). These are all non-rejected text edits from direct or approved feedback in the TODO (New) column for this website.
 
 ${batchSections(
 	edits,

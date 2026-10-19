@@ -32,41 +32,112 @@ function feedback(overrides: Partial<Feedback> = {}): Feedback {
 		id: "feedback-pricing",
 		title: "Pricing copy",
 		description: "Keep the current offer and change only the headline.",
+		status: "NEW",
 		approval: "DIRECT",
 		textEdits: [edit()],
 		...overrides,
 	};
 }
 
-test("aggregates pending and applied edits only from direct or approved feedback", () => {
+test("aggregates pending and applied edits only from direct or approved TODO feedback", () => {
+	const feedbackStatuses: Feedback["status"][] = [
+		"NEW",
+		"IN_PROGRESS",
+		"RESOLVED",
+	];
 	const approvals: Feedback["approval"][] = [
 		"DIRECT",
 		"APPROVED",
 		"PENDING",
 		"REJECTED",
 	];
-	const statuses: TextEdit["status"][] = ["PENDING", "APPLIED", "REJECTED"];
-	const submissions = approvals.map((approval) =>
-		feedback({
-			id: `feedback-${approval}`,
-			approval,
-			textEdits: statuses.map((status) =>
-				edit({ selector: `#${approval}-${status}`, status }),
-			),
-		}),
+	const editStatuses: TextEdit["status"][] = ["PENDING", "APPLIED", "REJECTED"];
+	const submissions = feedbackStatuses.flatMap((status) =>
+		approvals.map((approval) =>
+			feedback({
+				id: `feedback-${status}-${approval}`,
+				status,
+				approval,
+				textEdits: editStatuses.map((editStatus) =>
+					edit({
+						selector: `#${status}-${approval}-${editStatus}`,
+						status: editStatus,
+					}),
+				),
+			}),
+		),
 	);
 	const before = structuredClone(submissions);
 
 	assert.deepEqual(
 		getWebsiteTextEdits(submissions).map(({ selector }) => selector),
 		[
-			"#DIRECT-PENDING",
-			"#DIRECT-APPLIED",
-			"#APPROVED-PENDING",
-			"#APPROVED-APPLIED",
+			"#NEW-DIRECT-PENDING",
+			"#NEW-DIRECT-APPLIED",
+			"#NEW-APPROVED-PENDING",
+			"#NEW-APPROVED-APPLIED",
 		],
 	);
 	assert.deepEqual(submissions, before, "copying must not mutate feedback");
+});
+
+test("omits in-progress and resolved requests and their context from the copied prompt", () => {
+	const prompt = websiteTextEditsPrompt({
+		...website,
+		feedback: [
+			feedback(),
+			feedback({
+				id: "in-progress-request",
+				title: "In-progress headline",
+				description: "In-progress context",
+				status: "IN_PROGRESS",
+				textEdits: [
+					edit({
+						selector: "#in-progress",
+						suggestedText: "In-progress requested text",
+					}),
+				],
+			}),
+			feedback({
+				id: "resolved-request",
+				title: "Resolved headline",
+				description: "Resolved context",
+				status: "RESOLVED",
+				approval: "APPROVED",
+				textEdits: [
+					edit({
+						selector: "#resolved",
+						suggestedText: "Resolved requested text",
+					}),
+				],
+			}),
+		],
+	});
+
+	assert.match(prompt, /following 1 text change across/);
+	assert.ok(prompt.includes("#headline"));
+	assert.doesNotMatch(prompt, /in-progress|In-progress|resolved|Resolved/);
+});
+
+test("updates copyable edits as feedback moves out of TODO and back", () => {
+	const submission = feedback();
+	assert.equal(getWebsiteTextEdits([submission]).length, 1);
+
+	for (const status of ["IN_PROGRESS", "RESOLVED"] as const) {
+		submission.status = status;
+		assert.deepEqual(getWebsiteTextEdits([submission]), []);
+		assert.match(
+			websiteTextEditsPrompt({ ...website, feedback: [submission] }),
+			/following 0 text changes across/,
+		);
+	}
+
+	submission.status = "NEW";
+	assert.equal(getWebsiteTextEdits([submission]).length, 1);
+	assert.match(
+		websiteTextEditsPrompt({ ...website, feedback: [submission] }),
+		/following 1 text change across/,
+	);
 });
 
 test("has no copyable edits for empty or non-actionable feedback", () => {

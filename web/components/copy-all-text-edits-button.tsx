@@ -7,7 +7,7 @@ import {
 	websiteTextEditsPrompt,
 } from "@/lib/ai-prompt";
 
-/** Uses the complete, authorized website payload, independent of view filters. */
+/** Copies TODO/New feedback from the authorized payload, across view filters. */
 export function CopyAllTextEditsButton({
 	website,
 }: {
@@ -28,11 +28,11 @@ export function CopyAllTextEditsButton({
 					feedback: website.feedback,
 				})
 			}
-			label={`Copy all text edits (${count})`}
+			label={`Copy TODO text edits (${count})`}
 			tooltip={
 				count === 0
-					? "No text edits to copy from direct or approved feedback"
-					: "One AI prompt for every text edit on this website, including applied edits. Rejected edits and feedback awaiting approval are excluded."
+					? "No text edits to copy from direct or approved TODO (New) feedback"
+					: "One AI prompt for text edits in TODO (New) feedback. In Progress, Resolved, rejected edits, and feedback awaiting approval are excluded."
 			}
 			disabled={count === 0}
 		/>
