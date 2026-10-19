@@ -36,6 +36,7 @@ import { FaEdgeLegacy, FaMicrosoft } from "react-icons/fa";
 import { SiFirefoxbrowser } from "react-icons/si";
 import type { WebsiteDataTypeNonNullable } from "@/app/data/website/get-website-by-id-and-dev-id";
 import { CopyAiPromptButton } from "@/components/copy-ai-prompt-button";
+import { CopyAllTextEditsButton } from "@/components/copy-all-text-edits-button";
 import { CopyAnnotationPromptButton } from "@/components/copy-annotation-prompt-button";
 import ImageEditList from "@/components/image-edit-list";
 import { parseStyleChanges } from "@/components/style-change-rows";
@@ -211,7 +212,8 @@ const FeedbackTable = ({
 
 	return (
 		<div className="h-full w-full">
-			<div className="flex items-center justify-end pb-2">
+			<div className="flex flex-wrap items-center justify-between gap-3 pb-3">
+				<CopyAllTextEditsButton website={website} />
 				<ToggleGroup
 					type="single"
 					variant="outline"

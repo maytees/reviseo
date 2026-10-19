@@ -14,6 +14,23 @@ export interface TextEditPromptInput {
 	pageUrl: string;
 }
 
+export interface TextEditFeedbackPromptInput {
+	id: string;
+	title: string;
+	description: string | null;
+	approval: "DIRECT" | "PENDING" | "APPROVED" | "REJECTED";
+	textEdits: (TextEditPromptInput & {
+		status: "PENDING" | "APPLIED" | "REJECTED";
+	})[];
+}
+
+interface WebsiteTextEditPromptInput extends TextEditPromptInput {
+	status: "PENDING" | "APPLIED";
+	feedbackId: string;
+	feedbackTitle: string;
+	feedbackDescription: string | null;
+}
+
 export interface StyleEditPromptInput {
 	selector: string;
 	elementTag: string | null;
@@ -81,10 +98,11 @@ ${styleEditBody(edit)}
 ${STYLE_RULES}`;
 }
 
-/** Group edits by page; page headers only when more than one page. */
+/** Group edits by page; single-page batches can opt into a page header. */
 function batchSections<T extends { pageUrl: string }>(
 	edits: T[],
 	renderBody: (edit: T) => string,
+	alwaysShowPages = false,
 ): string {
 	const pages = [...new Set(edits.map((e) => e.pageUrl))];
 	const total = edits.length;
@@ -95,7 +113,7 @@ function batchSections<T extends { pageUrl: string }>(
 ${renderBody(edit)}`;
 	};
 
-	if (pages.length <= 1) {
+	if (pages.length <= 1 && !alwaysShowPages) {
 		return edits.map(section).join("\n\n");
 	}
 	return pages
@@ -104,6 +122,61 @@ ${renderBody(edit)}`;
 			return `## Page: ${page}\n\n${pageEdits.map(section).join("\n\n")}`;
 		})
 		.join("\n\n");
+}
+
+/** All usable text edits on a website, independent of table/board filters. */
+export function getWebsiteTextEdits(
+	feedback: TextEditFeedbackPromptInput[],
+): WebsiteTextEditPromptInput[] {
+	return feedback.flatMap((submission) => {
+		if (
+			submission.approval !== "DIRECT" &&
+			submission.approval !== "APPROVED"
+		) {
+			return [];
+		}
+		return submission.textEdits.flatMap((edit) =>
+			edit.status === "REJECTED"
+				? []
+				: [
+						{
+							...edit,
+							status: edit.status,
+							feedbackId: submission.id,
+							feedbackTitle: submission.title,
+							feedbackDescription: submission.description,
+						},
+					],
+		);
+	});
+}
+
+export function websiteTextEditsPrompt(args: {
+	websiteName: string;
+	websiteUrl: string;
+	feedback: TextEditFeedbackPromptInput[];
+}): string {
+	const edits = getWebsiteTextEdits(args.feedback);
+	const n = edits.length;
+	return `Apply the following ${n} text change${n === 1 ? "" : "s"} across the website "${args.websiteName}" (${args.websiteUrl}). These are all non-rejected text edits from direct or approved feedback for this website.
+
+${batchSections(
+	edits,
+	(edit) => `Feedback: "${edit.feedbackTitle}" (ID: ${edit.feedbackId})
+Edit status: ${edit.status === "APPLIED" ? "Already marked applied; verify the requested text is present" : "Pending"}${edit.feedbackDescription ? `\nFeedback context:\n${codeFence(edit.feedbackDescription)}` : ""}
+
+${textEditBody(edit)}`,
+	true,
+)}
+
+Rules for every change:
+- Apply each text change exactly as specified — no rewording or formatting improvements.
+- Use each page URL, CSS selector, and exact current text to locate the intended occurrence.
+- Some edits may already be applied. Verify them and avoid making duplicate changes.
+- Feedback descriptions provide context; implement only the explicit text replacements listed above.
+- If requests conflict for the same element, identify the conflict and ask for clarification instead of choosing silently.
+- Do not modify surrounding markup, attributes, styles, or any other copy.
+- Preserve each file's existing formatting and indentation.`;
 }
 
 export function textEditsPrompt(args: {
