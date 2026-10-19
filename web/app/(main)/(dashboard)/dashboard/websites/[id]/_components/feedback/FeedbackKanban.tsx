@@ -1,11 +1,6 @@
 "use client";
 
-import {
-	ImageIcon,
-	Maximize2Icon,
-	PaletteIcon,
-	TextCursorInputIcon,
-} from "lucide-react";
+import { Maximize2Icon } from "lucide-react";
 import moment from "moment";
 import { useRouter } from "next/navigation";
 import {
@@ -40,6 +35,7 @@ import {
 	PRIORITY_BADGE_MAP,
 	PRIORITY_CONFIG,
 	STATUS_CONFIG,
+	TYPE_CONFIG,
 } from "@/lib/types";
 import { cn } from "@/lib/utils";
 import type { FeedbackStatus } from "@/prisma/generated/client/enums";
@@ -174,8 +170,12 @@ export default function FeedbackKanban({
 			onValueChange={() => {}}
 			getItemValue={(item) => item.id}
 			onMove={handleMove}
+			// Pointer drags must not move the page or the column under the user.
+			// Layout compensation is separate from dnd-kit's edge auto-scroll.
+			autoScroll={{ enabled: false, layoutShiftCompensation: false }}
+			className="[overflow-anchor:none]"
 		>
-			<KanbanBoard className="grid gap-4 sm:grid-cols-3">
+			<KanbanBoard className="grid auto-rows-auto items-start gap-4 sm:grid-cols-3">
 				{COLUMNS.map((status) => (
 					<BoardColumn
 						key={status}
@@ -185,7 +185,9 @@ export default function FeedbackKanban({
 					/>
 				))}
 			</KanbanBoard>
-			<KanbanOverlay>
+			{/* dnd-kit's drop animation scrolls an offscreen destination into
+			    view. A status move should leave the user's viewport in place. */}
+			<KanbanOverlay dropAnimation={null}>
 				{({ value }) => {
 					const item = feedback.find((f) => f.id === value);
 					return item ? <BoardCardBody item={item} /> : null;
@@ -210,8 +212,11 @@ function BoardColumn({
 
 	return (
 		// No KanbanColumnHandle rendered — status columns are fixed.
-		<KanbanColumn value={status} className="flex flex-col gap-3">
-			<div className="flex items-center gap-2.5">
+		<KanbanColumn
+			value={status}
+			className="flex h-[min(68dvh,42rem)] min-h-72 min-w-0 flex-col gap-3 rounded-xl border border-border bg-muted/20 p-3"
+		>
+			<div className="flex shrink-0 items-center gap-2.5">
 				<div
 					className={cn(
 						"flex size-7 items-center justify-center rounded-md",
@@ -227,7 +232,8 @@ function BoardColumn({
 			</div>
 			<KanbanColumnContent
 				value={status}
-				className="flex min-h-32 flex-col gap-2"
+				reorderable={false}
+				className="flex min-h-0 flex-1 flex-col gap-2 overflow-y-auto overscroll-y-contain pr-1 [overflow-anchor:none] [scrollbar-gutter:stable]"
 			>
 				{items.length === 0 && (
 					<p className="rounded-lg border border-border border-dashed px-3 py-6 text-center text-muted-foreground text-xs">
@@ -255,12 +261,12 @@ function BoardCard({
 	const downPos = useRef<{ x: number; y: number } | null>(null);
 
 	return (
-		<KanbanItem value={item.id}>
+		<KanbanItem value={item.id} className="shrink-0">
 			<KanbanItemHandle asChild>
 				{/* biome-ignore lint/a11y/noStaticElementInteractions: drag handle wraps the card; keyboard users open details via the Maximize button and drag via the keyboard sensor */}
 				{/* biome-ignore lint/a11y/useKeyWithClickEvents: see above — Enter/Space on the focused card starts a keyboard drag, so a key handler here would conflict */}
 				<div
-					className="group/card cursor-grab active:cursor-grabbing"
+					className="group/card cursor-grab rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-inset active:cursor-grabbing"
 					onPointerDown={(e) => {
 						downPos.current = { x: e.clientX, y: e.clientY };
 					}}
@@ -311,11 +317,33 @@ function BoardCardBody({
 }) {
 	const priorityConfig = PRIORITY_CONFIG[item.priority];
 	const PriorityIcon = priorityConfig.icon;
+	const typeConfig = TYPE_CONFIG[item.type];
+	const TypeIcon = typeConfig.icon;
+	const editCount =
+		item.type === "TEXT_EDIT"
+			? item.textEdits.length
+			: item.type === "STYLE_EDIT"
+				? item.styleEdits.length
+				: item.type === "IMAGE_EDIT"
+					? item.imageEdits.length
+					: null;
 	const pending = item.approval === "PENDING";
 
 	return (
 		<div className="flex flex-col gap-2 rounded-lg border border-border bg-background/30 p-3 transition-colors hover:border-foreground/20">
-			{item.screenshotKey ? (
+			<div className="flex min-w-0 items-center gap-1.5 text-muted-foreground text-xs">
+				<TypeIcon
+					aria-hidden="true"
+					className={cn("size-3.5 shrink-0", typeConfig.color)}
+				/>
+				<span className="truncate">{typeConfig.label}</span>
+				{editCount !== null && (
+					<span className="ml-auto shrink-0 tabular-nums">
+						{editCount} {editCount === 1 ? "edit" : "edits"}
+					</span>
+				)}
+			</div>
+			{item.screenshotKey && (
 				// Plain img on purpose: ScreenshotPreview's zoom would fight the
 				// drag handle. pointer-events-none keeps drags smooth.
 				// biome-ignore lint/performance/noImgElement: streamed annotation
@@ -325,25 +353,6 @@ function BoardCardBody({
 					className="pointer-events-none aspect-video w-full rounded object-cover"
 					draggable={false}
 				/>
-			) : (
-				<div
-					className={cn(
-						"flex aspect-video w-full items-center justify-center rounded",
-						item.type === "STYLE_EDIT"
-							? "bg-fuchsia-500/10"
-							: item.type === "IMAGE_EDIT"
-								? "bg-cyan-500/10"
-								: "bg-violet-500/10",
-					)}
-				>
-					{item.type === "STYLE_EDIT" ? (
-						<PaletteIcon className="size-5 text-fuchsia-500" />
-					) : item.type === "IMAGE_EDIT" ? (
-						<ImageIcon className="size-5 text-cyan-500" />
-					) : (
-						<TextCursorInputIcon className="size-5 text-violet-500" />
-					)}
-				</div>
 			)}
 
 			<div className={cn("flex flex-col gap-1", pending && "opacity-60")}>

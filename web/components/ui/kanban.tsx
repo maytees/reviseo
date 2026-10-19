@@ -2,6 +2,7 @@
 
 import {
 	DndContext,
+	type DragCancelEvent,
 	type DragEndEvent,
 	type DraggableAttributes,
 	type DraggableSyntheticListeners,
@@ -65,11 +66,15 @@ const ColumnContext = React.createContext<{
 });
 
 const ItemContext = React.createContext<{
+	attributes: DraggableAttributes;
 	listeners: DraggableSyntheticListeners | undefined;
+	setActivatorNodeRef: (element: HTMLElement | null) => void;
 	isDragging?: boolean;
 	disabled?: boolean;
 }>({
+	attributes: {} as DraggableAttributes,
 	listeners: undefined,
+	setActivatorNodeRef: () => {},
 	isDragging: false,
 	disabled: false,
 });
@@ -99,6 +104,7 @@ export interface KanbanRootProps<T> {
 	getItemValue: (item: T) => string;
 	children: React.ReactNode;
 	className?: string;
+	autoScroll?: React.ComponentProps<typeof DndContext>["autoScroll"];
 	onMove?: (event: KanbanMoveEvent) => void;
 	onDragEnd?: (args: OnDragEndArgs) => void;
 }
@@ -116,12 +122,37 @@ function Kanban<T>({
 	getItemValue,
 	children,
 	className,
+	autoScroll,
 	onMove,
 	onDragEnd,
 }: KanbanRootProps<T>) {
 	const columns = value;
 	const setColumns = onValueChange;
 	const [activeId, setActiveId] = React.useState<UniqueIdentifier | null>(null);
+	const rootRef = React.useRef<HTMLDivElement>(null);
+
+	const restoreKeyboardFocus = React.useCallback(
+		(event: DragEndEvent | DragCancelEvent) => {
+			if (event.activatorEvent.type !== "keydown") return;
+
+			// Moving between columns remounts the card. dnd-kit's default
+			// restoration scrolls its new position into view, even after a drop.
+			requestAnimationFrame(() => {
+				const nodes = rootRef.current?.querySelectorAll<HTMLElement>(
+					'[data-slot="kanban-item"], [data-slot="kanban-column"]',
+				);
+				const node = Array.from(nodes ?? []).find(
+					(element) => element.dataset.value === String(event.active.id),
+				);
+				node
+					?.querySelector<HTMLElement>(
+						'[data-slot="kanban-item-handle"], [data-slot="kanban-column-handle"]',
+					)
+					?.focus({ preventScroll: true });
+			});
+		},
+		[],
+	);
 
 	const sensors = useSensors(
 		useSensor(PointerSensor, {
@@ -131,6 +162,7 @@ function Kanban<T>({
 		}),
 		useSensor(KeyboardSensor, {
 			coordinateGetter: sortableKeyboardCoordinates,
+			scrollBehavior: "auto",
 		}),
 	);
 
@@ -210,6 +242,7 @@ function Kanban<T>({
 		(event: DragEndEvent) => {
 			const { active, over } = event;
 			setActiveId(null);
+			restoreKeyboardFocus(event);
 
 			if (!over) return;
 
@@ -298,6 +331,7 @@ function Kanban<T>({
 			setColumns,
 			onMove,
 			onDragEnd,
+			restoreKeyboardFocus,
 		],
 	);
 
@@ -327,14 +361,20 @@ function Kanban<T>({
 		<KanbanContext.Provider value={contextValue}>
 			<DndContext
 				sensors={sensors}
+				autoScroll={autoScroll}
+				accessibility={{ restoreFocus: false }}
 				onDragStart={handleDragStart}
 				onDragOver={handleDragOver}
 				onDragEnd={handleDragEnd}
 				// Esc / cancelled drags must reset the active id, or the root
 				// keeps data-dragging and the overlay's measured state goes stale.
-				onDragCancel={() => setActiveId(null)}
+				onDragCancel={(event) => {
+					setActiveId(null);
+					restoreKeyboardFocus(event);
+				}}
 			>
 				<div
+					ref={rootRef}
 					data-slot="kanban"
 					data-dragging={activeId !== null}
 					className={cn(className)}
@@ -476,6 +516,7 @@ function KanbanItem({
 }: KanbanItemProps) {
 	const {
 		setNodeRef,
+		setActivatorNodeRef,
 		transform,
 		transition,
 		attributes,
@@ -498,7 +539,13 @@ function KanbanItem({
 
 	return (
 		<ItemContext.Provider
-			value={{ listeners, isDragging: isItemDragging, disabled }}
+			value={{
+				attributes,
+				listeners,
+				setActivatorNodeRef,
+				isDragging: isItemDragging,
+				disabled,
+			}}
 		>
 			<Comp
 				data-slot="kanban-item"
@@ -507,7 +554,6 @@ function KanbanItem({
 				data-disabled={disabled}
 				ref={setNodeRef}
 				style={style}
-				{...attributes}
 				className={cn(
 					isSortableDragging && "opacity-50",
 					disabled && "opacity-50",
@@ -533,15 +579,18 @@ function KanbanItemHandle({
 	children,
 	cursor = true,
 }: KanbanItemHandleProps) {
-	const { listeners, isDragging, disabled } = React.useContext(ItemContext);
+	const { attributes, listeners, setActivatorNodeRef, isDragging, disabled } =
+		React.useContext(ItemContext);
 
 	const Comp = asChild ? Slot : "div";
 
 	return (
 		<Comp
+			ref={setActivatorNodeRef}
 			data-slot="kanban-item-handle"
 			data-dragging={isDragging}
 			data-disabled={disabled}
+			{...attributes}
 			{...listeners}
 			className={cn(
 				cursor && (isDragging ? "!cursor-grabbing" : "!cursor-grab"),
@@ -557,12 +606,16 @@ export interface KanbanColumnContentProps {
 	value: string;
 	className?: string;
 	children: React.ReactNode;
+	reorderable?: boolean;
 }
+
+const stationarySortingStrategy = () => null;
 
 function KanbanColumnContent({
 	value,
 	className,
 	children,
+	reorderable = true,
 }: KanbanColumnContentProps) {
 	const { columns, getItemId } = React.useContext(KanbanContext);
 
@@ -572,7 +625,12 @@ function KanbanColumnContent({
 	);
 
 	return (
-		<SortableContext items={itemIds} strategy={verticalListSortingStrategy}>
+		<SortableContext
+			items={itemIds}
+			strategy={
+				reorderable ? verticalListSortingStrategy : stationarySortingStrategy
+			}
+		>
 			<div
 				data-slot="kanban-column-content"
 				className={cn("flex flex-col gap-2", className)}
@@ -585,6 +643,7 @@ function KanbanColumnContent({
 
 export interface KanbanOverlayProps {
 	className?: string;
+	dropAnimation?: DropAnimation | null;
 	children?:
 		| React.ReactNode
 		| ((params: {
@@ -593,7 +652,11 @@ export interface KanbanOverlayProps {
 		  }) => React.ReactNode);
 }
 
-function KanbanOverlay({ children, className }: KanbanOverlayProps) {
+function KanbanOverlay({
+	children,
+	className,
+	dropAnimation = dropAnimationConfig,
+}: KanbanOverlayProps) {
 	const { activeId, isColumn } = React.useContext(KanbanContext);
 	const [dimensions, setDimensions] = React.useState<{
 		width: number;
@@ -631,7 +694,7 @@ function KanbanOverlay({ children, className }: KanbanOverlayProps) {
 	}, [activeId, children, isColumn]);
 
 	return (
-		<DragOverlay dropAnimation={dropAnimationConfig}>
+		<DragOverlay dropAnimation={dropAnimation}>
 			<div
 				data-slot="kanban-overlay"
 				data-dragging={true}
